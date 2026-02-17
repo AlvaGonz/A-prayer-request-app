@@ -6,7 +6,7 @@ A Progressive Web App (PWA) for Christian communities to share prayer requests a
 
 ## 🚀 Live Demo
 
-- **Frontend (Vercel):** [https://prayer-board-frontend.vercel.app](https://prayer-board-frontend.vercel.app)
+- **Frontend (Vercel):** [https://prayer-board-frontend.vercel.app](https://prayer-board-virid.vercel.app/)
 - **Backend (Render):** [https://prayer-board-api.onrender.com](https://prayer-board-api.onrender.com)
 
 
