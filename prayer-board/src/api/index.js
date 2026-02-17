@@ -1,16 +1,42 @@
-// Mock API layer for offline development
-// Replace these with real API calls when backend is ready
+// API Configuration
+const USE_MOCK_API = false; // Set to false when backend is ready
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// Helper for API calls
+const apiCall = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('prayerBoard_token');
+  
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers
+    },
+    ...options
+  };
+
+  const response = await fetch(url, config);
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(error.error || `HTTP ${response.status}`);
+  }
+  
+  return response.json();
+};
+
+// Mock API Helpers
 const STORAGE_KEYS = {
   USER: 'prayerBoard_user',
   TOKEN: 'prayerBoard_token',
   REQUESTS: 'prayerBoard_requests',
   INTERACTIONS: 'prayerBoard_interactions',
+  COMMENTS: 'prayerBoard_comments',
   USER_ID_COUNTER: 'prayerBoard_userIdCounter',
   REQUEST_ID_COUNTER: 'prayerBoard_requestIdCounter'
 };
 
-// Helper to generate IDs
 const generateId = (prefix) => {
   const counterKey = prefix === 'user' ? STORAGE_KEYS.USER_ID_COUNTER : STORAGE_KEYS.REQUEST_ID_COUNTER;
   let counter = parseInt(localStorage.getItem(counterKey) || '0');
@@ -19,76 +45,10 @@ const generateId = (prefix) => {
   return `${prefix}_${Date.now()}_${counter}`;
 };
 
-// Mock data initialization
-const initMockData = () => {
-  if (!localStorage.getItem(STORAGE_KEYS.REQUESTS)) {
-    const sampleRequests = [
-      {
-        id: generateId('req'),
-        body: "Please pray for my mother's surgery tomorrow. She has been battling health issues and we are trusting God for a successful outcome.",
-        authorName: "Sarah M.",
-        isAnonymous: false,
-        prayedCount: 12,
-        status: 'open',
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        isDeleted: false
-      },
-      {
-        id: generateId('req'),
-        body: "Going through a difficult season in my marriage. Praying for reconciliation and God's guidance.",
-        authorName: "Anonymous",
-        isAnonymous: true,
-        prayedCount: 5,
-        status: 'open',
-        createdAt: new Date(Date.now() - 7200000).toISOString(),
-        isDeleted: false
-      },
-      {
-        id: generateId('req'),
-        body: "Please pray for my job interview this Friday. I've been unemployed for 3 months and this opportunity would be a blessing for my family.",
-        authorName: "Michael R.",
-        isAnonymous: false,
-        prayedCount: 8,
-        status: 'open',
-        createdAt: new Date(Date.now() - 10800000).toISOString(),
-        isDeleted: false
-      },
-      {
-        id: generateId('req'),
-        body: "Thank you all for your prayers last month. My father's cancer treatment is working and his recent scan showed improvement! Glory to God!",
-        authorName: "Anonymous",
-        isAnonymous: true,
-        prayedCount: 24,
-        status: 'answered',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        isDeleted: false
-      },
-      {
-        id: generateId('req'),
-        body: "Praying for peace and comfort for a friend who lost their child recently. The grief is overwhelming.",
-        authorName: "Jennifer K.",
-        isAnonymous: false,
-        prayedCount: 18,
-        status: 'open',
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        isDeleted: false
-      }
-    ];
-    localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(sampleRequests));
-  }
-  
-  if (!localStorage.getItem(STORAGE_KEYS.INTERACTIONS)) {
-    localStorage.setItem(STORAGE_KEYS.INTERACTIONS, JSON.stringify([]));
-  }
-};
-
-// Initialize mock data on load
-initMockData();
-
-// Auth API
-export const authAPI = {
+// Mock Auth API
+const mockAuthAPI = {
   register: async ({ displayName, email, password }) => {
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     const users = JSON.parse(localStorage.getItem('prayerBoard_users') || '[]');
     if (users.find(u => u.email === email)) {
@@ -100,11 +60,10 @@ export const authAPI = {
       displayName,
       email,
       role: 'member',
-      passwordHash: btoa(password), // Mock hash
       createdAt: new Date().toISOString()
     };
     
-    users.push(user);
+    users.push({ ...user, passwordHash: btoa(password) });
     localStorage.setItem('prayerBoard_users', JSON.stringify(users));
     
     const token = btoa(JSON.stringify({ userId: user.id, email: user.email }));
@@ -118,13 +77,15 @@ export const authAPI = {
     await new Promise(resolve => setTimeout(resolve, 500));
     
     const users = JSON.parse(localStorage.getItem('prayerBoard_users') || '[]');
-    const user = users.find(u => u.email === email && u.passwordHash === btoa(password));
+    const userData = users.find(u => u.email === email && u.passwordHash === btoa(password));
     
-    if (!user) {
+    if (!userData) {
       throw new Error('Invalid email or password');
     }
     
+    const { passwordHash, ...user } = userData;
     const token = btoa(JSON.stringify({ userId: user.id, email: user.email }));
+    
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
     localStorage.setItem(STORAGE_KEYS.TOKEN, token);
     
@@ -149,8 +110,28 @@ export const authAPI = {
   }
 };
 
-// Requests API
-export const requestsAPI = {
+// Real Auth API
+const realAuthAPI = {
+  register: async (data) => apiCall('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  
+  login: async (data) => apiCall('/api/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  
+  me: async () => apiCall('/api/auth/me'),
+  
+  logout: () => {
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+  }
+};
+
+// Mock Requests API
+const mockRequestsAPI = {
   getAll: async ({ page = 1, limit = 20, status = 'open' } = {}) => {
     await new Promise(resolve => setTimeout(resolve, 400));
     
@@ -176,10 +157,6 @@ export const requestsAPI = {
   create: async ({ body, isAnonymous = true }, user = null) => {
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    if (!body || body.length < 10 || body.length > 1000) {
-      throw new Error('Request body must be between 10 and 1000 characters');
-    }
-    
     const request = {
       id: generateId('req'),
       body: body.trim(),
@@ -187,6 +164,7 @@ export const requestsAPI = {
       isAnonymous: isAnonymous || !user,
       author: user ? user.id : null,
       prayedCount: 0,
+      commentCount: 0,
       status: 'open',
       createdAt: new Date().toISOString(),
       isDeleted: false
@@ -199,7 +177,7 @@ export const requestsAPI = {
     return { request };
   },
   
-  pray: async (requestId, user = null) => {
+  pray: async (requestId) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
     const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
@@ -209,28 +187,6 @@ export const requestsAPI = {
       throw new Error('Request not found');
     }
     
-    const interactions = JSON.parse(localStorage.getItem(STORAGE_KEYS.INTERACTIONS) || '[]');
-    
-    // Check for duplicate prayers from registered users
-    if (user) {
-      const alreadyPrayed = interactions.find(
-        i => i.request === requestId && i.user === user.id
-      );
-      if (alreadyPrayed) {
-        throw new Error('You have already prayed for this request');
-      }
-    }
-    
-    // Record interaction
-    interactions.push({
-      id: generateId('int'),
-      request: requestId,
-      user: user ? user.id : null,
-      createdAt: new Date().toISOString()
-    });
-    localStorage.setItem(STORAGE_KEYS.INTERACTIONS, JSON.stringify(interactions));
-    
-    // Increment count
     request.prayedCount++;
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
     
@@ -241,33 +197,10 @@ export const requestsAPI = {
   },
   
   updateStatus: async (requestId, { status }, user) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (!user) throw new Error('Authentication required');
-    
     const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
     const request = requests.find(r => r.id === requestId);
     
-    if (!request || request.isDeleted) {
-      throw new Error('Request not found');
-    }
-    
-    // Check permissions
-    const isAuthor = request.author === user.id;
-    const isAdmin = user.role === 'admin';
-    
-    if (!isAuthor && !isAdmin) {
-      throw new Error('Not authorized');
-    }
-    
-    // Validate transitions
-    if (status === 'answered' && !isAuthor) {
-      throw new Error('Only the author can mark as answered');
-    }
-    
-    if (['hidden', 'archived'].includes(status) && !isAdmin) {
-      throw new Error('Only admins can hide or archive');
-    }
+    if (!request) throw new Error('Request not found');
     
     request.status = status;
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
@@ -275,58 +208,51 @@ export const requestsAPI = {
     return { request };
   },
   
-  delete: async (requestId, user) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (!user || user.role !== 'admin') {
-      throw new Error('Admin access required');
-    }
-    
+  delete: async (requestId) => {
     const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
     const request = requests.find(r => r.id === requestId);
     
-    if (!request) {
-      throw new Error('Request not found');
-    }
+    if (!request) throw new Error('Request not found');
     
     request.isDeleted = true;
-    request.deletedBy = user.id;
-    request.deletedAt = new Date().toISOString();
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
     
     return { message: 'Request removed.' };
   }
 };
 
-// Notifications API (high-level wiring)
-export const notificationsAPI = {
-  subscribe: async (subscription, user) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (!user) throw new Error('Authentication required');
-    
-    // In real implementation, send to backend
-    // For now, just store in user object
-    const users = JSON.parse(localStorage.getItem('prayerBoard_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === user.id);
-    
-    if (userIndex !== -1) {
-      users[userIndex].pushSubscription = subscription;
-      localStorage.setItem('prayerBoard_users', JSON.stringify(users));
-    }
-    
-    return { success: true };
-  }
+// Real Requests API
+const realRequestsAPI = {
+  getAll: async (params) => {
+    const query = new URLSearchParams(params).toString();
+    return apiCall(`/api/requests?${query}`);
+  },
+  
+  create: async (data) => apiCall('/api/requests', {
+    method: 'POST',
+    body: JSON.stringify(data)
+  }),
+  
+  pray: async (requestId) => apiCall(`/api/requests/${requestId}/pray`, {
+    method: 'POST'
+  }),
+  
+  updateStatus: async (requestId, data) => apiCall(`/api/requests/${requestId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
+  
+  delete: async (requestId) => apiCall(`/api/requests/${requestId}`, {
+    method: 'DELETE'
+  })
 };
 
-// Comments API
-const COMMENTS_KEY = 'prayerBoard_comments';
-
-export const commentsAPI = {
+// Mock Comments API
+const mockCommentsAPI = {
   getByRequest: async (requestId) => {
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS) || '[]');
     const comments = allComments
       .filter(c => c.prayerRequest === requestId && !c.isDeleted)
       .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -337,8 +263,7 @@ export const commentsAPI = {
         body: c.body,
         authorName: c.authorName,
         authorId: c.author,
-        createdAt: c.createdAt,
-        canDelete: true // In real app, check auth
+        createdAt: c.createdAt
       })),
       count: comments.length
     };
@@ -346,12 +271,6 @@ export const commentsAPI = {
   
   create: async (requestId, body, user) => {
     await new Promise(resolve => setTimeout(resolve, 400));
-    
-    if (!user) throw new Error('Authentication required');
-    
-    if (!body || body.trim().length < 1 || body.trim().length > 500) {
-      throw new Error('Comment must be between 1 and 500 characters');
-    }
     
     const comment = {
       id: generateId('comment'),
@@ -363,11 +282,11 @@ export const commentsAPI = {
       createdAt: new Date().toISOString()
     };
     
-    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS) || '[]');
     allComments.push(comment);
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
+    localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(allComments));
     
-    // Update comment count on request
+    // Update comment count
     const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
     const request = requests.find(r => r.id === requestId);
     if (request) {
@@ -382,47 +301,40 @@ export const commentsAPI = {
         authorName: comment.authorName,
         authorId: comment.author,
         createdAt: comment.createdAt
-      },
-      message: 'Comment added successfully'
+      }
     };
   },
   
   delete: async (commentId, user) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    if (!user) throw new Error('Authentication required');
-    
-    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    const allComments = JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMENTS) || '[]');
     const comment = allComments.find(c => c.id === commentId);
     
-    if (!comment) {
-      throw new Error('Comment not found');
-    }
+    if (!comment) throw new Error('Comment not found');
     
-    // Check permissions
-    const isAuthor = comment.author === user.id;
-    const isAdmin = user.role === 'admin';
-    
-    if (!isAuthor && !isAdmin) {
-      throw new Error('Not authorized to delete this comment');
-    }
-    
-    // Soft delete
     comment.isDeleted = true;
-    comment.deletedBy = user.id;
-    comment.deletedAt = new Date().toISOString();
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
-    
-    // Update comment count on request
-    const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
-    const request = requests.find(r => r.id === comment.prayerRequest);
-    if (request && request.commentCount > 0) {
-      request.commentCount--;
-      localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
-    }
+    localStorage.setItem(STORAGE_KEYS.COMMENTS, JSON.stringify(allComments));
     
     return { message: 'Comment removed' };
   }
 };
 
-export default { authAPI, requestsAPI, notificationsAPI, commentsAPI };
+// Real Comments API
+const realCommentsAPI = {
+  getByRequest: async (requestId) => apiCall(`/api/requests/${requestId}/comments`),
+  
+  create: async (requestId, body) => apiCall(`/api/requests/${requestId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ body })
+  }),
+  
+  delete: async (commentId) => apiCall(`/api/comments/${commentId}`, {
+    method: 'DELETE'
+  })
+};
+
+// Export APIs (switch between mock and real)
+export const authAPI = USE_MOCK_API ? mockAuthAPI : realAuthAPI;
+export const requestsAPI = USE_MOCK_API ? mockRequestsAPI : realRequestsAPI;
+export const commentsAPI = USE_MOCK_API ? mockCommentsAPI : realCommentsAPI;
+
+export default { authAPI, requestsAPI, commentsAPI };
