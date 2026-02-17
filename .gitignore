@@ -1,0 +1,13 @@
+DEPLOYMENT.md
+DEPLOYMENT_GITHUB_ACTIONS.md
+implementation_plan.md.resolved
+node_modules/
+.env
+.DS_Store
+dist/
+coverage/
+.vscode/
+prayer-board/node_modules/
+prayer-board/dist/
+prayer-board/.env
+prayer-board/.vercel

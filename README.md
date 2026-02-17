@@ -2,6 +2,14 @@
 
 A Progressive Web App (PWA) for Christian communities to share prayer requests and support one another through prayer and encouragement.
 
+**This is a problem-solving project designed to provide a privacy-focused, accessible digital space for communal prayer.**
+
+## 🚀 Live Demo
+
+- **Frontend (Vercel):** [https://prayer-board-frontend.vercel.app](https://prayer-board-frontend.vercel.app)
+- **Backend (Render):** [https://prayer-board-api.onrender.com](https://prayer-board-api.onrender.com)
+
+
 ## Features
 
 ### Core Features
@@ -33,6 +41,8 @@ A Progressive Web App (PWA) for Christian communities to share prayer requests a
 - **Icons**: Lucide React
 - **Date Formatting**: date-fns
 - **PWA**: vite-plugin-pwa with Workbox
+- **Deployment**: Vercel (Frontend) + Render (Backend)
+
 
 ## Getting Started
 
