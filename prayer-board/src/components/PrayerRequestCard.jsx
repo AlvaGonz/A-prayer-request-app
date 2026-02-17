@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { User, CheckCircle2, Trash2, EyeOff, Archive } from 'lucide-react';
+import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
+import CommentSection from './CommentSection';
 import { useAuth } from '../context/AuthContext';
 import './PrayerRequestCard.css';
 
@@ -11,6 +12,7 @@ const PrayerRequestCard = ({
   onUpdateStatus, 
   onDelete 
 }) => {
+  const [showComments, setShowComments] = useState(false);
   const { user, isAuthenticated } = useAuth();
   
   const isAuthor = isAuthenticated && request.author === user?.id;
@@ -70,11 +72,22 @@ const PrayerRequestCard = ({
       </div>
       
       <div className="prayer-card-footer">
-        <PrayedButton 
-          requestId={request.id} 
-          initialCount={request.prayedCount}
-          onPrayed={onPrayed}
-        />
+        <div className="prayer-card-actions-left">
+          <PrayedButton 
+            requestId={request.id} 
+            initialCount={request.prayedCount}
+            onPrayed={onPrayed}
+          />
+          
+          <button
+            className="action-btn comments-btn"
+            onClick={() => setShowComments(!showComments)}
+            title={showComments ? 'Hide comments' : 'Show comments'}
+          >
+            <MessageCircle size={16} />
+            <span>{request.commentCount || 0}</span>
+          </button>
+        </div>
         
         {(isAuthor || isAdmin) && (
           <div className="prayer-card-actions">
@@ -119,6 +132,13 @@ const PrayerRequestCard = ({
           </div>
         )}
       </div>
+
+      <CommentSection
+        requestId={request.id}
+        isOpen={showComments}
+        onToggle={() => setShowComments(!showComments)}
+        requestAuthorId={request.author}
+      />
     </div>
   );
 };

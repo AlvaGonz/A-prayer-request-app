@@ -106,9 +106,20 @@
   border-top: 1px solid var(--color-border);
 }
 
+.prayer-card-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .prayer-card-actions {
   display: flex;
   gap: 8px;
+}
+
+.action-btn.comments-btn:hover {
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
 }
 
 .action-btn {
