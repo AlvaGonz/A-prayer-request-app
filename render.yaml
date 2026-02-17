@@ -1,0 +1,22 @@
+# Render Blueprint - Backend Only
+# Frontend should be deployed separately as a Static Site
+
+services:
+  - type: web
+    name: prayer-board-api
+    runtime: node
+    repo: https://github.com/YOUR_USERNAME/prayer-board
+    branch: main
+    buildFilter:
+      paths:
+        - server/**
+    buildCommand: cd server && npm install
+    startCommand: cd server && node server.js
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        generateValue: false
+      - key: JWT_SECRET
+        generateValue: false
