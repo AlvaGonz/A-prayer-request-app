@@ -2,7 +2,7 @@ services:
   # Backend (Node.js API)
   - type: web
     name: prayer-board-api
-    env: node
+    runtime: node
     root: server
     buildCommand: npm install
     startCommand: node server.js
@@ -10,23 +10,24 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        sync: false # User will input this in dashboard
+        sync: false
       - key: JWT_SECRET
-        sync: false # User will input this in dashboard
+        sync: false
 
   # Frontend (React Static Site)
-  - type: static_site
+  - type: static
     name: prayer-board-web
-    env: static
+    runtime: static
     root: .
     buildCommand: npm install && npm run build
-    publishDir: dist
+    staticPublishPath: dist
     routes:
-      # Rewrite API requests to the backend service
       - type: rewrite
         source: /api/*
         destination: https://prayer-board-api.onrender.com/api/*
-      # Handle React Router (SPA) - redirect all other 404s to index.html
       - type: rewrite
         source: /*
         destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://prayer-board-api.onrender.com
