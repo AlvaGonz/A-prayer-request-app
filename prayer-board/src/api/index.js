@@ -319,4 +319,110 @@ export const notificationsAPI = {
   }
 };
 
-export default { authAPI, requestsAPI, notificationsAPI };
+// Comments API
+const COMMENTS_KEY = 'prayerBoard_comments';
+
+export const commentsAPI = {
+  getByRequest: async (requestId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    const comments = allComments
+      .filter(c => c.prayerRequest === requestId && !c.isDeleted)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    
+    return {
+      comments: comments.map(c => ({
+        id: c.id,
+        body: c.body,
+        authorName: c.authorName,
+        authorId: c.author,
+        createdAt: c.createdAt,
+        canDelete: true // In real app, check auth
+      })),
+      count: comments.length
+    };
+  },
+  
+  create: async (requestId, body, user) => {
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    if (!user) throw new Error('Authentication required');
+    
+    if (!body || body.trim().length < 1 || body.trim().length > 500) {
+      throw new Error('Comment must be between 1 and 500 characters');
+    }
+    
+    const comment = {
+      id: generateId('comment'),
+      prayerRequest: requestId,
+      author: user.id,
+      authorName: user.displayName,
+      body: body.trim(),
+      isDeleted: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    allComments.push(comment);
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
+    
+    // Update comment count on request
+    const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
+    const request = requests.find(r => r.id === requestId);
+    if (request) {
+      request.commentCount = (request.commentCount || 0) + 1;
+      localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
+    }
+    
+    return {
+      comment: {
+        id: comment.id,
+        body: comment.body,
+        authorName: comment.authorName,
+        authorId: comment.author,
+        createdAt: comment.createdAt
+      },
+      message: 'Comment added successfully'
+    };
+  },
+  
+  delete: async (commentId, user) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    if (!user) throw new Error('Authentication required');
+    
+    const allComments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
+    const comment = allComments.find(c => c.id === commentId);
+    
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+    
+    // Check permissions
+    const isAuthor = comment.author === user.id;
+    const isAdmin = user.role === 'admin';
+    
+    if (!isAuthor && !isAdmin) {
+      throw new Error('Not authorized to delete this comment');
+    }
+    
+    // Soft delete
+    comment.isDeleted = true;
+    comment.deletedBy = user.id;
+    comment.deletedAt = new Date().toISOString();
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify(allComments));
+    
+    // Update comment count on request
+    const requests = JSON.parse(localStorage.getItem(STORAGE_KEYS.REQUESTS) || '[]');
+    const request = requests.find(r => r.id === comment.prayerRequest);
+    if (request && request.commentCount > 0) {
+      request.commentCount--;
+      localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
+    }
+    
+    return { message: 'Comment removed' };
+  }
+};
+
+export default { authAPI, requestsAPI, notificationsAPI, commentsAPI };
