@@ -1,5 +1,15 @@
+const sanitizeHtml = require('sanitize-html');
 const Comment = require('../models/Comment');
 const PrayerRequest = require('../models/PrayerRequest');
+
+// Sanitize input
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return sanitizeHtml(input.trim(), {
+    allowedTags: [],
+    allowedAttributes: {}
+  });
+};
 
 // @desc    Get comments for a prayer request
 // @route   GET /api/requests/:id/comments
@@ -26,7 +36,7 @@ const getComments = async (req, res) => {
       count: formattedComments.length
     });
   } catch (error) {
-    console.error('Get comments error:', error);
+    console.error('Get comments error:', error.message);
     res.status(500).json({ error: 'Failed to fetch comments' });
   }
 };
@@ -36,10 +46,13 @@ const getComments = async (req, res) => {
 // @access  Private
 const createComment = async (req, res) => {
   try {
-    const { body } = req.body;
+    let { body } = req.body;
+
+    // Sanitize input
+    body = sanitizeInput(body);
 
     // Validation
-    if (!body || body.trim().length < 1 || body.trim().length > 500) {
+    if (!body || body.length < 1 || body.length > 500) {
       return res.status(400).json({ 
         error: 'Comment must be between 1 and 500 characters' 
       });
@@ -60,7 +73,7 @@ const createComment = async (req, res) => {
       prayerRequest: req.params.id,
       author: req.user._id,
       authorName: req.user.displayName,
-      body: body.trim()
+      body
     });
 
     // Update comment count
@@ -81,7 +94,7 @@ const createComment = async (req, res) => {
       message: 'Comment added successfully'
     });
   } catch (error) {
-    console.error('Create comment error:', error);
+    console.error('Create comment error:', error.message);
     res.status(500).json({ error: 'Failed to add comment' });
   }
 };
@@ -123,7 +136,7 @@ const deleteComment = async (req, res) => {
 
     res.json({ message: 'Comment removed' });
   } catch (error) {
-    console.error('Delete comment error:', error);
+    console.error('Delete comment error:', error.message);
     res.status(500).json({ error: 'Failed to delete comment' });
   }
 };

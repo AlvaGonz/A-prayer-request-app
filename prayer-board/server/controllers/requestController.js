@@ -1,5 +1,15 @@
+const sanitizeHtml = require('sanitize-html');
 const PrayerRequest = require('../models/PrayerRequest');
 const Comment = require('../models/Comment');
+
+// Sanitize input
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return sanitizeHtml(input.trim(), {
+    allowedTags: [],
+    allowedAttributes: {}
+  });
+};
 
 // @desc    Get all prayer requests
 // @route   GET /api/requests
@@ -48,7 +58,7 @@ const getRequests = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Get requests error:', error);
+    console.error('Get requests error:', error.message);
     res.status(500).json({ error: 'Failed to fetch prayer requests' });
   }
 };
@@ -58,17 +68,20 @@ const getRequests = async (req, res) => {
 // @access  Public (guests allowed)
 const createRequest = async (req, res) => {
   try {
-    const { body, isAnonymous = true } = req.body;
+    let { body, isAnonymous = true } = req.body;
+
+    // Sanitize input
+    body = sanitizeInput(body);
 
     // Validation
-    if (!body || body.trim().length < 10 || body.trim().length > 1000) {
+    if (!body || body.length < 10 || body.length > 1000) {
       return res.status(400).json({ 
         error: 'Request body must be between 10 and 1000 characters' 
       });
     }
 
     const request = await PrayerRequest.create({
-      body: body.trim(),
+      body,
       isAnonymous: req.user ? isAnonymous : true,
       author: req.user ? req.user._id : null,
       authorName: req.user && !isAnonymous ? req.user.displayName : 'Anonymous'
@@ -88,7 +101,7 @@ const createRequest = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Create request error:', error);
+    console.error('Create request error:', error.message);
     res.status(500).json({ error: 'Failed to create prayer request' });
   }
 };
@@ -113,7 +126,7 @@ const pray = async (req, res) => {
       message: 'Your prayer has been noted. Thank you for lifting this up.'
     });
   } catch (error) {
-    console.error('Pray error:', error);
+    console.error('Pray error:', error.message);
     res.status(500).json({ error: 'Failed to record prayer' });
   }
 };
@@ -156,7 +169,7 @@ const updateStatus = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Update status error:', error);
+    console.error('Update status error:', error.message);
     res.status(500).json({ error: 'Failed to update status' });
   }
 };
@@ -180,7 +193,7 @@ const deleteRequest = async (req, res) => {
 
     res.json({ message: 'Request removed' });
   } catch (error) {
-    console.error('Delete request error:', error);
+    console.error('Delete request error:', error.message);
     res.status(500).json({ error: 'Failed to delete request' });
   }
 };

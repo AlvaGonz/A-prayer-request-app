@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const sanitizeHtml = require('sanitize-html');
 const User = require('../models/User');
 
 // Generate JWT
@@ -8,24 +9,59 @@ const generateToken = (id) => {
   });
 };
 
+// Email validation regex
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Password validation (min 8 chars, at least 1 uppercase, 1 lowercase, 1 number)
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+
+// Sanitize input to prevent XSS
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return sanitizeHtml(input.trim(), {
+    allowedTags: [],
+    allowedAttributes: {}
+  });
+};
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res) => {
   try {
-    const { displayName, email, password } = req.body;
+    let { displayName, email, password } = req.body;
+
+    // Sanitize inputs
+    displayName = sanitizeInput(displayName);
+    email = sanitizeInput(email)?.toLowerCase();
 
     // Validation
     if (!displayName || !email || !password) {
       return res.status(400).json({ error: 'Please provide all required fields' });
     }
 
+    // Email format validation
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
+    }
+
     if (displayName.length < 2 || displayName.length > 50) {
       return res.status(400).json({ error: 'Display name must be between 2 and 50 characters' });
     }
 
+    // Password validation
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    if (password.length > 128) {
+      return res.status(400).json({ error: 'Password must not exceed 128 characters' });
+    }
+
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ 
+        error: 'Password must contain at least one uppercase letter, one lowercase letter, and one number' 
+      });
     }
 
     // Check if user exists
@@ -53,7 +89,7 @@ const register = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Register error:', error.message);
     res.status(500).json({ error: 'Server error during registration' });
   }
 };
@@ -63,11 +99,19 @@ const register = async (req, res) => {
 // @access  Public
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    // Sanitize email
+    email = sanitizeInput(email)?.toLowerCase();
 
     // Validation
     if (!email || !password) {
       return res.status(400).json({ error: 'Please provide email and password' });
+    }
+
+    // Email format validation
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
     }
 
     // Check for user email
@@ -99,7 +143,7 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Login error:', error.message);
     res.status(500).json({ error: 'Server error during login' });
   }
 };
@@ -124,7 +168,7 @@ const getMe = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('GetMe error:', error);
+    console.error('GetMe error:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
