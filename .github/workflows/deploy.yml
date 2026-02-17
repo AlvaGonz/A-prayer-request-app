@@ -31,9 +31,11 @@ jobs:
           cache: 'npm'
       
       - name: Install Dependencies
+        working-directory: ./prayer-board
         run: npm ci
       
       - name: Build Frontend
+        working-directory: ./prayer-board
         run: npm run build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
