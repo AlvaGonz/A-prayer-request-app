@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 // Load env vars
@@ -15,17 +16,22 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Basic Route
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/requests', require('./routes/requests'));
+app.use('/api', require('./routes/comments'));
 
-// Import Routes (will add later)
-// app.use('/api/auth', require('./routes/auth'));
-// app.use('/api/requests', require('./routes/requests'));
+// Health check
+app.get('/', (req, res) => {
+    res.json({ 
+        message: 'Prayer Board API is running',
+        version: '1.0.0',
+        status: 'healthy'
+    });
+});
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
