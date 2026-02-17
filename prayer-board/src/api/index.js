@@ -1,7 +1,18 @@
-// API Configuration
-const USE_MOCK_API = false; // Set to false when backend is ready
-// HARDCODED: Production backend URL
+// API Configuration - v1.0.1
+// Force cache refresh: Updated to production backend
+const USE_MOCK_API = false;
 const API_BASE_URL = 'https://prayer-board-api.onrender.com';
+
+// Clear any old cached data on load
+if (typeof window !== 'undefined') {
+  const cacheVersion = localStorage.getItem('app_cache_version');
+  if (cacheVersion !== '1.0.1') {
+    console.log('Clearing old cache...');
+    localStorage.setItem('app_cache_version', '1.0.1');
+    // Optional: Clear specific cached items if needed
+    // localStorage.removeItem('cached_requests');
+  }
+}
 
 // Helper for API calls
 const apiCall = async (endpoint, options = {}) => {
@@ -11,6 +22,8 @@ const apiCall = async (endpoint, options = {}) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
       ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers
     },

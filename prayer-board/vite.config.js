@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Version bump to force cache refresh - change this number when deploying updates
+const APP_VERSION = '1.0.1';
+
 export default defineConfig({
   plugins: [
     react(),
@@ -17,6 +20,7 @@ export default defineConfig({
         display: 'standalone',
         scope: '/',
         start_url: '/',
+        id: `prayer-board-v${APP_VERSION}`,
         icons: [
           {
             src: '/icons/icon-192.svg',
@@ -33,15 +37,21 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\/api\//,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'api-cache',
+              cacheName: `api-cache-v${APP_VERSION}`,
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60
+                maxAgeSeconds: 60 * 60 // 1 hour - shorter cache for API
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
               }
             }
           }
