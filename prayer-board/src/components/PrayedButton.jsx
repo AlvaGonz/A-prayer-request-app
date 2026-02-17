@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HandsPraying } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import './PrayedButton.css';
@@ -54,7 +54,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         disabled={isLoading || (isAuthenticated && isPrayed)}
         aria-label={isPrayed ? 'You have prayed for this request' : 'Pray for this request'}
       >
-        <HandsPraying 
+        <Heart 
           size={18} 
           className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
         />
