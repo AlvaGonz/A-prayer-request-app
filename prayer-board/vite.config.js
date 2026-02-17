@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  root: './prayer-board',  // ← Add this line
   plugins: [
     react(),
     VitePWA({
