@@ -15,7 +15,7 @@ services:
         sync: false # User will input this in dashboard
 
   # Frontend (React Static Site)
-  - type: static
+  - type: static_site
     name: prayer-board-web
     env: static
     root: .
