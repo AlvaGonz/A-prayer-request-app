@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, X } from 'lucide-react';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import './PrayedButton.css';
@@ -66,7 +66,16 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       
       {showMessage && (
         <div className="prayed-message animate-in">
-          Your prayer has been noted. Thank you for lifting this up.
+          <span className="prayed-message-text">
+            Your prayer has been noted. Thank you for lifting this up.
+          </span>
+          <button 
+            className="prayed-message-close" 
+            onClick={() => setShowMessage(false)}
+            aria-label="Close message"
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
     </div>
