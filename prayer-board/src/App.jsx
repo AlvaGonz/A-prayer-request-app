@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import PrayerWallPage from './pages/PrayerWallPage';
@@ -17,6 +18,7 @@ function App() {
           </Routes>
         </Router>
       </SocketProvider>
+      <Analytics />
     </AuthProvider>
   );
 }

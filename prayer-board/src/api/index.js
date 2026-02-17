@@ -1,6 +1,7 @@
 // API Configuration
 const USE_MOCK_API = false; // Set to false when backend is ready
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// HARDCODED: Production backend URL
+const API_BASE_URL = 'https://prayer-board-api.onrender.com';
 
 // Helper for API calls
 const apiCall = async (endpoint, options = {}) => {
