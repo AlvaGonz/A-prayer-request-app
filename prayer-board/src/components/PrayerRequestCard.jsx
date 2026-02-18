@@ -3,22 +3,23 @@ import { formatDistanceToNow } from 'date-fns';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
 import CommentSection from './CommentSection';
+import ShareButton from './ShareButton';
 import { useAuth } from '../context/AuthContext';
 import './PrayerRequestCard.css';
 
-const PrayerRequestCard = ({ 
-  request, 
-  onPrayed, 
-  onUpdateStatus, 
-  onDelete 
+const PrayerRequestCard = ({
+  request,
+  onPrayed,
+  onUpdateStatus,
+  onDelete
 }) => {
   const [showComments, setShowComments] = useState(false);
   const { user, isAuthenticated } = useAuth();
-  
+
   const isAuthor = isAuthenticated && request.author === user?.id;
   const isAdmin = isAuthenticated && user?.role === 'admin';
   const isAnswered = request.status === 'answered';
-  
+
   const timeAgo = formatDistanceToNow(new Date(request.createdAt), { addSuffix: true });
 
   const handleStatusUpdate = (newStatus) => {
@@ -36,7 +37,7 @@ const PrayerRequestCard = ({
   };
 
   return (
-    <article 
+    <article
       className={`prayer-card ${isAnswered ? 'answered' : ''}`}
       aria-labelledby={`prayer-author-${request.id}`}
     >
@@ -58,7 +59,7 @@ const PrayerRequestCard = ({
             </>
           )}
         </div>
-        
+
         <div className="prayer-card-meta">
           {isAnswered && (
             <span className="status-badge answered" aria-label="Prayer request answered">
@@ -71,19 +72,19 @@ const PrayerRequestCard = ({
           </time>
         </div>
       </header>
-      
+
       <div className="prayer-card-body">
         <p className="prayer-text">{request.body}</p>
       </div>
-      
+
       <footer className="prayer-card-footer">
         <div className="prayer-card-actions-left">
-          <PrayedButton 
-            requestId={request.id} 
+          <PrayedButton
+            requestId={request.id}
             initialCount={request.prayedCount}
             onPrayed={onPrayed}
           />
-          
+
           <button
             className="action-btn comments-btn"
             onClick={() => setShowComments(!showComments)}
@@ -94,8 +95,12 @@ const PrayerRequestCard = ({
             <MessageCircle size={16} aria-hidden="true" />
             <span aria-hidden="true">{request.commentCount || 0}</span>
           </button>
+
+          {isAuthenticated && (
+            <ShareButton requestId={request.id} />
+          )}
         </div>
-        
+
         {(isAuthor || isAdmin) && (
           <div className="prayer-card-actions" role="group" aria-label="Prayer request actions">
             {isAuthor && !isAnswered && (
@@ -108,7 +113,7 @@ const PrayerRequestCard = ({
                 <span>Mark Answered</span>
               </button>
             )}
-            
+
             {isAdmin && (
               <>
                 <button
@@ -118,7 +123,7 @@ const PrayerRequestCard = ({
                 >
                   <EyeOff size={16} aria-hidden="true" />
                 </button>
-                
+
                 <button
                   className="action-btn archive"
                   onClick={() => handleStatusUpdate('archived')}
@@ -126,7 +131,7 @@ const PrayerRequestCard = ({
                 >
                   <Archive size={16} aria-hidden="true" />
                 </button>
-                
+
                 <button
                   className="action-btn delete"
                   onClick={handleDelete}

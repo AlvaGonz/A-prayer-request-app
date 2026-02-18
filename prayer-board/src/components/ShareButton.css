@@ -1,0 +1,19 @@
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.share-btn.copied {
+  color: var(--color-success, #22c55e);
+}
+
+.share-btn .spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
