@@ -106,7 +106,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     try {
       const result = await commentsAPI.create(requestId, newComment, user);
       setNewComment('');
-      
+
       // Emit real-time event
       emitToRequest(requestId, 'new-comment', {
         id: result.comment.id,
@@ -125,10 +125,10 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
 
   const handleDelete = async (commentId) => {
     if (!window.confirm('Delete this comment?')) return;
-    
+
     try {
       await commentsAPI.delete(commentId, user);
-      
+
       // Emit real-time event
       emitToRequest(requestId, 'comment-deleted', { commentId });
     } catch (error) {
@@ -146,8 +146,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   }
 
   return (
-    <section 
-      className="comment-section" 
+    <section
+      className="comment-section"
       id={id}
       aria-label={`Comments section for prayer request. ${comments.length} comments.`}
     >
@@ -199,8 +199,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
             rows={2}
             disabled={isSubmitting}
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={!newComment.trim() || isSubmitting}
             className="submit-comment-btn"
             aria-label="Send comment"
@@ -213,7 +213,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
           <a href="/login">Log in</a> to add a comment
         </p>
       )}
-    </div>
+    </section>
   );
 };
 
