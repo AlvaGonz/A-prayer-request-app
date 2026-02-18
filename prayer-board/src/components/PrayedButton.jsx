@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heart, X } from 'lucide-react';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,16 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const messageTimeoutRef = useRef(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handlePray = async () => {
     if (isLoading) return;
@@ -31,7 +41,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       setShowMessage(true);
       
       // Hide message after 3 seconds
-      setTimeout(() => setShowMessage(false), 3000);
+      messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 3000);
       
       if (onPrayed) {
         onPrayed(requestId, result.prayedCount);

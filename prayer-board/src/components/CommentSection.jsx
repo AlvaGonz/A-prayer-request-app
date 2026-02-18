@@ -15,6 +15,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId }) => {
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const commentsEndRef = useRef(null);
+  const notificationTimeoutsRef = useRef([]);
 
   // Load comments when opened
   useEffect(() => {
@@ -57,9 +58,10 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId }) => {
       // Only show notifications for the current user
       if (notification.targetUserId === user?.id && notification.requestId === requestId) {
         setNotifications(prev => [...prev, notification]);
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           setNotifications(prev => prev.filter(n => n !== notification));
         }, 5000);
+        notificationTimeoutsRef.current.push(timeoutId);
       }
     };
 
@@ -71,6 +73,9 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId }) => {
       socket.off('new-comment', handleNewComment);
       socket.off('comment-deleted', handleCommentDeleted);
       socket.off('notification', handleNotification);
+      // Clear notification timeouts
+      notificationTimeoutsRef.current.forEach(id => clearTimeout(id));
+      notificationTimeoutsRef.current = [];
     };
   }, [socket, requestId, user]);
 
