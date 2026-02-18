@@ -13,10 +13,25 @@ connectDB();
 
 const app = express();
 
-// Security: CORS Configuration - Allow all origins for now to fix deployment issues
+// Security: CORS Configuration - Whitelist specific origins
+const allowedOrigins = [
+  'https://prayer-board-virid.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 const corsOptions = {
-  origin: true, // Allow all origins
-  credentials: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Origin', 'Accept', 'X-Requested-With']
 };
