@@ -70,6 +70,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api', require('./routes/comments'));
+app.use('/api/shared', require('./routes/shared'));
 
 // Health check
 app.get('/', (req, res) => {
