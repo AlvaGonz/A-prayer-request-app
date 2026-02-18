@@ -1,4 +1,4 @@
-```javascript
+
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Lock, Globe, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
@@ -63,7 +63,7 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         { body, isAnonymous },
         isAuthenticated ? user : null
       );
-      
+
       setBody('');
       setIsAnonymous(true);
       onSuccess(result.request);
@@ -87,15 +87,15 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="modal-overlay" 
+    <div
+      className="modal-overlay"
       onClick={handleClose}
       role="presentation"
       aria-hidden="true"
     >
-      <div 
+      <div
         ref={modalRef}
-        className="modal-content" 
+        className="modal-content"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -104,9 +104,9 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       >
         <div className="modal-header">
           <h3 id="modal-title">{t('newRequest.title')}</h3>
-          <button 
+          <button
             ref={closeButtonRef}
-            className="close-btn" 
+            className="close-btn"
             onClick={onClose}
             aria-label={t('newRequest.close')}
             disabled={loading}
@@ -157,8 +157,8 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           {!isAuthenticated && (
             <p className="guest-notice" role="note">
               <Trans i18nKey="newRequest.guestNoticeWithLink">
-                 You are posting as a guest. Your request will appear as "Anonymous."
-                 <Link to="/register">Create an account</Link> to post with your name.
+                You are posting as a guest. Your request will appear as "Anonymous."
+                <Link to="/register">Create an account</Link> to post with your name.
               </Trans>
             </p>
           )}

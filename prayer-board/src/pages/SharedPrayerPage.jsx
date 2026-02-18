@@ -10,7 +10,7 @@ import './SharedPrayerPage.css';
 
 const SharedPrayerPage = () => {
     const { token } = useParams();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [request, setRequest] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
