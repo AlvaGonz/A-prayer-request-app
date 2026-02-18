@@ -13,11 +13,19 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [guestName, setGuestName] = useState('');
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const commentsEndRef = useRef(null);
   const notificationTimeoutsRef = useRef([]);
+
+  // Quick comment options
+  const quickOptions = [
+    { emoji: '🙏', text: t('comments.quickOptions.praying') },
+    { emoji: '💪', text: t('comments.quickOptions.encouragement') },
+    { emoji: '❤️', text: t('comments.quickOptions.blessing') }
+  ];
 
   // Load comments when opened
   useEffect(() => {
@@ -100,14 +108,29 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     }
   };
 
+  const handleQuickOption = (optionText) => {
+    setNewComment(prev => {
+      const separator = prev.trim() ? ' ' : '';
+      return prev.trim() + separator + optionText;
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || isSubmitting || !isAuthenticated) return;
+    if (!newComment.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
-      const result = await commentsAPI.create(requestId, newComment, user);
+      // Prepare comment data
+      const commentData = {
+        body: newComment.trim(),
+        authorName: isAuthenticated ? user.displayName : (guestName.trim() || 'Anonymous'),
+        isAnonymous: !isAuthenticated
+      };
+
+      const result = await commentsAPI.create(requestId, commentData);
       setNewComment('');
+      setGuestName('');
 
       // Emit real-time event
       emitToRequest(requestId, 'new-comment', {
@@ -116,7 +139,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
         authorName: result.comment.authorName,
         authorId: result.comment.authorId,
         createdAt: result.comment.createdAt,
-        targetUserId: requestAuthorId // For notification
+        targetUserId: requestAuthorId
       });
     } catch (error) {
       alert(error.message);
@@ -130,7 +153,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
 
     try {
       await commentsAPI.delete(commentId, user);
-
       // Emit real-time event
       emitToRequest(requestId, 'comment-deleted', { commentId });
     } catch (error) {
@@ -191,8 +213,38 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
         <div ref={commentsEndRef} />
       </div>
 
-      {isAuthenticated ? (
-        <form className="comment-form" onSubmit={handleSubmit}>
+      {/* Comment Form - Now available for everyone */}
+      <form className="comment-form" onSubmit={handleSubmit}>
+        {/* Quick Options */}
+        <div className="quick-options">
+          {quickOptions.map((option, index) => (
+            <button
+              key={index}
+              type="button"
+              className="quick-option-btn"
+              onClick={() => handleQuickOption(`${option.emoji} ${option.text}`)}
+              disabled={isSubmitting}
+            >
+              <span className="quick-option-emoji">{option.emoji}</span>
+              <span className="quick-option-text">{option.text}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Guest Name Input (only for non-authenticated users) */}
+        {!isAuthenticated && (
+          <input
+            type="text"
+            value={guestName}
+            onChange={(e) => setGuestName(e.target.value)}
+            placeholder={t('comments.namePlaceholder')}
+            className="guest-name-input"
+            maxLength={50}
+            disabled={isSubmitting}
+          />
+        )}
+
+        <div className="comment-input-row">
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -209,12 +261,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
           >
             <Send size={16} />
           </button>
-        </form>
-      ) : (
-        <p className="login-prompt">
-          <a href="/login">{t('header.login')}</a> {t('comments.loginToCommentSuffix') || 'to add a comment'}
-        </p>
-      )}
+        </div>
+      </form>
     </section>
   );
 };

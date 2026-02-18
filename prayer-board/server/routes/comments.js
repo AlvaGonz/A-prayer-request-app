@@ -9,9 +9,9 @@ const { protect } = require('../middleware/auth');
 
 // Public routes
 router.get('/requests/:id/comments', getComments);
+router.post('/requests/:id/comments', createComment); // Allow anonymous comments
 
-// Protected routes
-router.post('/requests/:id/comments', protect, createComment);
+// Protected routes - only delete requires authentication
 router.delete('/comments/:id', protect, deleteComment);
 
 module.exports = router;

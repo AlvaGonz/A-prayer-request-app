@@ -45,12 +45,16 @@
     "empty": "Sé el primero en ofrecer ánimo y oraciones",
     "placeholder": "Comparte ánimo u oraciones...",
     "send": "Enviar comentario",
-    "loginToComment": "Inicia sesión para agregar un comentario",
     "delete": "Eliminar comentario",
     "deleteConfirm": "¿Eliminar este comentario?",
     "deleteError": "Error al eliminar el comentario",
     "deleteAria": "Eliminar comentario",
-    "loginSuffix": "para comentar"
+    "namePlaceholder": "Tu nombre (opcional)",
+    "quickOptions": {
+      "praying": "Orando por ti",
+      "encouragement": "Ánimo",
+      "blessing": "Dios te bendiga"
+    }
   },
   "newRequest": {
     "title": "Compartir una Petición de Oración",

@@ -43,13 +43,14 @@ const getComments = async (req, res) => {
 
 // @desc    Create comment
 // @route   POST /api/requests/:id/comments
-// @access  Private
+// @access  Public (supports both authenticated and anonymous)
 const createComment = async (req, res) => {
   try {
-    let { body } = req.body;
+    let { body, authorName, isAnonymous } = req.body;
 
     // Sanitize input
     body = sanitizeInput(body);
+    authorName = sanitizeInput(authorName);
 
     // Validation
     if (!body || body.length < 1 || body.length > 500) {
@@ -68,13 +69,25 @@ const createComment = async (req, res) => {
       return res.status(404).json({ error: 'Prayer request not found' });
     }
 
+    // Determine author info
+    const isUserAuthenticated = !!req.user;
+    const commentAuthorName = isUserAuthenticated 
+      ? req.user.displayName 
+      : (authorName && authorName.trim() ? authorName.trim() : 'Anonymous');
+    
     // Create comment
-    const comment = await Comment.create({
+    const commentData = {
       prayerRequest: req.params.id,
-      author: req.user._id,
-      authorName: req.user.displayName,
-      body
-    });
+      body,
+      authorName: commentAuthorName
+    };
+
+    // Add author ID only if authenticated
+    if (isUserAuthenticated) {
+      commentData.author = req.user._id;
+    }
+
+    const comment = await Comment.create(commentData);
 
     // Update comment count
     prayerRequest.commentCount = await Comment.countDocuments({
@@ -88,7 +101,7 @@ const createComment = async (req, res) => {
         id: comment._id,
         body: comment.body,
         authorName: comment.authorName,
-        authorId: comment.author.toString(),
+        authorId: comment.author ? comment.author.toString() : null,
         createdAt: comment.createdAt
       },
       message: 'Comment added successfully'
