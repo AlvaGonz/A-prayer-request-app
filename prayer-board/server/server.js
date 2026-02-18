@@ -13,48 +13,16 @@ connectDB();
 
 const app = express();
 
-// Security: CORS Configuration
+// Security: CORS Configuration - Allow all origins for now to fix deployment issues
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Allow all Vercel domains and localhost
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://prayer-board-virid.vercel.app',
-      'https://prayer-board-frontend.vercel.app',
-      'https://prayer-board-frontend-git-main-alvagonz.vercel.app',
-      'https://a-prayer-request-app.vercel.app',
-      'https://a-prayer-request-app-develop.vercel.app'
-    ];
-    
-    // Check if origin matches allowed patterns or contains vercel.app
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Origin', 'Accept'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Origin', 'Accept', 'X-Requested-With']
 };
 
 // Enable CORS for all routes
 app.use(cors(corsOptions));
-
-// Handle preflight requests manually for all routes
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-    return;
-  }
-  next();
-});
 
 // Security: Rate Limiting
 const authLimiter = rateLimit({
