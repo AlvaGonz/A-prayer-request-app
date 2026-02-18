@@ -52,8 +52,7 @@ const prayerRequestSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true,
-    index: true,
-    default: null
+    index: true
   }
 }, {
   timestamps: true
@@ -62,4 +61,33 @@ const prayerRequestSchema = new mongoose.Schema({
 // Indexes for the wall query
 prayerRequestSchema.index({ isDeleted: 1, status: 1, createdAt: -1 });
 
-module.exports = mongoose.model('PrayerRequest', prayerRequestSchema);
+const PrayerRequest = mongoose.model('PrayerRequest', prayerRequestSchema);
+
+// Fix: Drop and recreate the shareToken index to ensure it is sparse.
+// A non-sparse unique index on shareToken causes duplicate key errors
+// when multiple documents have shareToken: null.
+(async () => {
+  try {
+    const collection = PrayerRequest.collection;
+    const indexes = await collection.indexes();
+    const shareIdx = indexes.find(i => i.key && i.key.shareToken);
+    if (shareIdx && !shareIdx.sparse) {
+      console.log('Dropping non-sparse shareToken index and recreating as sparse...');
+      await collection.dropIndex(shareIdx.name);
+      await collection.createIndex({ shareToken: 1 }, { unique: true, sparse: true });
+      console.log('shareToken index recreated as sparse.');
+    }
+    // Also clean up any existing null shareToken values to prevent issues
+    await collection.updateMany(
+      { shareToken: null },
+      { $unset: { shareToken: '' } }
+    );
+  } catch (err) {
+    // Index might not exist yet or collection not ready — that's fine
+    if (err.code !== 26 && err.code !== 27) {
+      console.warn('shareToken index fix warning:', err.message);
+    }
+  }
+})();
+
+module.exports = PrayerRequest;
