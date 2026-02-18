@@ -6,7 +6,7 @@ import CommentItem from './CommentItem';
 import { commentsAPI } from '../api';
 import './CommentSection.css';
 
-const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId }) => {
+const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -146,7 +146,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId }) => {
   }
 
   return (
-    <div className="comment-section">
+    <section 
+      className="comment-section" 
+      id={id}
+      aria-label={`Comments section for prayer request. ${comments.length} comments.`}
+    >
       {/* Notifications */}
       {notifications.length > 0 && (
         <div className="notifications-container">

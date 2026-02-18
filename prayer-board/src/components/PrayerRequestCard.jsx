@@ -36,42 +36,47 @@ const PrayerRequestCard = ({
   };
 
   return (
-    <div className={`prayer-card ${isAnswered ? 'answered' : ''}`}>
-      <div className="prayer-card-header">
+    <article 
+      className={`prayer-card ${isAnswered ? 'answered' : ''}`}
+      aria-labelledby={`prayer-author-${request.id}`}
+    >
+      <header className="prayer-card-header">
         <div className="prayer-card-author">
           {request.isAnonymous ? (
             <>
-              <div className="author-avatar anonymous">
+              <div className="author-avatar anonymous" aria-hidden="true">
                 <User size={16} />
               </div>
-              <span className="author-name">Anonymous</span>
+              <span id={`prayer-author-${request.id}`} className="author-name">Anonymous</span>
             </>
           ) : (
             <>
-              <div className="author-avatar">
+              <div className="author-avatar" aria-hidden="true">
                 {request.authorName.charAt(0).toUpperCase()}
               </div>
-              <span className="author-name">{request.authorName}</span>
+              <span id={`prayer-author-${request.id}`} className="author-name">{request.authorName}</span>
             </>
           )}
         </div>
         
         <div className="prayer-card-meta">
           {isAnswered && (
-            <span className="status-badge answered">
-              <CheckCircle2 size={14} />
+            <span className="status-badge answered" aria-label="Prayer request answered">
+              <CheckCircle2 size={14} aria-hidden="true" />
               Answered
             </span>
           )}
-          <span className="time-ago">{timeAgo}</span>
+          <time className="time-ago" dateTime={request.createdAt}>
+            {timeAgo}
+          </time>
         </div>
-      </div>
+      </header>
       
       <div className="prayer-card-body">
         <p className="prayer-text">{request.body}</p>
       </div>
       
-      <div className="prayer-card-footer">
+      <footer className="prayer-card-footer">
         <div className="prayer-card-actions-left">
           <PrayedButton 
             requestId={request.id} 
@@ -82,22 +87,24 @@ const PrayerRequestCard = ({
           <button
             className="action-btn comments-btn"
             onClick={() => setShowComments(!showComments)}
-            title={showComments ? 'Hide comments' : 'Show comments'}
+            aria-expanded={showComments}
+            aria-controls={`comments-section-${request.id}`}
+            aria-label={showComments ? 'Hide comments' : `Show ${request.commentCount || 0} comments`}
           >
-            <MessageCircle size={16} />
-            <span>{request.commentCount || 0}</span>
+            <MessageCircle size={16} aria-hidden="true" />
+            <span aria-hidden="true">{request.commentCount || 0}</span>
           </button>
         </div>
         
         {(isAuthor || isAdmin) && (
-          <div className="prayer-card-actions">
+          <div className="prayer-card-actions" role="group" aria-label="Prayer request actions">
             {isAuthor && !isAnswered && (
               <button
                 className="action-btn mark-answered"
                 onClick={() => handleStatusUpdate('answered')}
-                title="Mark as answered"
+                aria-label="Mark prayer request as answered"
               >
-                <CheckCircle2 size={16} />
+                <CheckCircle2 size={16} aria-hidden="true" />
                 <span>Mark Answered</span>
               </button>
             )}
@@ -107,39 +114,40 @@ const PrayerRequestCard = ({
                 <button
                   className="action-btn hide"
                   onClick={() => handleStatusUpdate('hidden')}
-                  title="Hide request"
+                  aria-label="Hide prayer request"
                 >
-                  <EyeOff size={16} />
+                  <EyeOff size={16} aria-hidden="true" />
                 </button>
                 
                 <button
                   className="action-btn archive"
                   onClick={() => handleStatusUpdate('archived')}
-                  title="Archive request"
+                  aria-label="Archive prayer request"
                 >
-                  <Archive size={16} />
+                  <Archive size={16} aria-hidden="true" />
                 </button>
                 
                 <button
                   className="action-btn delete"
                   onClick={handleDelete}
-                  title="Delete request"
+                  aria-label="Delete prayer request"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={16} aria-hidden="true" />
                 </button>
               </>
             )}
           </div>
         )}
-      </div>
+      </footer>
 
       <CommentSection
         requestId={request.id}
         isOpen={showComments}
         onToggle={() => setShowComments(!showComments)}
         requestAuthorId={request.author}
+        id={`comments-section-${request.id}`}
       />
-    </div>
+    </article>
   );
 };
 

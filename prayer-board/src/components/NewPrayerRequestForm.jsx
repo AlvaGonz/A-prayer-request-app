@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Send } from 'lucide-react';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
+import useFocusTrap from '../hooks/useFocusTrap';
 import './NewPrayerRequestForm.css';
 
 const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
@@ -10,9 +11,31 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const { user, isAuthenticated } = useAuth();
+  const modalRef = useFocusTrap(isOpen);
+  const closeButtonRef = useRef(null);
 
   const maxLength = 1000;
   const charCount = body.length;
+
+  // Handle Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      // Prevent scrolling when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, isSubmitting, onClose]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,18 +77,37 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div 
+      className="modal-overlay" 
+      onClick={handleClose}
+      role="presentation"
+      aria-hidden="true"
+    >
+      <div 
+        ref={modalRef}
+        className="modal-content" 
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
         <div className="modal-header">
-          <h2>Share a Prayer Request</h2>
+          <h2 id="modal-title">Share a Prayer Request</h2>
           <button 
+            ref={closeButtonRef}
             className="close-btn" 
             onClick={handleClose}
-            aria-label="Close modal"
+            aria-label="Close prayer request form"
+            disabled={isSubmitting}
           >
-            <X size={20} />
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
+
+        <p id="modal-description" className="sr-only">
+          Form to share a new prayer request with the community
+        </p>
 
         <form onSubmit={handleSubmit} className="prayer-form">
           <div className="form-group">
@@ -81,13 +123,19 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               rows={6}
               disabled={isSubmitting}
               autoFocus
+              aria-required="true"
+              aria-describedby="char-count prayer-hint"
+              aria-invalid={charCount > 0 && charCount < 10 ? 'true' : 'false'}
             />
-            <div className="char-counter">
+            <div id="char-count" className="char-counter" aria-live="polite">
               <span className={charCount > maxLength * 0.9 ? 'near-limit' : ''}>
                 {charCount}
               </span>
               /{maxLength}
             </div>
+            <span id="prayer-hint" className="sr-only">
+              Minimum 10 characters required
+            </span>
           </div>
 
           {isAuthenticated && (
@@ -98,31 +146,32 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   checked={isAnonymous}
                   onChange={(e) => setIsAnonymous(e.target.checked)}
                   disabled={isSubmitting}
+                  aria-describedby="anonymous-hint"
                 />
                 <span className="checkmark"></span>
                 <span className="checkbox-text">
                   Post anonymously
                 </span>
               </label>
-              <p className="checkbox-hint">
+              <p id="anonymous-hint" className="checkbox-hint">
                 Your request will appear as "Anonymous" to others
               </p>
             </div>
           )}
 
           {!isAuthenticated && (
-            <p className="guest-notice">
+            <p className="guest-notice" role="note">
               You are posting as a guest. Your request will appear as "Anonymous."
               <a href="/register"> Create an account</a> to post with your name.
             </p>
           )}
 
-          <p className="privacy-notice">
+          <p className="privacy-notice" role="note">
             Your request will be visible to everyone on the prayer wall.
           </p>
 
           {error && (
-            <div className="error-message">
+            <div className="error-message" role="alert" aria-live="assertive">
               {error}
             </div>
           )}
@@ -140,12 +189,16 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               type="submit"
               className="btn btn-primary"
               disabled={isSubmitting || charCount < 10}
+              aria-busy={isSubmitting}
             >
               {isSubmitting ? (
-                'Posting...'
+                <>
+                  <span className="sr-only">Posting</span>
+                  Posting...
+                </>
               ) : (
                 <>
-                  <Send size={16} />
+                  <Send size={16} aria-hidden="true" />
                   Share Request
                 </>
               )}
