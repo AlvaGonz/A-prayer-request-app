@@ -16,6 +16,7 @@ const app = express();
 // Security: CORS Configuration - Whitelist specific origins
 const allowedOrigins = [
   'https://prayer-board-virid.vercel.app',
+  'https://prayer-board-git-develop-adrianaalvarezgonz-1151s-projects.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000'
 ];
