@@ -14,15 +14,15 @@ connectDB();
 const app = express();
 
 // Security: CORS Configuration
-const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-    'http://localhost:5173',
-    'https://prayer-board-frontend.vercel.app',
-    'https://prayer-board-frontend-git-main-alvagonz.vercel.app'
-  ],
+origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+  'http://localhost:5173',
+  'https://prayer-board-frontend.vercel.app',
+  'https://prayer-board-frontend-git-main-alvagonz.vercel.app',
+  'https://prayer-board-virid.vercel.app'
+],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 app.use(cors(corsOptions));
 
@@ -72,26 +72,26 @@ app.use('/api', require('./routes/comments'));
 
 // Health check
 app.get('/', (req, res) => {
-    res.json({ 
-        message: 'Prayer Board API is running',
-        version: '1.0.0',
-        status: 'healthy'
-    });
+  res.json({
+    message: 'Prayer Board API is running',
+    version: '1.0.0',
+    status: 'healthy'
+  });
 });
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ error: 'Route not found' });
 });
 
 // Error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
