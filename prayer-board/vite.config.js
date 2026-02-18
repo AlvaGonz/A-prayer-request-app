@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.svg'],
       manifest: {
-        name: 'Prayer Board',
-        short_name: 'Prayer',
-        description: 'Share prayer requests and pray for one another.',
+        name: 'Prayer Board | Muro de Oración',
+        short_name: 'Prayer Board',
+        description: 'Comparte peticiones de oración y ora por los demás.',
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',
