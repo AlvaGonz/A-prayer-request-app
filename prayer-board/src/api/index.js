@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000' : 'https://a-prayer-request-app-develop.onrender.com';
+const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000' : 'https://prayer-board-api.onrender.com';
 
 // Clear old cache version marker
 if (typeof window !== 'undefined') {
