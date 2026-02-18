@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Cross, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +14,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { t } = useTranslation();
 
   const validatePassword = (pass) => {
     if (pass.length < 8) return 'Password must be at least 8 characters';
@@ -54,13 +56,13 @@ const RegisterPage = () => {
         <div className="auth-header">
           <Link to="/" className="auth-logo">
             <Cross size={32} className="logo-icon" />
-            <span>Prayer Board</span>
+            <span>{t('app.title')}</span>
           </Link>
         </div>
 
         <div className="auth-card">
-          <h1>Create Account</h1>
-          <p className="auth-subtitle">Join our community of prayer warriors</p>
+          <h1>{t('auth.registerTitle')}</h1>
+          <p className="auth-subtitle">{t('header.signup')}</p>
 
           {error && (
             <div className="auth-error">
@@ -70,7 +72,7 @@ const RegisterPage = () => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-field">
-              <label htmlFor="displayName">Display Name</label>
+              <label htmlFor="displayName">{t('auth.displayName')}</label>
               <input
                 type="text"
                 id="displayName"
@@ -84,7 +86,7 @@ const RegisterPage = () => {
             </div>
 
             <div className="form-field">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('auth.email')}</label>
               <input
                 type="email"
                 id="email"
@@ -97,7 +99,7 @@ const RegisterPage = () => {
             </div>
 
             <div className="form-field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('auth.password')}</label>
               <div className="password-input">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -143,13 +145,12 @@ const RegisterPage = () => {
           </div>
 
           <Link to="/" className="guest-link">
-            Continue as Guest
+            {t('auth.guest')}
           </Link>
         </div>
 
         <p className="auth-footer">
-          Already have an account?{' '}
-          <Link to="/login">Sign in</Link>
+          {t('auth.hasAccount')} <Link to="/login">{t('header.login')}</Link>
         </p>
       </div>
     </div>

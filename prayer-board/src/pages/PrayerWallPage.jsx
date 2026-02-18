@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
 import { requestsAPI } from '../api';
 import Header from '../components/Header';
@@ -16,22 +17,23 @@ const PrayerWallPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const fetchRequests = useCallback(async (pageNum = 1, append = false) => {
     try {
       setLoading(true);
       const data = await requestsAPI.getAll({ page: pageNum, limit: 20 });
-      
+
       if (append) {
         setRequests(prev => [...prev, ...data.requests]);
       } else {
         setRequests(data.requests);
       }
-      
+
       setHasMore(pageNum < data.pagination.totalPages);
       setError(null);
     } catch (err) {
-      setError('Failed to load prayer requests. Please try again.');
+      setError(t('errors.loading'));
       console.error('Error fetching requests:', err);
     } finally {
       setLoading(false);
@@ -49,9 +51,9 @@ const PrayerWallPage = () => {
   };
 
   const handlePrayed = (requestId, newCount) => {
-    setRequests(prev => 
-      prev.map(req => 
-        req.id === requestId 
+    setRequests(prev =>
+      prev.map(req =>
+        req.id === requestId
           ? { ...req, prayedCount: newCount }
           : req
       )
@@ -87,20 +89,20 @@ const PrayerWallPage = () => {
   return (
     <div className="prayer-wall-page">
       <Header />
-      
+
       <main className="wall-content">
         <div className="wall-header">
           <div className="wall-intro">
-            <h1>Community Prayer Wall</h1>
-            <p>Share your prayer requests and lift others up in prayer</p>
+            <h1>{t('prayerWall.title')}</h1>
+            <p>{t('prayerWall.subtitle')}</p>
           </div>
-          
+
           <button
             className="new-request-btn"
             onClick={() => setIsModalOpen(true)}
           >
             <Plus size={20} />
-            New Request
+            {t('prayerWall.newRequest')}
           </button>
         </div>
 
@@ -114,8 +116,7 @@ const PrayerWallPage = () => {
         <div className="requests-container">
           {requests.length === 0 && !loading ? (
             <div className="empty-state">
-              <p>No prayer requests yet.</p>
-              <p>Be the first to share a request with the community.</p>
+              <p>{t('prayerWall.empty')}</p>
             </div>
           ) : (
             <div className="requests-list">
@@ -134,7 +135,7 @@ const PrayerWallPage = () => {
           {loading && (
             <div className="loading-state">
               <Loader2 size={32} className="spinner" />
-              <p>Loading prayer requests...</p>
+              <p>{t('prayerWall.loading')}</p>
             </div>
           )}
 
@@ -143,7 +144,7 @@ const PrayerWallPage = () => {
               className="load-more-btn"
               onClick={handleLoadMore}
             >
-              Load More
+              {t('prayerWall.loadMore')}
             </button>
           )}
         </div>
@@ -154,7 +155,7 @@ const PrayerWallPage = () => {
         onClose={() => setIsModalOpen(false)}
         onSuccess={handleNewRequest}
       />
-      
+
       <NotificationBanner />
     </div>
   );

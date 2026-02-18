@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Cross, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +13,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,13 +36,13 @@ const LoginPage = () => {
         <div className="auth-header">
           <Link to="/" className="auth-logo">
             <Cross size={32} className="logo-icon" />
-            <span>Prayer Board</span>
+            <span>{t('app.title')}</span>
           </Link>
         </div>
 
         <div className="auth-card">
-          <h1>Welcome Back</h1>
-          <p className="auth-subtitle">Sign in to your account to continue</p>
+          <h1>{t('auth.loginTitle')}</h1>
+          <p className="auth-subtitle">{t('auth.login')}</p>
 
           {error && (
             <div className="auth-error">
@@ -50,7 +52,7 @@ const LoginPage = () => {
 
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-field">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">{t('auth.email')}</label>
               <input
                 type="email"
                 id="email"
@@ -63,7 +65,7 @@ const LoginPage = () => {
             </div>
 
             <div className="form-field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t('auth.password')}</label>
               <div className="password-input">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -93,10 +95,10 @@ const LoginPage = () => {
               {isLoading ? (
                 <>
                   <Loader2 size={18} className="spinner" />
-                  Signing in...
+                  {t('auth.login')}...
                 </>
               ) : (
-                'Sign In'
+                t('auth.login')
               )}
             </button>
           </form>
@@ -106,13 +108,13 @@ const LoginPage = () => {
           </div>
 
           <Link to="/" className="guest-link">
-            Continue as Guest
+            {t('auth.guest')}
           </Link>
         </div>
 
         <p className="auth-footer">
-          Don't have an account?{' '}
-          <Link to="/register">Sign up</Link>
+          {t('auth.noAccount')}{' '}
+          <Link to="/register">{t('header.signup')}</Link>
         </p>
       </div>
     </div>

@@ -119,7 +119,7 @@ const pray = async (req, res) => {
     }
 
     // Increment count
-    request.prayedCount += 1;
+    request.prayedCount = (request.prayedCount || 0) + 1;
     await request.save();
 
     res.json({
