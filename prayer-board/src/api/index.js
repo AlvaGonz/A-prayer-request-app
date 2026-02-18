@@ -109,7 +109,25 @@ export const commentsAPI = {
   })
 };
 
+// Share API
+export const shareAPI = {
+  generateLink: async (requestId) => apiCall(`/api/requests/${requestId}/share`, {
+    method: 'POST'
+  }),
+
+  getShared: async (token) => apiCall(`/api/shared/${token}`),
+
+  prayShared: async (token) => apiCall(`/api/shared/${token}/pray`, {
+    method: 'POST'
+  }),
+
+  commentShared: async (token, body, guestName) => apiCall(`/api/shared/${token}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ body, guestName })
+  })
+};
+
 // Export error class for handling in components
 export { APIError };
 
-export default { authAPI, requestsAPI, commentsAPI, APIError };
+export default { authAPI, requestsAPI, commentsAPI, shareAPI, APIError };

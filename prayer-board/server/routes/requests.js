@@ -5,7 +5,8 @@ const {
   createRequest,
   pray,
   updateStatus,
-  deleteRequest
+  deleteRequest,
+  generateShareLink
 } = require('../controllers/requestController');
 const { protect, adminOnly } = require('../middleware/auth');
 
@@ -15,6 +16,7 @@ router.post('/', createRequest); // Guests allowed
 router.post('/:id/pray', pray);
 
 // Protected routes
+router.post('/:id/share', protect, generateShareLink);
 router.patch('/:id/status', protect, updateStatus);
 router.delete('/:id', protect, adminOnly, deleteRequest);
 

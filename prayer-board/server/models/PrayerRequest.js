@@ -47,6 +47,13 @@ const prayerRequestSchema = new mongoose.Schema({
   deletedAt: {
     type: Date,
     default: null
+  },
+  shareToken: {
+    type: String,
+    unique: true,
+    sparse: true,
+    index: true,
+    default: null
   }
 }, {
   timestamps: true
