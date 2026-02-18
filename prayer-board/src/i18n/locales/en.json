@@ -1,0 +1,97 @@
+{
+  "app": {
+    "title": "Prayer Board",
+    "description": "Share prayer requests and pray for one another"
+  },
+  "header": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "admin": "Admin"
+  },
+  "prayerWall": {
+    "title": "Community Prayer Wall",
+    "subtitle": "Share your prayer requests and lift others up in prayer",
+    "newRequest": "New Request",
+    "loadMore": "Load More",
+    "loading": "Loading prayer requests...",
+    "empty": "No prayer requests yet. Be the first to share!"
+  },
+  "prayerCard": {
+    "anonymous": "Anonymous",
+    "answered": "Answered",
+    "timeAgo": "{{time}} ago",
+    "prayed": "Prayed",
+    "iPrayed": "I Prayed",
+    "comments": "{{count}} comments",
+    "addComment": "Add a comment",
+    "markAnswered": "Mark Answered",
+    "hide": "Hide request",
+    "archive": "Archive request",
+    "delete": "Delete request"
+  },
+  "comments": {
+    "title": "Comments ({{count}})",
+    "close": "Close comments",
+    "loading": "Loading comments...",
+    "empty": "Be the first to offer encouragement and prayers",
+    "placeholder": "Share encouragement or prayers...",
+    "send": "Send comment",
+    "loginToComment": "Log in to add a comment",
+    "delete": "Delete comment"
+  },
+  "newRequest": {
+    "title": "Share a Prayer Request",
+    "close": "Close prayer request form",
+    "placeholder": "Share what you would like prayer for...",
+    "anonymous": "Post anonymously",
+    "anonymousHint": "Your request will appear as \"Anonymous\" to others",
+    "guestNotice": "You are posting as a guest. Your request will appear as \"Anonymous.\" Create an account to post with your name.",
+    "privacyNotice": "Your request will be visible to everyone on the prayer wall.",
+    "cancel": "Cancel",
+    "submit": "Share Request",
+    "submitting": "Posting...",
+    "minChars": "Minimum 10 characters required",
+    "charCount": "{{count}}/{{max}}"
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "registerTitle": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Display Name",
+    "login": "Sign In",
+    "register": "Create Account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "guest": "Continue as Guest",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "accountDeactivated": "Your account has been deactivated",
+      "emailExists": "An account with this email already exists",
+      "weakPassword": "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+      "invalidEmail": "Please enter a valid email address",
+      "rateLimit": "Too many attempts. Please try again later.",
+      "network": "Unable to connect to server. Please check your internet connection."
+    }
+  },
+  "notifications": {
+    "prayed": "Your prayer has been noted. Thank you for lifting this up.",
+    "newComment": "{{name}} commented on your prayer request"
+  },
+  "errors": {
+    "loading": "Failed to load prayer requests. Please try again.",
+    "creating": "Failed to create prayer request. Please try again.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Switch to {{theme}} theme"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "select": "Select language"
+  }
+}

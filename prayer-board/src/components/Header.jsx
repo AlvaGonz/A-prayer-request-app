@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Cross, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
+import LanguageSelector from './LanguageSelector';
 import './Header.css';
 
 const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     logout();
@@ -19,10 +22,11 @@ const Header = () => {
       <div className="header-container">
         <Link to="/" className="header-logo">
           <Cross className="logo-icon" size={24} />
-          <span className="logo-text">Prayer Board</span>
+          <span className="logo-text">{t('app.title')}</span>
         </Link>
         
         <div className="header-actions">
+          <LanguageSelector />
           <ThemeToggle />
           {isAuthenticated ? (
             <div className="user-menu">
@@ -32,26 +36,26 @@ const Header = () => {
                 </div>
                 <span className="user-name">{user.displayName}</span>
                 {user.role === 'admin' && (
-                  <span className="admin-badge">Admin</span>
+                  <span className="admin-badge">{t('header.admin')}</span>
                 )}
               </div>
               
               <button
                 className="logout-btn"
                 onClick={handleLogout}
-                aria-label="Log out"
+                aria-label={t('header.logout')}
               >
                 <LogOut size={18} />
-                <span>Logout</span>
+                <span>{t('header.logout')}</span>
               </button>
             </div>
           ) : (
             <div className="auth-buttons">
               <Link to="/login" className="btn btn-secondary">
-                Log In
+                {t('header.login')}
               </Link>
               <Link to="/register" className="btn btn-primary">
-                Sign Up
+                {t('header.signup')}
               </Link>
             </div>
           )}
