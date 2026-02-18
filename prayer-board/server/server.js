@@ -14,15 +14,16 @@ connectDB();
 const app = express();
 
 // Security: CORS Configuration
-origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-  'http://localhost:5173',
-  'https://prayer-board-frontend.vercel.app',
-  'https://prayer-board-frontend-git-main-alvagonz.vercel.app',
-  'https://prayer-board-virid.vercel.app'
-],
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+    'http://localhost:5173',
+    'https://prayer-board-frontend.vercel.app',
+    'https://prayer-board-frontend-git-main-alvagonz.vercel.app',
+    'https://prayer-board-virid.vercel.app'
+  ],
   credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 
