@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { User, Heart, Loader2, Send, AlertCircle } from 'lucide-react';
@@ -8,6 +9,7 @@ import './SharedPrayerPage.css';
 
 const SharedPrayerPage = () => {
     const { token } = useParams();
+    const { t } = useTranslation();
     const [request, setRequest] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -32,8 +34,8 @@ const SharedPrayerPage = () => {
                 setPrayedCount(data.request.prayedCount);
             } catch (err) {
                 setError(err.statusCode === 404
-                    ? 'This prayer request is no longer available.'
-                    : 'Failed to load prayer request. Please try again.'
+                    ? t('share.notAvailable')
+                    : t('errors.loading')
                 );
             } finally {
                 setLoading(false);
@@ -81,7 +83,7 @@ const SharedPrayerPage = () => {
                 <Header />
                 <div className="shared-loading">
                     <Loader2 size={32} className="spinner" />
-                    <p>Loading prayer request...</p>
+                    <p>{t('share.loading') || t('prayerWall.loading')}</p>
                 </div>
             </div>
         );
@@ -93,9 +95,9 @@ const SharedPrayerPage = () => {
                 <Header />
                 <div className="shared-error">
                     <AlertCircle size={48} />
-                    <h2>Prayer request not found</h2>
+                    <h2>{t('share.notFound')}</h2>
                     <p>{error}</p>
-                    <Link to="/" className="shared-cta-btn">Visit the Prayer Wall</Link>
+                    <Link to="/" className="shared-cta-btn">{t('share.visitWall')}</Link>
                 </div>
             </div>
         );
@@ -109,7 +111,7 @@ const SharedPrayerPage = () => {
 
             <main className="shared-content">
                 <div className="shared-banner">
-                    <p>Someone is asking for prayer</p>
+                    <p>{t('share.title')}</p>
                 </div>
 
                 <article className="shared-card">
@@ -120,7 +122,7 @@ const SharedPrayerPage = () => {
                                     <div className="author-avatar anonymous" aria-hidden="true">
                                         <User size={16} />
                                     </div>
-                                    <span className="author-name">Anonymous</span>
+                                    <span className="author-name">{t('prayerCard.anonymous')}</span>
                                 </>
                             ) : (
                                 <>
@@ -145,7 +147,7 @@ const SharedPrayerPage = () => {
                             disabled={isPraying || hasPrayed}
                         >
                             <Heart size={20} fill={hasPrayed ? 'currentColor' : 'none'} />
-                            <span>{hasPrayed ? 'Prayed!' : 'I Prayed for This'}</span>
+                            <span>{hasPrayed ? t('share.prayed') : t('share.prayButton')}</span>
                             <span className="pray-count">{prayedCount}</span>
                         </button>
                     </footer>
@@ -153,11 +155,11 @@ const SharedPrayerPage = () => {
 
                 {/* Comments */}
                 <section className="shared-comments" aria-label="Comments and encouragement">
-                    <h3>Encouragement ({comments.length})</h3>
+                    <h3>{t('share.encouragement')} ({comments.length})</h3>
 
                     <div className="shared-comments-list">
                         {comments.length === 0 ? (
-                            <p className="empty-comments">Be the first to offer encouragement</p>
+                            <p className="empty-comments">{t('share.emptyComments')}</p>
                         ) : (
                             comments.map(comment => (
                                 <div key={comment.id} className="shared-comment">
@@ -177,7 +179,7 @@ const SharedPrayerPage = () => {
                             type="text"
                             value={guestName}
                             onChange={(e) => setGuestName(e.target.value)}
-                            placeholder="Your name (optional)"
+                            placeholder={t('share.namePlaceholder')}
                             maxLength={50}
                             className="guest-name-input"
                         />
@@ -185,7 +187,7 @@ const SharedPrayerPage = () => {
                             <textarea
                                 value={commentBody}
                                 onChange={(e) => setCommentBody(e.target.value)}
-                                placeholder="Share encouragement or prayers..."
+                                placeholder={t('share.commentPlaceholder')}
                                 maxLength={500}
                                 rows={2}
                                 disabled={isSubmitting}
@@ -204,8 +206,8 @@ const SharedPrayerPage = () => {
 
                 {/* CTA */}
                 <div className="shared-cta">
-                    <p>Want to see more prayer requests and join the community?</p>
-                    <Link to="/register" className="shared-cta-btn">Create an Account</Link>
+                    <p>{t('share.joinCta')}</p>
+                    <Link to="/register" className="shared-cta-btn">{t('share.createAccount')}</Link>
                 </div>
             </main>
         </div>
