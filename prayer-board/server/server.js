@@ -44,9 +44,17 @@ const corsOptions = {
   optionsSuccessStatus: 204
 };
 
-// Enable preflight for all routes
-app.options('*', cors(corsOptions));
+// Enable CORS for all routes
 app.use(cors(corsOptions));
+
+// Handle preflight requests manually for all routes
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+  next();
+});
 
 // Security: Rate Limiting
 const authLimiter = rateLimit({
