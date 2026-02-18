@@ -1,5 +1,7 @@
 import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
 import CommentSection from './CommentSection';
@@ -15,12 +17,17 @@ const PrayerRequestCard = ({
 }) => {
   const [showComments, setShowComments] = useState(false);
   const { user, isAuthenticated } = useAuth();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language.startsWith('es') ? es : enUS;
 
   const isAuthor = isAuthenticated && request.author === user?.id;
   const isAdmin = isAuthenticated && user?.role === 'admin';
   const isAnswered = request.status === 'answered';
 
-  const timeAgo = formatDistanceToNow(new Date(request.createdAt), { addSuffix: true });
+  const timeAgo = formatDistanceToNow(new Date(request.createdAt), {
+    addSuffix: true,
+    locale
+  });
 
   const handleStatusUpdate = (newStatus) => {
     if (onUpdateStatus) {
@@ -29,7 +36,7 @@ const PrayerRequestCard = ({
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to remove this prayer request?')) {
+    if (window.confirm(t('prayerCard.deleteConfirm'))) {
       if (onDelete) {
         onDelete(request.id);
       }
@@ -48,7 +55,7 @@ const PrayerRequestCard = ({
               <div className="author-avatar anonymous" aria-hidden="true">
                 <User size={16} />
               </div>
-              <span id={`prayer-author-${request.id}`} className="author-name">Anonymous</span>
+              <span id={`prayer-author-${request.id}`} className="author-name">{t('prayerCard.anonymous')}</span>
             </>
           ) : (
             <>
@@ -62,9 +69,9 @@ const PrayerRequestCard = ({
 
         <div className="prayer-card-meta">
           {isAnswered && (
-            <span className="status-badge answered" aria-label="Prayer request answered">
+            <span className="status-badge answered" aria-label={t('prayerCard.answered')}>
               <CheckCircle2 size={14} aria-hidden="true" />
-              Answered
+              {t('prayerCard.answered')}
             </span>
           )}
           <time className="time-ago" dateTime={request.createdAt}>
@@ -90,7 +97,7 @@ const PrayerRequestCard = ({
             onClick={() => setShowComments(!showComments)}
             aria-expanded={showComments}
             aria-controls={`comments-section-${request.id}`}
-            aria-label={showComments ? 'Hide comments' : `Show ${request.commentCount || 0} comments`}
+            aria-label={showComments ? t('prayerCard.hideComments') : t('prayerCard.showComments', { count: request.commentCount || 0 })}
           >
             <MessageCircle size={16} aria-hidden="true" />
             <span aria-hidden="true">{request.commentCount || 0}</span>
@@ -107,10 +114,10 @@ const PrayerRequestCard = ({
               <button
                 className="action-btn mark-answered"
                 onClick={() => handleStatusUpdate('answered')}
-                aria-label="Mark prayer request as answered"
+                aria-label={t('prayerCard.markAnswered')}
               >
                 <CheckCircle2 size={16} aria-hidden="true" />
-                <span>Mark Answered</span>
+                <span>{t('prayerCard.markAnswered')}</span>
               </button>
             )}
 
@@ -119,7 +126,7 @@ const PrayerRequestCard = ({
                 <button
                   className="action-btn hide"
                   onClick={() => handleStatusUpdate('hidden')}
-                  aria-label="Hide prayer request"
+                  aria-label={t('prayerCard.hide')}
                 >
                   <EyeOff size={16} aria-hidden="true" />
                 </button>
@@ -127,7 +134,7 @@ const PrayerRequestCard = ({
                 <button
                   className="action-btn archive"
                   onClick={() => handleStatusUpdate('archived')}
-                  aria-label="Archive prayer request"
+                  aria-label={t('prayerCard.archive')}
                 >
                   <Archive size={16} aria-hidden="true" />
                 </button>
@@ -135,7 +142,7 @@ const PrayerRequestCard = ({
                 <button
                   className="action-btn delete"
                   onClick={handleDelete}
-                  aria-label="Delete prayer request"
+                  aria-label={t('prayerCard.delete')}
                 >
                   <Trash2 size={16} aria-hidden="true" />
                 </button>

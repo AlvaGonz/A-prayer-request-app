@@ -3,6 +3,9 @@
     "title": "Muro de Oración",
     "description": "Comparte peticiones de oración y ora unos por otros"
   },
+  "common": {
+    "close": "Cerrar"
+  },
   "header": {
     "login": "Iniciar Sesión",
     "signup": "Registrarse",
@@ -28,7 +31,12 @@
     "markAnswered": "Marcar Respondida",
     "hide": "Ocultar petición",
     "archive": "Archivar petición",
-    "delete": "Eliminar petición"
+    "delete": "Eliminar petición",
+    "deleteConfirm": "¿Estás seguro de que quieres eliminar esta petición de oración?",
+    "hideComments": "Ocultar comentarios",
+    "showComments": "Mostrar {{count}} comentarios",
+    "youPrayedAria": "Has orado por esta petición",
+    "prayAria": "Orar por esta petición"
   },
   "comments": {
     "title": "Comentarios ({{count}})",
@@ -38,7 +46,11 @@
     "placeholder": "Comparte ánimo u oraciones...",
     "send": "Enviar comentario",
     "loginToComment": "Inicia sesión para agregar un comentario",
-    "delete": "Eliminar comentario"
+    "delete": "Eliminar comentario",
+    "deleteConfirm": "¿Eliminar este comentario?",
+    "deleteError": "Error al eliminar el comentario",
+    "deleteAria": "Eliminar comentario",
+    "loginSuffix": "para comentar"
   },
   "newRequest": {
     "title": "Compartir una Petición de Oración",
@@ -47,12 +59,15 @@
     "anonymous": "Publicar anónimamente",
     "anonymousHint": "Tu petición aparecerá como \"Anónimo\" para otros",
     "guestNotice": "Estás publicando como invitado. Tu petición aparecerá como \"Anónimo.\" Crea una cuenta para publicar con tu nombre.",
+    "guestNoticeWithLink": "Estás publicando como invitado. Tu petición aparecerá como \"Anónimo.\" <1>Crea una cuenta</1> para publicar con tu nombre.",
     "privacyNotice": "Tu petición será visible para todos en el muro de oración.",
     "cancel": "Cancelar",
     "submit": "Compartir Petición",
     "submitting": "Publicando...",
     "minChars": "Mínimo 10 caracteres requeridos",
-    "charCount": "{{count}}/{{max}}"
+    "charCount": "{{count}}/{{max}}",
+    "minCharsError": "Por favor escribe al menos 10 caracteres",
+    "prayerBodyLabel": "Tu petición de oración"
   },
   "auth": {
     "loginTitle": "Bienvenido de Nuevo",
@@ -82,7 +97,8 @@
   "errors": {
     "loading": "Error al cargar las peticiones. Por favor intenta de nuevo.",
     "creating": "Error al crear la petición. Por favor intenta de nuevo.",
-    "generic": "Algo salió mal. Por favor intenta de nuevo."
+    "generic": "Algo salió mal. Por favor intenta de nuevo.",
+    "pray": "No se pudo registrar tu oración. Por favor intenta de nuevo."
   },
   "theme": {
     "light": "Claro",
@@ -109,6 +125,10 @@
     "notAvailable": "Esta petición de oración ya no está disponible.",
     "joinCta": "¿Quieres ver más peticiones de oración y unirte a la comunidad?",
     "createAccount": "Crear una Cuenta",
-    "visitWall": "Visitar el Muro de Oración"
+    "visitWall": "Visitar el Muro de Oración",
+    "ariaLabel": "Compartir petición de oración",
+    "error": "Error al generar el enlace",
+    "text": "Alguien está pidiendo oración. ¿Orarías con ellos?",
+    "titleArg": "Petición de Oración"
   }
 }
