@@ -1,0 +1,97 @@
+{
+  "app": {
+    "title": "Muro de Oración",
+    "description": "Comparte peticiones de oración y ora unos por otros"
+  },
+  "header": {
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "admin": "Admin"
+  },
+  "prayerWall": {
+    "title": "Muro de Oración Comunitario",
+    "subtitle": "Comparte tus peticiones de oración y levanta oraciones por otros",
+    "newRequest": "Nueva Petición",
+    "loadMore": "Cargar Más",
+    "loading": "Cargando peticiones de oración...",
+    "empty": "No hay peticiones de oración aún. ¡Sé el primero en compartir!"
+  },
+  "prayerCard": {
+    "anonymous": "Anónimo",
+    "answered": "Respondida",
+    "timeAgo": "hace {{time}}",
+    "prayed": "Orado",
+    "iPrayed": "Yo Oro",
+    "comments": "{{count}} comentarios",
+    "addComment": "Agregar comentario",
+    "markAnswered": "Marcar Respondida",
+    "hide": "Ocultar petición",
+    "archive": "Archivar petición",
+    "delete": "Eliminar petición"
+  },
+  "comments": {
+    "title": "Comentarios ({{count}})",
+    "close": "Cerrar comentarios",
+    "loading": "Cargando comentarios...",
+    "empty": "Sé el primero en ofrecer ánimo y oraciones",
+    "placeholder": "Comparte ánimo u oraciones...",
+    "send": "Enviar comentario",
+    "loginToComment": "Inicia sesión para agregar un comentario",
+    "delete": "Eliminar comentario"
+  },
+  "newRequest": {
+    "title": "Compartir una Petición de Oración",
+    "close": "Cerrar formulario de petición",
+    "placeholder": "Comparte por qué te gustaría recibir oración...",
+    "anonymous": "Publicar anónimamente",
+    "anonymousHint": "Tu petición aparecerá como \"Anónimo\" para otros",
+    "guestNotice": "Estás publicando como invitado. Tu petición aparecerá como \"Anónimo.\" Crea una cuenta para publicar con tu nombre.",
+    "privacyNotice": "Tu petición será visible para todos en el muro de oración.",
+    "cancel": "Cancelar",
+    "submit": "Compartir Petición",
+    "submitting": "Publicando...",
+    "minChars": "Mínimo 10 caracteres requeridos",
+    "charCount": "{{count}}/{{max}}"
+  },
+  "auth": {
+    "loginTitle": "Bienvenido de Nuevo",
+    "registerTitle": "Crear Cuenta",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "displayName": "Nombre para Mostrar",
+    "login": "Iniciar Sesión",
+    "register": "Crear Cuenta",
+    "noAccount": "¿No tienes una cuenta?",
+    "hasAccount": "¿Ya tienes una cuenta?",
+    "guest": "Continuar como Invitado",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "accountDeactivated": "Tu cuenta ha sido desactivada",
+      "emailExists": "Ya existe una cuenta con este correo electrónico",
+      "weakPassword": "La contraseña debe contener al menos una mayúscula, una minúscula y un número",
+      "invalidEmail": "Por favor ingresa un correo electrónico válido",
+      "rateLimit": "Demasiados intentos. Por favor intenta más tarde.",
+      "network": "No se puede conectar al servidor. Por favor verifica tu conexión a internet."
+    }
+  },
+  "notifications": {
+    "prayed": "Tu oración ha sido registrada. Gracias por elevarla.",
+    "newComment": "{{name}} comentó en tu petición de oración"
+  },
+  "errors": {
+    "loading": "Error al cargar las peticiones. Por favor intenta de nuevo.",
+    "creating": "Error al crear la petición. Por favor intenta de nuevo.",
+    "generic": "Algo salió mal. Por favor intenta de nuevo."
+  },
+  "theme": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "toggle": "Cambiar a tema {{theme}}"
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "select": "Seleccionar idioma"
+  }
+}
