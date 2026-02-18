@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Send, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import CommentItem from './CommentItem';
@@ -14,6 +15,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   const [notifications, setNotifications] = useState([]);
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const commentsEndRef = useRef(null);
   const notificationTimeoutsRef = useRef([]);
 
@@ -124,7 +126,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   };
 
   const handleDelete = async (commentId) => {
-    if (!window.confirm('Delete this comment?')) return;
+    if (!window.confirm(t('comments.deleteConfirm'))) return;
 
     try {
       await commentsAPI.delete(commentId, user);
@@ -132,7 +134,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
       // Emit real-time event
       emitToRequest(requestId, 'comment-deleted', { commentId });
     } catch (error) {
-      alert('Failed to delete comment');
+      alert(t('comments.deleteError'));
     }
   };
 
@@ -140,7 +142,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     return (
       <button className="comments-toggle-btn" onClick={onToggle}>
         <MessageCircle size={16} />
-        {comments.length > 0 ? `${comments.length} comments` : 'Add a comment'}
+        {comments.length > 0 ? t('comments.title', { count: comments.length }) : t('prayerCard.addComment')}
       </button>
     );
   }
@@ -163,18 +165,18 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
       )}
 
       <div className="comment-section-header">
-        <h4>Comments ({comments.length})</h4>
-        <button className="close-comments" onClick={onToggle} aria-label="Close comments">
+        <h4>{t('comments.title', { count: comments.length })}</h4>
+        <button className="close-comments" onClick={onToggle} aria-label={t('comments.close')}>
           <X size={18} />
         </button>
       </div>
 
       <div className="comments-list">
         {loading ? (
-          <p className="loading-text">Loading comments...</p>
+          <p className="loading-text">{t('comments.loading')}</p>
         ) : comments.length === 0 ? (
           <p className="empty-comments">
-            Be the first to offer encouragement and prayers
+            {t('comments.empty')}
           </p>
         ) : (
           comments.map(comment => (
@@ -194,7 +196,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Share encouragement or prayers..."
+            placeholder={t('comments.placeholder')}
             maxLength={500}
             rows={2}
             disabled={isSubmitting}
@@ -203,14 +205,14 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
             type="submit"
             disabled={!newComment.trim() || isSubmitting}
             className="submit-comment-btn"
-            aria-label="Send comment"
+            aria-label={t('comments.send')}
           >
             <Send size={16} />
           </button>
         </form>
       ) : (
         <p className="login-prompt">
-          <a href="/login">Log in</a> to add a comment
+          <a href="/login">{t('header.login')}</a> {t('comments.loginToCommentSuffix') || 'to add a comment'}
         </p>
       )}
     </section>

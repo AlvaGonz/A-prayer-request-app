@@ -3,6 +3,9 @@
     "title": "Prayer Board",
     "description": "Share prayer requests and pray for one another"
   },
+  "common": {
+    "close": "Close"
+  },
   "header": {
     "login": "Log In",
     "signup": "Sign Up",
@@ -28,7 +31,12 @@
     "markAnswered": "Mark Answered",
     "hide": "Hide request",
     "archive": "Archive request",
-    "delete": "Delete request"
+    "delete": "Delete request",
+    "deleteConfirm": "Are you sure you want to remove this prayer request?",
+    "hideComments": "Hide comments",
+    "showComments": "Show {{count}} comments",
+    "youPrayedAria": "You have prayed for this request",
+    "prayAria": "Pray for this request"
   },
   "comments": {
     "title": "Comments ({{count}})",
@@ -38,7 +46,11 @@
     "placeholder": "Share encouragement or prayers...",
     "send": "Send comment",
     "loginToComment": "Log in to add a comment",
-    "delete": "Delete comment"
+    "delete": "Delete comment",
+    "deleteConfirm": "Delete this comment?",
+    "deleteError": "Failed to delete comment",
+    "deleteAria": "Delete comment",
+    "loginSuffix": "to add a comment"
   },
   "newRequest": {
     "title": "Share a Prayer Request",
@@ -47,12 +59,15 @@
     "anonymous": "Post anonymously",
     "anonymousHint": "Your request will appear as \"Anonymous\" to others",
     "guestNotice": "You are posting as a guest. Your request will appear as \"Anonymous.\" Create an account to post with your name.",
+    "guestNoticeWithLink": "You are posting as a guest. Your request will appear as \"Anonymous.\" <1>Create an account</1> to post with your name.",
     "privacyNotice": "Your request will be visible to everyone on the prayer wall.",
     "cancel": "Cancel",
     "submit": "Share Request",
     "submitting": "Posting...",
     "minChars": "Minimum 10 characters required",
-    "charCount": "{{count}}/{{max}}"
+    "charCount": "{{count}}/{{max}}",
+    "minCharsError": "Please write at least 10 characters",
+    "prayerBodyLabel": "Your prayer request"
   },
   "auth": {
     "loginTitle": "Welcome Back",
@@ -81,8 +96,9 @@
   },
   "errors": {
     "loading": "Failed to load prayer requests. Please try again.",
-    "creating": "Failed to create prayer request. Please try again.",
-    "generic": "Something went wrong. Please try again."
+    "creating": "Failed to create request. Please try again.",
+    "generic": "Something went wrong. Please try again.",
+    "pray": "Unable to record your prayer. Please try again."
   },
   "theme": {
     "light": "Light",
@@ -109,6 +125,10 @@
     "notAvailable": "This prayer request is no longer available.",
     "joinCta": "Want to see more prayer requests and join the community?",
     "createAccount": "Create an Account",
-    "visitWall": "Visit the Prayer Wall"
+    "visitWall": "Visit the Prayer Wall",
+    "ariaLabel": "Share prayer request",
+    "error": "Failed to generate share link",
+    "text": "Someone is asking for prayer. Will you pray with them?",
+    "titleArg": "Prayer Request"
   }
 }

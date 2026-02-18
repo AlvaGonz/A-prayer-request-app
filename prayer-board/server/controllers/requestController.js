@@ -118,8 +118,10 @@ const pray = async (req, res) => {
       return res.status(404).json({ error: 'Request not found' });
     }
 
-    // Increment count
-    request.prayedCount = (request.prayedCount || 0) + 1;
+    // Increment count safely
+    const currentCount = typeof request.prayedCount === 'number' ? request.prayedCount : 0;
+    request.prayedCount = currentCount + 1;
+
     await request.save();
 
     res.json({
@@ -127,8 +129,8 @@ const pray = async (req, res) => {
       message: 'Your prayer has been noted. Thank you for lifting this up.'
     });
   } catch (error) {
-    console.error('Pray error:', error.message);
-    res.status(500).json({ error: 'Failed to record prayer' });
+    console.error('Pray error:', error);
+    res.status(500).json({ error: 'Failed to record prayer', details: error.message });
   }
 };
 

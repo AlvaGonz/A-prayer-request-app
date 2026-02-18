@@ -1,5 +1,8 @@
+```javascript
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send } from 'lucide-react';
+import { X, Lock, Globe, AlertCircle, Loader2 } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import useFocusTrap from '../hooks/useFocusTrap';
@@ -8,19 +11,25 @@ import './NewPrayerRequestForm.css';
 const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const [body, setBody] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const modalRef = useFocusTrap(isOpen);
   const closeButtonRef = useRef(null);
 
   const maxLength = 1000;
   const charCount = body.length;
 
+  const validate = (text) => {
+    if (text.length < 10) return t('newRequest.minCharsError');
+    return null;
+  };
+
   // Handle Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+      if (e.key === 'Escape' && isOpen && !loading) {
         onClose();
       }
     };
@@ -33,20 +42,21 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
-  }, [isOpen, isSubmitting, onClose]);
+  }, [isOpen, loading, onClose]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    if (charCount < 10) {
-      setError('Please write at least 10 characters');
+    const validationError = validate(body);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
-    setIsSubmitting(true);
+    setLoading(true);
 
     try {
       const result = await requestsAPI.create(
@@ -59,14 +69,14 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(result.request);
       onClose();
     } catch (err) {
-      setError(err.message || 'Failed to post prayer request. Please try again.');
+      setError(t('errors.creating'));
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   const handleClose = () => {
-    if (!isSubmitting) {
+    if (!loading) {
       setBody('');
       setIsAnonymous(true);
       setError(null);
@@ -93,49 +103,35 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         aria-describedby="modal-description"
       >
         <div className="modal-header">
-          <h2 id="modal-title">Share a Prayer Request</h2>
+          <h3 id="modal-title">{t('newRequest.title')}</h3>
           <button 
             ref={closeButtonRef}
             className="close-btn" 
-            onClick={handleClose}
-            aria-label="Close prayer request form"
-            disabled={isSubmitting}
+            onClick={onClose}
+            aria-label={t('newRequest.close')}
+            disabled={loading}
           >
-            <X size={20} aria-hidden="true" />
+            <X size={20} />
           </button>
         </div>
-
-        <p id="modal-description" className="sr-only">
-          Form to share a new prayer request with the community
-        </p>
 
         <form onSubmit={handleSubmit} className="prayer-form">
           <div className="form-group">
             <label htmlFor="prayer-body" className="sr-only">
-              Your prayer request
+              {t('newRequest.prayerBodyLabel')}
             </label>
             <textarea
               id="prayer-body"
               value={body}
               onChange={(e) => setBody(e.target.value)}
-              placeholder="Share what you would like prayer for..."
+              placeholder={t('newRequest.placeholder')}
               maxLength={maxLength}
               rows={6}
-              disabled={isSubmitting}
-              autoFocus
-              aria-required="true"
-              aria-describedby="char-count prayer-hint"
-              aria-invalid={charCount > 0 && charCount < 10 ? 'true' : 'false'}
+              disabled={loading}
             />
-            <div id="char-count" className="char-counter" aria-live="polite">
-              <span className={charCount > maxLength * 0.9 ? 'near-limit' : ''}>
-                {charCount}
-              </span>
-              /{maxLength}
+            <div className="char-count">
+              {t('newRequest.charCount', { count: body.length, max: 1000 })}
             </div>
-            <span id="prayer-hint" className="sr-only">
-              Minimum 10 characters required
-            </span>
           </div>
 
           {isAuthenticated && (
@@ -145,33 +141,36 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   type="checkbox"
                   checked={isAnonymous}
                   onChange={(e) => setIsAnonymous(e.target.checked)}
-                  disabled={isSubmitting}
-                  aria-describedby="anonymous-hint"
+                  disabled={!isAuthenticated || loading}
                 />
                 <span className="checkmark"></span>
                 <span className="checkbox-text">
-                  Post anonymously
+                  {t('newRequest.anonymous')}
                 </span>
               </label>
               <p id="anonymous-hint" className="checkbox-hint">
-                Your request will appear as "Anonymous" to others
+                {isAnonymous ? t('newRequest.anonymousHint') : t('newRequest.privacyNotice')}
               </p>
             </div>
           )}
 
           {!isAuthenticated && (
             <p className="guest-notice" role="note">
-              You are posting as a guest. Your request will appear as "Anonymous."
-              <a href="/register"> Create an account</a> to post with your name.
+              <Trans i18nKey="newRequest.guestNoticeWithLink">
+                 You are posting as a guest. Your request will appear as "Anonymous."
+                 <Link to="/register">Create an account</Link> to post with your name.
+              </Trans>
             </p>
           )}
 
           <p className="privacy-notice" role="note">
-            Your request will be visible to everyone on the prayer wall.
+            <Globe size={16} className="icon-inline" aria-hidden="true" />
+            {t('newRequest.privacyNotice')}
           </p>
 
           {error && (
             <div className="error-message" role="alert" aria-live="assertive">
+              <AlertCircle size={16} className="icon-inline" aria-hidden="true" />
               {error}
             </div>
           )}
@@ -181,25 +180,25 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               type="button"
               className="btn btn-secondary"
               onClick={handleClose}
-              disabled={isSubmitting}
+              disabled={loading}
             >
-              Cancel
+              {t('newRequest.cancel')}
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isSubmitting || charCount < 10}
-              aria-busy={isSubmitting}
+              disabled={!body.trim() || loading}
+              aria-busy={loading}
             >
-              {isSubmitting ? (
+              {loading ? (
                 <>
-                  <span className="sr-only">Posting</span>
-                  Posting...
+                  <Loader2 size={16} className="spinner" aria-hidden="true" />
+                  {t('newRequest.submitting')}
                 </>
               ) : (
                 <>
-                  <Send size={16} aria-hidden="true" />
-                  Share Request
+                  <Lock size={16} aria-hidden="true" />
+                  {t('newRequest.submit')}
                 </>
               )}
             </button>
