@@ -103,9 +103,6 @@ const createRequest = async (req, res) => {
     });
   } catch (error) {
     console.error('Create request error:', error.message);
-    console.error('Error code:', error.code);
-    console.error('Error keyPattern:', JSON.stringify(error.keyPattern));
-    console.error('Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to create prayer request' });
   }
 };
