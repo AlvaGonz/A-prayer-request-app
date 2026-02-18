@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { User, Heart, Loader2, Send, AlertCircle } from 'lucide-react';
 import { shareAPI } from '../api';
 import Header from '../components/Header';
@@ -165,7 +166,10 @@ const SharedPrayerPage = () => {
                                 <div key={comment.id} className="shared-comment">
                                     <div className="shared-comment-author">
                                         <strong>{comment.authorName}</strong>
-                                        <time>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</time>
+                                        <time>{formatDistanceToNow(new Date(comment.createdAt), {
+                                            addSuffix: true,
+                                            locale: i18n.language.startsWith('es') ? es : enUS
+                                        })}</time>
                                     </div>
                                     <p>{comment.body}</p>
                                 </div>
