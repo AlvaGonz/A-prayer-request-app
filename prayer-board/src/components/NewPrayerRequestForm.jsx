@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Lock, Globe, AlertCircle, Loader2 } from 'lucide-react';
+import { X, MessageCircle, Globe, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { requestsAPI } from '../api';
@@ -197,7 +197,7 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                 </>
               ) : (
                 <>
-                  <Lock size={16} aria-hidden="true" />
+                  <MessageCircle size={16} aria-hidden="true" />
                   {t('newRequest.submit')}
                 </>
               )}
