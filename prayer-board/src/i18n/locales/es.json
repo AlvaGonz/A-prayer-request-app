@@ -93,5 +93,22 @@
     "en": "English",
     "es": "Español",
     "select": "Seleccionar idioma"
+  },
+  "share": {
+    "button": "Compartir",
+    "copied": "¡Enlace copiado!",
+    "title": "Alguien está pidiendo oración",
+    "prayButton": "Oré por Esto",
+    "prayed": "¡Orado!",
+    "encouragement": "Ánimo",
+    "guestComment": "Deja un mensaje de ánimo",
+    "namePlaceholder": "Tu nombre (opcional)",
+    "commentPlaceholder": "Comparte ánimo u oraciones...",
+    "emptyComments": "Sé el primero en ofrecer ánimo",
+    "notFound": "Petición de oración no encontrada",
+    "notAvailable": "Esta petición de oración ya no está disponible.",
+    "joinCta": "¿Quieres ver más peticiones de oración y unirte a la comunidad?",
+    "createAccount": "Crear una Cuenta",
+    "visitWall": "Visitar el Muro de Oración"
   }
 }
