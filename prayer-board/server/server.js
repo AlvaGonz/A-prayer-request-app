@@ -15,12 +15,37 @@ const app = express();
 
 // Security: CORS Configuration
 const corsOptions = {
-  // Allow all origins for staging/development testing to fix CORS issues with dynamic Vercel preview URLs
-  origin: '*',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow all Vercel domains and localhost
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://prayer-board-virid.vercel.app',
+      'https://prayer-board-frontend.vercel.app',
+      'https://prayer-board-frontend-git-main-alvagonz.vercel.app',
+      'https://a-prayer-request-app.vercel.app',
+      'https://a-prayer-request-app-develop.vercel.app'
+    ];
+    
+    // Check if origin matches allowed patterns or contains vercel.app
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('vercel.app')) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Origin', 'Accept'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
+
+// Enable preflight for all routes
+app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 // Security: Rate Limiting
