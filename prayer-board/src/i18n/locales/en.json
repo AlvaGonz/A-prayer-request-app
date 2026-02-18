@@ -93,5 +93,22 @@
     "en": "English",
     "es": "Español",
     "select": "Select language"
+  },
+  "share": {
+    "button": "Share",
+    "copied": "Link copied!",
+    "title": "Someone is asking for prayer",
+    "prayButton": "I Prayed for This",
+    "prayed": "Prayed!",
+    "encouragement": "Encouragement",
+    "guestComment": "Leave encouragement",
+    "namePlaceholder": "Your name (optional)",
+    "commentPlaceholder": "Share encouragement or prayers...",
+    "emptyComments": "Be the first to offer encouragement",
+    "notFound": "Prayer request not found",
+    "notAvailable": "This prayer request is no longer available.",
+    "joinCta": "Want to see more prayer requests and join the community?",
+    "createAccount": "Create an Account",
+    "visitWall": "Visit the Prayer Wall"
   }
 }
