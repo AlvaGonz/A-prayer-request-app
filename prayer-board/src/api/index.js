@@ -1,5 +1,5 @@
 // API Configuration v2.0 - Production Only
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://prayer-board-api.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5000' : 'https://prayer-board-api.onrender.com');
 
 // Clear old cache version marker
 if (typeof window !== 'undefined') {
@@ -23,7 +23,7 @@ class APIError extends Error {
 const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const token = localStorage.getItem('prayerBoard_token');
-  
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -36,12 +36,12 @@ const apiCall = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Unknown error' }));
       throw new APIError(error.error || `HTTP ${response.status}`, response.status);
     }
-    
+
     return response.json();
   } catch (error) {
     if (error.name === 'APIError') throw error;
@@ -55,14 +55,14 @@ export const authAPI = {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  
+
   login: async (data) => apiCall('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  
+
   me: async () => apiCall('/api/auth/me'),
-  
+
   logout: () => {
     localStorage.removeItem('prayerBoard_user');
     localStorage.removeItem('prayerBoard_token');
@@ -75,21 +75,21 @@ export const requestsAPI = {
     const query = new URLSearchParams(params).toString();
     return apiCall(`/api/requests?${query}`);
   },
-  
+
   create: async (data) => apiCall('/api/requests', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  
+
   pray: async (requestId) => apiCall(`/api/requests/${requestId}/pray`, {
     method: 'POST'
   }),
-  
+
   updateStatus: async (requestId, data) => apiCall(`/api/requests/${requestId}/status`, {
     method: 'PATCH',
     body: JSON.stringify(data)
   }),
-  
+
   delete: async (requestId) => apiCall(`/api/requests/${requestId}`, {
     method: 'DELETE'
   })
@@ -98,12 +98,12 @@ export const requestsAPI = {
 // Comments API
 export const commentsAPI = {
   getByRequest: async (requestId) => apiCall(`/api/requests/${requestId}/comments`),
-  
+
   create: async (requestId, body) => apiCall(`/api/requests/${requestId}/comments`, {
     method: 'POST',
     body: JSON.stringify({ body })
   }),
-  
+
   delete: async (commentId) => apiCall(`/api/comments/${commentId}`, {
     method: 'DELETE'
   })
