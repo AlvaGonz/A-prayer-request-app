@@ -99,9 +99,9 @@ export const requestsAPI = {
 export const commentsAPI = {
   getByRequest: async (requestId) => apiCall(`/api/requests/${requestId}/comments`),
 
-  create: async (requestId, body) => apiCall(`/api/requests/${requestId}/comments`, {
+  create: async (requestId, commentData) => apiCall(`/api/requests/${requestId}/comments`, {
     method: 'POST',
-    body: JSON.stringify({ body })
+    body: JSON.stringify(commentData)
   }),
 
   delete: async (commentId) => apiCall(`/api/comments/${commentId}`, {

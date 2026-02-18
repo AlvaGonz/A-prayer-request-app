@@ -45,12 +45,16 @@
     "empty": "Be the first to offer encouragement and prayers",
     "placeholder": "Share encouragement or prayers...",
     "send": "Send comment",
-    "loginToComment": "Log in to add a comment",
     "delete": "Delete comment",
     "deleteConfirm": "Delete this comment?",
     "deleteError": "Failed to delete comment",
     "deleteAria": "Delete comment",
-    "loginSuffix": "to add a comment"
+    "namePlaceholder": "Your name (optional)",
+    "quickOptions": {
+      "praying": "Praying for you",
+      "encouragement": "Stay strong",
+      "blessing": "God bless you"
+    }
   },
   "newRequest": {
     "title": "Share a Prayer Request",
