@@ -63,28 +63,40 @@ prayerRequestSchema.index({ isDeleted: 1, status: 1, createdAt: -1 });
 
 const PrayerRequest = mongoose.model('PrayerRequest', prayerRequestSchema);
 
-// Fix: Drop and recreate the shareToken index to ensure it is sparse.
+// Fix: Ensure the shareToken index is properly sparse.
 // A non-sparse unique index on shareToken causes duplicate key errors
-// when multiple documents have shareToken: null.
+// when multiple documents have no shareToken value.
 (async () => {
   try {
     const collection = PrayerRequest.collection;
+
+    // Drop ALL existing shareToken indexes to start fresh
     const indexes = await collection.indexes();
-    const shareIdx = indexes.find(i => i.key && i.key.shareToken);
-    if (shareIdx && !shareIdx.sparse) {
-      console.log('Dropping non-sparse shareToken index and recreating as sparse...');
-      await collection.dropIndex(shareIdx.name);
-      await collection.createIndex({ shareToken: 1 }, { unique: true, sparse: true });
-      console.log('shareToken index recreated as sparse.');
+    for (const idx of indexes) {
+      if (idx.key && idx.key.shareToken !== undefined && idx.name !== '_id_') {
+        console.log(`Dropping shareToken index: ${idx.name} (sparse: ${idx.sparse})`);
+        await collection.dropIndex(idx.name);
+      }
     }
-    // Also clean up any existing null shareToken values to prevent issues
-    await collection.updateMany(
-      { shareToken: null },
+
+    // Remove shareToken field entirely from docs that don't have a real value
+    const result = await collection.updateMany(
+      { $or: [{ shareToken: null }, { shareToken: '' }] },
       { $unset: { shareToken: '' } }
     );
+    if (result.modifiedCount > 0) {
+      console.log(`Cleaned shareToken from ${result.modifiedCount} documents`);
+    }
+
+    // Recreate as sparse unique index
+    await collection.createIndex(
+      { shareToken: 1 },
+      { unique: true, sparse: true }
+    );
+    console.log('shareToken sparse unique index ensured.');
   } catch (err) {
-    // Index might not exist yet or collection not ready - that's fine
-    if (err.code !== 26 && err.code !== 27) {
+    // Collection might not exist yet - that's fine on first run
+    if (err.code !== 26) {
       console.warn('shareToken index fix warning:', err.message);
     }
   }
