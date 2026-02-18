@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Trash2 } from 'lucide-react';
 import './CommentItem.css';
@@ -33,4 +33,4 @@ const CommentItem = ({ comment, onDelete, canDelete }) => {
   );
 };
 
-export default CommentItem;
+export default memo(CommentItem);

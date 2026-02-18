@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
@@ -143,4 +143,4 @@ const PrayerRequestCard = ({
   );
 };
 
-export default PrayerRequestCard;
+export default memo(PrayerRequestCard);
