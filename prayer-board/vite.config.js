@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Version bump to force cache refresh - change this number when deploying updates
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 
 export default defineConfig({
   plugins: [
