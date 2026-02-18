@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Cross, LogOut, User as UserIcon, Menu } from 'lucide-react';
+import { Cross, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggle from './ThemeToggle';
 import './Header.css';
 
 const Header = () => {
@@ -22,6 +23,7 @@ const Header = () => {
         </Link>
         
         <div className="header-actions">
+          <ThemeToggle />
           {isAuthenticated ? (
             <div className="user-menu">
               <div className="user-info">

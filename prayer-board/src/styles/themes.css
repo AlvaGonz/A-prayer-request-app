@@ -1,0 +1,72 @@
+:root {
+  /* Light Theme (Default) */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f5f5f7;
+  --color-bg-tertiary: #e8e8ed;
+  --color-bg-card: #ffffff;
+  
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #4a4a5c;
+  --color-text-muted: #6b6b7b;
+  
+  --color-accent-gold: #b4884d;
+  --color-accent-gold-hover: #9a7440;
+  --color-accent-blue: #1a495a;
+  --color-accent-green: #2d8a4e;
+  --color-accent-red: #dc2626;
+  
+  --color-border: #d1d1d6;
+  --color-shadow: rgba(0, 0, 0, 0.1);
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --shadow-sm: 0 2px 4px var(--color-shadow);
+  --shadow-md: 0 4px 12px var(--color-shadow);
+  --shadow-lg: 0 8px 24px var(--color-shadow);
+  
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+[data-theme="dark"] {
+  /* Dark Theme */
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: #16213e;
+  --color-bg-tertiary: #0f3460;
+  --color-bg-card: #252544;
+  
+  --color-text-primary: #eaeaea;
+  --color-text-secondary: #a0a0b0;
+  --color-text-muted: #6b6b7b;
+  
+  --color-accent-gold: #e2b96f;
+  --color-accent-gold-hover: #d4a85c;
+  --color-accent-blue: #4a9eff;
+  --color-accent-green: #4ade80;
+  --color-accent-red: #f87171;
+  
+  --color-border: #2d2d4a;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Apply transitions when theme changes */
+*,
+*::before,
+*::after {
+  transition: background-color var(--transition-normal),
+              color var(--transition-fast),
+              border-color var(--transition-fast);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
