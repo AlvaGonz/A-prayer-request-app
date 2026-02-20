@@ -132,12 +132,12 @@
   transition: all var(--transition-fast);
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark {
+.checkbox-label input[type="checkbox"]:checked+.checkmark {
   background-color: var(--color-accent-gold);
   border-color: var(--color-accent-gold);
 }
 
-.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+.checkbox-label input[type="checkbox"]:checked+.checkmark::after {
   content: '✓';
   color: var(--color-bg-primary);
   font-weight: bold;
@@ -234,8 +234,13 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -243,6 +248,7 @@
     opacity: 0;
     transform: translateY(20px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -253,19 +259,46 @@
   .modal-overlay {
     padding: 0;
     align-items: flex-end;
+    /* Sheet-like behavior on mobile */
   }
-  
+
   .modal-content {
     max-height: 85vh;
+    /* Ensure modal fits within viewport */
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    width: 100vw;
+    /* Full width on mobile */
+    margin: 0;
   }
-  
+
+  .prayer-form {
+    padding: 20px 16px;
+    /* Reduced side padding */
+  }
+
   .form-actions {
     flex-direction: column-reverse;
+    /* Stack buttons, cancel at bottom */
+    gap: 12px;
   }
-  
+
   .form-actions .btn {
     width: 100%;
     justify-content: center;
+    padding: 14px;
+    /* Maintain touch target size */
+  }
+
+  /* Make checkbox label wrap properly */
+  .checkbox-label {
+    align-items: flex-start;
+    /* Align checkbox to top of text */
+  }
+
+  .checkmark {
+    margin-top: 2px;
+    /* slight adjustment for top alignment */
+    flex-shrink: 0;
+    /* Don't shrink checkbox */
   }
 }

@@ -15,11 +15,9 @@
 
 .prayer-card.answered {
   border-color: var(--color-accent-gold);
-  background: linear-gradient(
-    135deg,
-    var(--color-bg-card) 0%,
-    rgba(226, 185, 111, 0.05) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--color-bg-card) 0%,
+      rgba(226, 185, 111, 0.05) 100%);
 }
 
 .prayer-card-header {
@@ -165,6 +163,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -175,14 +174,44 @@
   .prayer-card {
     padding: 16px;
   }
-  
+
+  .prayer-card-header {
+    flex-wrap: wrap;
+    /* Allow header to wrap (author / time) */
+    gap: 10px;
+  }
+
+  .prayer-card-author {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .author-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .prayer-card-footer {
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     align-items: stretch;
+    /* Full width items */
   }
-  
+
+  .prayer-card-actions-left {
+    justify-content: space-between;
+    /* Spread out main interaction buttons */
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .prayer-card-actions {
     justify-content: flex-end;
+    width: 100%;
+    border-top: 1px dashed var(--color-border);
+    /* Separator for admin actions */
+    padding-top: 12px;
   }
 }
