@@ -126,8 +126,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .load-more-btn {
@@ -149,27 +154,36 @@
   color: var(--color-text-primary);
 }
 
+@media (max-width: 768px) {
+  .wall-content {
+    padding: 24px 20px;
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 600px) {
   .wall-content {
-    padding: 20px 16px;
+    padding: 16px;
   }
-  
+
   .wall-header {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .wall-intro h1 {
     font-size: 1.5rem;
   }
-  
+
   .wall-intro p {
     font-size: 1rem;
   }
-  
+
   .new-request-btn {
     width: 100%;
     justify-content: center;
+    padding: 12px 20px;
+    /* Slightly smaller padding */
   }
 }
