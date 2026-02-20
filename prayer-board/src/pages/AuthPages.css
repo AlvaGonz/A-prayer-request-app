@@ -169,8 +169,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .auth-divider {
@@ -230,13 +235,27 @@
 @media (max-width: 480px) {
   .auth-page {
     padding: 16px;
+    background-color: var(--color-bg-card);
+    /* Full screen card on mobile */
   }
-  
+
+  .auth-container {
+    max-width: 100%;
+  }
+
   .auth-card {
-    padding: 24px 20px;
+    padding: 0;
+    box-shadow: none;
+    background-color: transparent;
+    border: none;
   }
-  
+
   .auth-logo {
     font-size: 1.3rem;
+  }
+
+  /* Prevent zoom on inputs */
+  .form-field input {
+    font-size: 16px;
   }
 }

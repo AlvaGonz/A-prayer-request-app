@@ -332,4 +332,17 @@
         width: 100%;
         justify-content: center;
     }
+
+    .comment-input-row {
+        flex-direction: column;
+    }
+
+    .comment-input-row textarea {
+        min-height: 80px;
+    }
+
+    .send-comment-btn {
+        justify-content: center;
+        width: 100%;
+    }
 }
