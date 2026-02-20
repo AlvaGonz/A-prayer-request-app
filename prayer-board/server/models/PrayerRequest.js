@@ -95,7 +95,7 @@ const PrayerRequest = mongoose.model('PrayerRequest', prayerRequestSchema);
     );
     console.log('shareToken sparse unique index ensured.');
   } catch (err) {
-    // Collection might not exist yet — that's fine on first run
+    // Collection might not exist yet - that's fine on first run
     if (err.code !== 26) {
       console.warn('shareToken index fix warning:', err.message);
     }
@@ -103,4 +103,3 @@ const PrayerRequest = mongoose.model('PrayerRequest', prayerRequestSchema);
 })();
 
 module.exports = PrayerRequest;
-
