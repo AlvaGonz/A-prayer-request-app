@@ -146,25 +146,65 @@
   border-color: var(--color-text-secondary);
 }
 
-@media (max-width: 768px) {
-  .header-container {
-    padding: 14px 20px;
-  }
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  padding: 0px;
+  transition: transform 0.3s ease;
+}
+
+.mobile-menu-btn[aria-expanded="true"] {
+  transform: rotate(180deg);
+}
+
+.mobile-only-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Overlay for outside click closing */
+.menu-overlay {
+  display: none;
+}
+
+/* On desktop, this group should just be part of the flow */
+.mobile-only-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 @media (max-width: 600px) {
   .header-container {
-    padding: 12px 12px;
-    /* Reduced vertical/horizontal padding */
+    padding: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
-  /* Compact actions container */
+  .header-logo {
+    flex-shrink: 0;
+  }
+
   .header-actions {
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 1;
+    overflow-x: auto;
+    max-width: 100%;
+    scrollbar-width: none;
+  }
+
+  .header-actions::-webkit-scrollbar {
+    display: none;
   }
 
   .auth-buttons {
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
   }
 
   .logo-text {
@@ -172,8 +212,7 @@
     white-space: nowrap;
   }
 
-  /* Hide logo text on very small screens to prioritize actions */
-  @media (max-width: 380px) {
+  @media (max-width: 400px) {
     .logo-text {
       display: none;
     }
@@ -183,20 +222,133 @@
     display: none;
   }
 
-  /* Compact buttons */
   .btn {
-    padding: 8px 10px;
+    padding: 6px 10px;
     font-size: 0.8rem;
     white-space: nowrap;
-    /* Prevent "Log In" from wrapping */
   }
 
-  /* Logout button icon only */
   .logout-btn span {
     display: none;
   }
 
   .logout-btn {
-    padding: 8px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 525px) {
+  .header-container {
+    padding: 14px 20px;
+    position: relative;
+    flex-wrap: nowrap;
+    /* Force nowrap for hamburger */
+  }
+
+  .logo-text {
+    display: inline-block;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+    gap: 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    overflow-x: visible;
+    max-width: none;
+
+    transform: translateY(-20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .header-actions.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .menu-overlay {
+    display: block;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
+    font-size: 1rem;
+  }
+
+  .user-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .user-info {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .user-name {
+    display: inline-block;
+  }
+
+  .logout-btn {
+    width: 100%;
+    justify-content: center;
+    border-color: var(--color-accent-red);
+    color: var(--color-accent-red);
+    padding: 12px;
+  }
+
+  .logout-btn span {
+    display: inline;
+  }
+
+  .mobile-only-group {
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .language-selector,
+  .theme-toggle {
+    padding: 10px;
+    width: 48%;
+    justify-content: center;
   }
 }
