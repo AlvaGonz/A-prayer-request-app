@@ -146,21 +146,57 @@
   border-color: var(--color-text-secondary);
 }
 
+@media (max-width: 768px) {
+  .header-container {
+    padding: 14px 20px;
+  }
+}
+
 @media (max-width: 600px) {
   .header-container {
-    padding: 12px 16px;
+    padding: 12px 12px;
+    /* Reduced vertical/horizontal padding */
+  }
+
+  /* Compact actions container */
+  .header-actions {
+    gap: 8px;
+  }
+
+  .auth-buttons {
+    gap: 8px;
   }
 
   .logo-text {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  /* Hide logo text on very small screens to prioritize actions */
+  @media (max-width: 380px) {
+    .logo-text {
+      display: none;
+    }
   }
 
   .user-name {
     display: none;
   }
 
+  /* Compact buttons */
   .btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    /* Prevent "Log In" from wrapping */
+  }
+
+  /* Logout button icon only */
+  .logout-btn span {
+    display: none;
+  }
+
+  .logout-btn {
+    padding: 8px;
   }
 }
