@@ -33,18 +33,23 @@
 .new-request-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 14px 24px;
   background: linear-gradient(135deg, var(--color-accent-gold), var(--color-accent-gold-hover));
   color: var(--color-bg-primary);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(226, 185, 111, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
 }
 
 .new-request-btn:hover {
@@ -181,10 +186,10 @@
   }
 
   .new-request-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
-    /* Slightly smaller padding */
+    bottom: 24px;
+    right: 20px;
+    width: auto;
+    padding: 14px 24px;
   }
 
   /* Stack error banner content */
