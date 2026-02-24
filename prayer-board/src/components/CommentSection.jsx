@@ -224,6 +224,25 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     }
   };
 
+  const handleEdit = async (commentId, newText) => {
+    try {
+      const result = await commentsAPI.update(commentId, { body: newText, guestId });
+      setComments(prev => prev.map(c =>
+        c.id === commentId ? {
+          ...c,
+          body: result.comment.body,
+          isEdited: true
+        } : c
+      ));
+    } catch (error) {
+      setNotifications(prev => [...prev, { message: t('comments.error_send') }]);
+      const timeoutId = setTimeout(() => {
+        setNotifications(prev => prev.slice(1));
+      }, 5000);
+      notificationTimeoutsRef.current.push(timeoutId);
+    }
+  };
+
   const handleDelete = async (commentId) => {
     if (!window.confirm(t('comments.deleteConfirm'))) return;
 
@@ -282,7 +301,12 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
               key={comment.id}
               comment={comment}
               onDelete={handleDelete}
+              onEdit={handleEdit}
               canDelete={comment.authorId === user?.id || user?.role === 'admin'}
+              canEdit={
+                (comment.authorId && comment.authorId === user?.id) ||
+                (!comment.authorId && comment.guestId === guestId)
+              }
             />
           ))
         )}

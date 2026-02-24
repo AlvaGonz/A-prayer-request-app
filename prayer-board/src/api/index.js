@@ -108,6 +108,11 @@ export const commentsAPI = {
     body: JSON.stringify(commentData)
   }),
 
+  update: async (commentId, data) => apiCall(`/api/comments/${commentId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  }),
+
   delete: async (commentId) => apiCall(`/api/comments/${commentId}`, {
     method: 'DELETE'
   })
