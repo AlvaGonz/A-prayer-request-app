@@ -1,17 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+import { safeStorage } from '../utils/storage';
+
 const ThemeContext = createContext(null);
 
 export const ThemeProvider = ({ children }) => {
   // Check localStorage first, then system preference, default to light
   const getInitialTheme = () => {
     if (typeof window === 'undefined') return 'light';
-    
-    const savedTheme = localStorage.getItem('prayerBoard_theme');
+
+    const savedTheme = safeStorage.getItem('prayerBoard_theme');
     if (savedTheme) {
       return savedTheme;
     }
-    
+
     // Check system preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     return prefersDark ? 'dark' : 'light';
@@ -22,16 +24,16 @@ export const ThemeProvider = ({ children }) => {
   // Apply theme to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('prayerBoard_theme', theme);
+    safeStorage.setItem('prayerBoard_theme', theme);
   }, [theme]);
 
   // Listen for system preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     const handleChange = (e) => {
       // Only auto-switch if user hasn't manually set a preference
-      const savedTheme = localStorage.getItem('prayerBoard_theme');
+      const savedTheme = safeStorage.getItem('prayerBoard_theme');
       if (!savedTheme || savedTheme === 'auto') {
         setTheme(e.matches ? 'dark' : 'light');
       }
