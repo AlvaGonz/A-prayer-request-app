@@ -5,6 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { User, Heart, Loader2, Send, AlertCircle } from 'lucide-react';
 import { shareAPI } from '../api';
+import { safeStorage } from '../utils/storage';
 import Header from '../components/Header';
 import './SharedPrayerPage.css';
 
@@ -35,11 +36,13 @@ const SharedPrayerPage = () => {
                 setPrayedCount(data.request.prayedCount);
 
                 try {
-                    const stored = localStorage.getItem('prayedRequests');
+                    const stored = safeStorage.getItem('prayedRequests');
                     if (stored) {
                         const prayedRequests = JSON.parse(stored);
                         if (Array.isArray(prayedRequests) && prayedRequests.includes(data.request.id)) {
                             setHasPrayed(true);
+                        } else {
+                            setHasPrayed(false);
                         }
                     }
                 } catch (e) {
@@ -58,23 +61,40 @@ const SharedPrayerPage = () => {
     }, [token]);
 
     const handlePray = async () => {
-        if (isPraying || hasPrayed) return;
+        if (isPraying) return;
         setIsPraying(true);
         try {
-            const data = await shareAPI.prayShared(token);
-            setPrayedCount(data.prayedCount);
-            setHasPrayed(true);
+            if (hasPrayed) {
+                const data = await shareAPI.unprayShared(token);
+                setPrayedCount(data.prayedCount);
+                setHasPrayed(false);
 
-            if (request && request.id) {
-                try {
-                    const stored = localStorage.getItem('prayedRequests');
-                    const prayedRequests = stored ? JSON.parse(stored) : [];
-                    if (!prayedRequests.includes(request.id)) {
-                        prayedRequests.push(request.id);
-                        localStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+                if (request && request.id) {
+                    try {
+                        const stored = safeStorage.getItem('prayedRequests');
+                        let prayedRequests = stored ? JSON.parse(stored) : [];
+                        prayedRequests = prayedRequests.filter(id => id !== request.id);
+                        safeStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+                    } catch (e) {
+                        console.error('Error writing to local storage', e);
                     }
-                } catch (e) {
-                    console.error('Error writing to local storage', e);
+                }
+            } else {
+                const data = await shareAPI.prayShared(token);
+                setPrayedCount(data.prayedCount);
+                setHasPrayed(true);
+
+                if (request && request.id) {
+                    try {
+                        const stored = safeStorage.getItem('prayedRequests');
+                        const prayedRequests = stored ? JSON.parse(stored) : [];
+                        if (!prayedRequests.includes(request.id)) {
+                            prayedRequests.push(request.id);
+                            safeStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+                        }
+                    } catch (e) {
+                        console.error('Error writing to local storage', e);
+                    }
                 }
             }
         } catch (err) {
@@ -172,7 +192,7 @@ const SharedPrayerPage = () => {
                                 <button
                                     className={`shared-pray-btn ${hasPrayed ? 'prayed' : ''}`}
                                     onClick={handlePray}
-                                    disabled={isPraying || hasPrayed}
+                                    disabled={isPraying}
                                 >
                                     <Heart size={20} fill={hasPrayed ? 'currentColor' : 'none'} />
                                     <span>{hasPrayed ? t('share.prayed') : t('share.prayButton')}</span>
