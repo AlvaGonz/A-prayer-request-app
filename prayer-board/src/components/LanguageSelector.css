@@ -16,6 +16,10 @@
   color: var(--color-accent-gold);
 }
 
+.language-selector:hover .language-select {
+  color: var(--color-accent-gold);
+}
+
 .language-select {
   background: transparent;
   border: none;
