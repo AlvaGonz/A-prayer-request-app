@@ -134,6 +134,34 @@ const pray = async (req, res) => {
   }
 };
 
+// @desc    Decrement prayer count
+// @route   POST /api/requests/:id/unpray
+// @access  Public
+const unpray = async (req, res) => {
+  try {
+    const request = await PrayerRequest.findById(req.params.id);
+
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    // Decrement count safely
+    const currentCount = typeof request.prayedCount === 'number' ? request.prayedCount : 0;
+    if (currentCount > 0) {
+      request.prayedCount = currentCount - 1;
+      await request.save();
+    }
+
+    res.json({
+      prayedCount: request.prayedCount,
+      message: 'Praise removed.'
+    });
+  } catch (error) {
+    console.error('Unpray error:', error);
+    res.status(500).json({ error: 'Failed to record unpray', details: error.message });
+  }
+};
+
 // @desc    Update request status
 // @route   PATCH /api/requests/:id/status
 // @access  Private
@@ -305,6 +333,35 @@ const prayShared = async (req, res) => {
   }
 };
 
+// @desc    Unpray for a shared request by token
+// @route   POST /api/shared/:token/unpray
+// @access  Public
+const unprayShared = async (req, res) => {
+  try {
+    const request = await PrayerRequest.findOne({
+      shareToken: req.params.token,
+      isDeleted: false
+    });
+
+    if (!request) {
+      return res.status(404).json({ error: 'Shared prayer request not found' });
+    }
+
+    if (request.prayedCount > 0) {
+      request.prayedCount -= 1;
+      await request.save();
+    }
+
+    res.json({
+      prayedCount: request.prayedCount,
+      message: 'Praise removed.'
+    });
+  } catch (error) {
+    console.error('Unpray shared error:', error.message);
+    res.status(500).json({ error: 'Failed to record unpray' });
+  }
+};
+
 // @desc    Add a guest comment to a shared request
 // @route   POST /api/shared/:token/comments
 // @access  Public
@@ -360,10 +417,12 @@ module.exports = {
   getRequests,
   createRequest,
   pray,
+  unpray,
   updateStatus,
   deleteRequest,
   generateShareLink,
   getSharedRequest,
   prayShared,
+  unprayShared,
   commentShared
 };

@@ -3,13 +3,14 @@ import { Heart, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
+import { safeStorage } from '../utils/storage';
 import './PrayedButton.css';
 
 const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   const [count, setCount] = useState(initialCount);
   const [isPrayed, setIsPrayed] = useState(() => {
     try {
-      const stored = localStorage.getItem('prayedRequests');
+      const stored = safeStorage.getItem('prayedRequests');
       if (stored) {
         const prayedRequests = JSON.parse(stored);
         return Array.isArray(prayedRequests) && prayedRequests.includes(requestId);
@@ -22,11 +23,13 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('prayedRequests');
+      const stored = safeStorage.getItem('prayedRequests');
       if (stored) {
         const prayedRequests = JSON.parse(stored);
         if (Array.isArray(prayedRequests) && prayedRequests.includes(requestId)) {
           setIsPrayed(true);
+        } else {
+          setIsPrayed(false);
         }
       }
     } catch (e) {
@@ -49,41 +52,60 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   }, []);
 
   const handlePray = async () => {
-    if (isLoading || isPrayed) return;
+    if (isLoading) return;
 
     setIsLoading(true);
 
     // Optimistic update
-    const newCount = count + 1;
+    const newCount = isPrayed ? Math.max(0, count - 1) : count + 1;
     setCount(newCount);
 
     try {
-      const result = await requestsAPI.pray(requestId, user);
-      setIsPrayed(true);
-      setShowMessage(true);
+      if (isPrayed) {
+        const result = await requestsAPI.unpray(requestId, user);
+        setIsPrayed(false);
+        setShowMessage(false);
 
-      // Save to local storage
-      try {
-        const stored = localStorage.getItem('prayedRequests');
-        const prayedRequests = stored ? JSON.parse(stored) : [];
-        if (!prayedRequests.includes(requestId)) {
-          prayedRequests.push(requestId);
-          localStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+        try {
+          const stored = safeStorage.getItem('prayedRequests');
+          let prayedRequests = stored ? JSON.parse(stored) : [];
+          prayedRequests = prayedRequests.filter(id => id !== requestId);
+          safeStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+        } catch (e) {
+          console.error('Error writing to local storage', e);
         }
-      } catch (e) {
-        console.error('Error writing to local storage', e);
-      }
 
-      // Hide message after 7 seconds
-      messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 7000);
+        if (onPrayed) {
+          onPrayed(requestId, result.prayedCount);
+        }
+      } else {
+        const result = await requestsAPI.pray(requestId, user);
+        setIsPrayed(true);
+        setShowMessage(true);
 
-      if (onPrayed) {
-        onPrayed(requestId, result.prayedCount);
+        // Save to local storage
+        try {
+          const stored = safeStorage.getItem('prayedRequests');
+          const prayedRequests = stored ? JSON.parse(stored) : [];
+          if (!prayedRequests.includes(requestId)) {
+            prayedRequests.push(requestId);
+            safeStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+          }
+        } catch (e) {
+          console.error('Error writing to local storage', e);
+        }
+
+        // Hide message after 7 seconds
+        messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 7000);
+
+        if (onPrayed) {
+          onPrayed(requestId, result.prayedCount);
+        }
       }
     } catch (error) {
       // Revert optimistic update on error
       setCount(initialCount);
-      console.error('Error praying:', error);
+      console.error('Error praying/unpraying:', error);
       alert(error.message || t('errors.pray'));
     } finally {
       setIsLoading(false);
@@ -95,7 +117,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       <button
         className={`prayed-button ${isPrayed ? 'prayed' : ''} ${isLoading ? 'loading' : ''}`}
         onClick={handlePray}
-        disabled={isLoading || isPrayed}
+        disabled={isLoading}
         aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
       >
         <Heart

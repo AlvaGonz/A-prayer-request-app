@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
+import { safeStorage } from '../utils/storage';
 import './NotificationBanner.css';
 
 const NotificationBanner = () => {
@@ -11,8 +12,8 @@ const NotificationBanner = () => {
 
   useEffect(() => {
     // Check if notifications are already enabled or dismissed
-    const hasDismissed = localStorage.getItem('prayerBoard_notificationDismissed');
-    const hasPermission = Notification.permission === 'granted';
+    const hasDismissed = safeStorage.getItem('prayerBoard_notificationDismissed');
+    const hasPermission = 'Notification' in window && Notification.permission === 'granted';
 
     // Show banner if user is authenticated and hasn't dismissed it or enabled notifications
     if (isAuthenticated && !hasDismissed && !hasPermission) {
@@ -26,7 +27,7 @@ const NotificationBanner = () => {
   }, [isAuthenticated]);
 
   const handleDismiss = () => {
-    localStorage.setItem('prayerBoard_notificationDismissed', 'true');
+    safeStorage.setItem('prayerBoard_notificationDismissed', 'true');
     setIsVisible(false);
   };
 
@@ -51,7 +52,7 @@ const NotificationBanner = () => {
           console.log('Push notifications enabled');
 
           // Store that user has enabled notifications
-          localStorage.setItem('prayerBoard_notificationsEnabled', 'true');
+          safeStorage.setItem('prayerBoard_notificationsEnabled', 'true');
         }
 
         setIsVisible(false);

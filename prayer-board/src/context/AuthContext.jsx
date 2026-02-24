@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI, APIError } from '../api';
+import { safeStorage } from '../utils/storage';
 
 const AuthContext = createContext(null);
 
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const storedToken = localStorage.getItem('prayerBoard_token');
+        const storedToken = safeStorage.getItem('prayerBoard_token');
         if (storedToken) {
           const { user } = await authAPI.me();
           setUser(user);
@@ -29,7 +30,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     loadUser();
   }, []);
 
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true, token, user };
     } catch (error) {
       let errorMessage = 'Login failed. Please try again.';
-      
+
       if (error instanceof APIError) {
         if (error.message.includes('Invalid email or password')) {
           errorMessage = 'Invalid email or password. Please check your credentials.';
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
       } else if (error.message === 'Network error. Please check your connection.') {
         errorMessage = 'Unable to connect to server. Please check your internet connection.';
       }
-      
+
       setAuthError(errorMessage);
       return { success: false, error: errorMessage };
     }
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true, token, user };
     } catch (error) {
       let errorMessage = 'Registration failed. Please try again.';
-      
+
       if (error instanceof APIError) {
         if (error.message.includes('Email already registered')) {
           errorMessage = 'An account with this email already exists.';
@@ -89,7 +90,7 @@ export const AuthProvider = ({ children }) => {
       } else if (error.message === 'Network error. Please check your connection.') {
         errorMessage = 'Unable to connect to server. Please check your internet connection.';
       }
-      
+
       setAuthError(errorMessage);
       return { success: false, error: errorMessage };
     }
