@@ -4,7 +4,7 @@
 }
 
 .wall-content {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 32px 24px;
 }
@@ -87,8 +87,8 @@
 }
 
 .requests-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 20px;
 }
 

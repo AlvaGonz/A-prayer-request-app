@@ -7,7 +7,32 @@ import './PrayedButton.css';
 
 const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   const [count, setCount] = useState(initialCount);
-  const [isPrayed, setIsPrayed] = useState(false);
+  const [isPrayed, setIsPrayed] = useState(() => {
+    try {
+      const stored = localStorage.getItem('prayedRequests');
+      if (stored) {
+        const prayedRequests = JSON.parse(stored);
+        return Array.isArray(prayedRequests) && prayedRequests.includes(requestId);
+      }
+    } catch (e) {
+      console.error('Error reading from local storage', e);
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('prayedRequests');
+      if (stored) {
+        const prayedRequests = JSON.parse(stored);
+        if (Array.isArray(prayedRequests) && prayedRequests.includes(requestId)) {
+          setIsPrayed(true);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading from local storage', e);
+    }
+  }, [requestId]);
   const [isLoading, setIsLoading] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const { user, isAuthenticated } = useAuth();
@@ -24,12 +49,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   }, []);
 
   const handlePray = async () => {
-    if (isLoading) return;
-
-    // For registered users, prevent duplicate prayers
-    if (isAuthenticated && isPrayed) {
-      return;
-    }
+    if (isLoading || isPrayed) return;
 
     setIsLoading(true);
 
@@ -42,8 +62,20 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       setIsPrayed(true);
       setShowMessage(true);
 
-      // Hide message after 3 seconds
-      messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 3000);
+      // Save to local storage
+      try {
+        const stored = localStorage.getItem('prayedRequests');
+        const prayedRequests = stored ? JSON.parse(stored) : [];
+        if (!prayedRequests.includes(requestId)) {
+          prayedRequests.push(requestId);
+          localStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+        }
+      } catch (e) {
+        console.error('Error writing to local storage', e);
+      }
+
+      // Hide message after 7 seconds
+      messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 7000);
 
       if (onPrayed) {
         onPrayed(requestId, result.prayedCount);
@@ -63,7 +95,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       <button
         className={`prayed-button ${isPrayed ? 'prayed' : ''} ${isLoading ? 'loading' : ''}`}
         onClick={handlePray}
-        disabled={isLoading || (isAuthenticated && isPrayed)}
+        disabled={isLoading || isPrayed}
         aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
       >
         <Heart

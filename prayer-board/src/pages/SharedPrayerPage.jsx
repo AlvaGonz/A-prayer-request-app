@@ -33,6 +33,18 @@ const SharedPrayerPage = () => {
                 setRequest(data.request);
                 setComments(data.comments);
                 setPrayedCount(data.request.prayedCount);
+
+                try {
+                    const stored = localStorage.getItem('prayedRequests');
+                    if (stored) {
+                        const prayedRequests = JSON.parse(stored);
+                        if (Array.isArray(prayedRequests) && prayedRequests.includes(data.request.id)) {
+                            setHasPrayed(true);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error reading from local storage', e);
+                }
             } catch (err) {
                 setError(err.statusCode === 404
                     ? t('share.notAvailable')
@@ -52,6 +64,19 @@ const SharedPrayerPage = () => {
             const data = await shareAPI.prayShared(token);
             setPrayedCount(data.prayedCount);
             setHasPrayed(true);
+
+            if (request && request.id) {
+                try {
+                    const stored = localStorage.getItem('prayedRequests');
+                    const prayedRequests = stored ? JSON.parse(stored) : [];
+                    if (!prayedRequests.includes(request.id)) {
+                        prayedRequests.push(request.id);
+                        localStorage.setItem('prayedRequests', JSON.stringify(prayedRequests));
+                    }
+                } catch (e) {
+                    console.error('Error writing to local storage', e);
+                }
+            }
         } catch (err) {
             console.error('Pray failed:', err);
         } finally {
