@@ -12,6 +12,6 @@ prayer-board/dist/
 prayer-board/.env
 prayer-board/.vercel
 node_modules
-
 prayer-board-plan/
+prayer-board-plan
 *.txt
