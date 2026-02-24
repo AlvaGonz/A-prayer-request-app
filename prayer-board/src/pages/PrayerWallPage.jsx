@@ -4,6 +4,7 @@ import { Plus, Loader2 } from 'lucide-react';
 import { requestsAPI } from '../api';
 import Header from '../components/Header';
 import PrayerRequestCard from '../components/PrayerRequestCard';
+import PrayerRequestSkeleton from '../components/PrayerRequestSkeleton';
 import NewPrayerRequestForm from '../components/NewPrayerRequestForm';
 import NotificationBanner from '../components/NotificationBanner';
 import { useAuth } from '../context/AuthContext';
@@ -129,10 +130,16 @@ const PrayerWallPage = () => {
                   onDelete={handleDelete}
                 />
               ))}
+
+              {loading && requests.length === 0 && (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <PrayerRequestSkeleton key={index} />
+                ))
+              )}
             </div>
           )}
 
-          {loading && (
+          {loading && requests.length > 0 && (
             <div className="loading-state">
               <Loader2 size={32} className="spinner" />
               <p>{t('prayerWall.loading')}</p>
