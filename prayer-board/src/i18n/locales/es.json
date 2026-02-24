@@ -50,10 +50,14 @@
     "deleteError": "Error al eliminar el comentario",
     "deleteAria": "Eliminar comentario",
     "namePlaceholder": "Tu nombre (opcional)",
-    "quickOptions": {
-      "praying": "Orando por ti",
-      "encouragement": "Ánimo",
-      "blessing": "Dios te bendiga"
+    "anonymous_author": "Alguien que ora 🙏",
+    "rate_limit": "Has compartido mucho amor 💛 Gracias",
+    "load_more": "Ver más comentarios",
+    "error_send": "No se pudo enviar. Intenta de nuevo.",
+    "quick": {
+      "praying": "🙏 Orando por ti",
+      "strength": "💪 Dios te fortalece",
+      "not_alone": "❤️ No estás solo/a"
     }
   },
   "newRequest": {

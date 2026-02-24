@@ -15,13 +15,17 @@ const CommentItem = ({ comment, onDelete, canDelete }) => {
   });
 
   return (
-    <div className="comment-item">
+    <div className={`comment-item ${comment.isPending ? 'pending' : ''}`}>
       <div className="comment-header">
         <div className="comment-author">
-          <div className="comment-avatar">
-            {comment.authorName.charAt(0).toUpperCase()}
-          </div>
-          <span className="comment-author-name">{comment.authorName}</span>
+          {comment.authorId ? (
+            <div className="comment-avatar">
+              {comment.authorName.charAt(0).toUpperCase()}
+            </div>
+          ) : null}
+          <span className="comment-author-name">
+            {!comment.authorId ? t('comments.anonymous_author') : comment.authorName}
+          </span>
         </div>
         <span className="comment-time">{timeAgo}</span>
       </div>

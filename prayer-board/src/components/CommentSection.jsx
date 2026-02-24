@@ -13,18 +13,37 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [guestName, setGuestName] = useState('');
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const commentsEndRef = useRef(null);
   const notificationTimeoutsRef = useRef([]);
 
+  // Generate guestId mirroring PrayedButton logic
+  const guestId = React.useMemo(() => {
+    let id;
+    try {
+      id = import('../utils/storage').then(m => m.safeStorage.getItem('prayer_guest_comment_id'));
+    } catch (e) { }
+    // Fallback sync code because we can't import safeStorage easily inline without breaking hook rules
+    return id || Date.now().toString(36);
+  }, []);
+
+  useEffect(() => {
+    import('../utils/storage').then(({ safeStorage }) => {
+      let id = safeStorage.getItem('prayer_guest_comment_id');
+      if (!id) {
+        id = window.crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+        safeStorage.setItem('prayer_guest_comment_id', id);
+      }
+    });
+  }, []);
+
   // Quick comment options
   const quickOptions = [
-    { emoji: '🙏', text: t('comments.quickOptions.praying') },
-    { emoji: '💪', text: t('comments.quickOptions.encouragement') },
-    { emoji: '❤️', text: t('comments.quickOptions.blessing') }
+    { text: t('comments.quick.praying') },
+    { text: t('comments.quick.strength') },
+    { text: t('comments.quick.not_alone') }
   ];
 
   // Load comments when opened
@@ -108,31 +127,83 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     }
   };
 
-  const handleQuickOption = (optionText) => {
-    setNewComment(prev => {
-      const separator = prev.trim() ? ' ' : '';
-      return prev.trim() + separator + optionText;
-    });
+  const handleQuickOption = async (optionText) => {
+    await submitComment(optionText);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || isSubmitting) return;
+    if (!newComment.trim() || isSubmitting || newComment.length > 300) return;
+    await submitComment(newComment.trim());
+    setNewComment('');
+  };
+
+  const submitComment = async (text) => {
+    let safeStorageModule;
+    try {
+      safeStorageModule = await import('../utils/storage');
+    } catch (e) { }
+
+    // 1. Rate verify visually
+    const storeKey = `prayer_comments_${requestId}`;
+    let userComments = 0;
+    try {
+      if (safeStorageModule) {
+        const stored = safeStorageModule.safeStorage.getItem(storeKey);
+        if (stored) userComments = parseInt(stored, 10);
+      }
+    } catch (e) { }
+
+    if (userComments >= 3) {
+      setNotifications(prev => [...prev, { message: t('comments.rate_limit') }]);
+      const timeoutId = setTimeout(() => {
+        setNotifications(prev => prev.slice(1));
+      }, 5000);
+      notificationTimeoutsRef.current.push(timeoutId);
+      return;
+    }
 
     setIsSubmitting(true);
+
+    const tempId = `temp-${Date.now()}`;
+    const newCommentObj = {
+      id: tempId,
+      body: text,
+      authorName: isAuthenticated ? user.displayName : t('comments.anonymous_author'),
+      authorId: isAuthenticated ? user.id : null,
+      createdAt: new Date().toISOString(),
+      isPending: true,
+      canDelete: false
+    };
+
+    // Optimistic UI
+    setComments(prev => [...prev, newCommentObj]);
+
     try {
-      // Prepare comment data
+      // Backend POST
       const commentData = {
-        body: newComment.trim(),
-        authorName: isAuthenticated ? user.displayName : (guestName.trim() || 'Anonymous'),
-        isAnonymous: !isAuthenticated
+        body: text,
+        authorName: isAuthenticated ? user.displayName : t('comments.anonymous_author'),
+        isAnonymous: !isAuthenticated,
+        guestId
       };
 
       const result = await commentsAPI.create(requestId, commentData);
-      setNewComment('');
-      setGuestName('');
 
-      // Emit real-time event
+      try {
+        if (safeStorageModule) {
+          safeStorageModule.safeStorage.setItem(storeKey, (userComments + 1).toString());
+        }
+      } catch (e) { }
+
+      // Replace temp with real
+      setComments(prev => prev.map(c =>
+        c.id === tempId ? {
+          ...result.comment,
+          canDelete: result.comment.authorId === user?.id || user?.role === 'admin'
+        } : c
+      ));
+
       emitToRequest(requestId, 'new-comment', {
         id: result.comment.id,
         body: result.comment.body,
@@ -142,7 +213,12 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
         targetUserId: requestAuthorId
       });
     } catch (error) {
-      alert(error.message);
+      setComments(prev => prev.filter(c => c.id !== tempId));
+      setNotifications(prev => [...prev, { message: t('comments.error_send') }]);
+      const timeoutId = setTimeout(() => {
+        setNotifications(prev => prev.slice(1));
+      }, 5000);
+      notificationTimeoutsRef.current.push(timeoutId);
     } finally {
       setIsSubmitting(false);
     }
@@ -215,52 +291,43 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
 
       {/* Comment Form - Now available for everyone */}
       <form className="comment-form" onSubmit={handleSubmit}>
-        {/* Quick Options */}
-        <div className="quick-options">
+        {/* Quick Options chips */}
+        <div className="comment-section__quick-replies">
           {quickOptions.map((option, index) => (
             <button
               key={index}
               type="button"
-              className="quick-option-btn"
-              onClick={() => handleQuickOption(`${option.emoji} ${option.text}`)}
+              className="comment-section__chip"
+              onClick={() => handleQuickOption(option.text)}
               disabled={isSubmitting}
             >
-              <span className="quick-option-emoji">{option.emoji}</span>
-              <span className="quick-option-text">{option.text}</span>
+              {option.text}
             </button>
           ))}
         </div>
 
-        {/* Guest Name Input (only for non-authenticated users) */}
-        {!isAuthenticated && (
-          <input
-            type="text"
-            value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
-            placeholder={t('comments.namePlaceholder')}
-            className="guest-name-input"
-            maxLength={50}
-            disabled={isSubmitting}
-          />
-        )}
-
-        <div className="comment-input-row">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder={t('comments.placeholder')}
-            maxLength={500}
-            rows={2}
-            disabled={isSubmitting}
-          />
-          <button
-            type="submit"
-            disabled={!newComment.trim() || isSubmitting}
-            className="submit-comment-btn"
-            aria-label={t('comments.send')}
-          >
-            <Send size={16} />
-          </button>
+        <div className="comment-section__input-area">
+          <div className="comment-input-row">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={t('comments.placeholder')}
+              maxLength={300}
+              rows={2}
+              disabled={isSubmitting}
+            />
+            <button
+              type="submit"
+              disabled={!newComment.trim() || isSubmitting || newComment.length > 300}
+              className="submit-comment-btn"
+              aria-label={t('comments.send')}
+            >
+              <Send size={16} />
+            </button>
+          </div>
+          <div className={`comment-section__char-count ${newComment.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
+            {newComment.length} / 300
+          </div>
         </div>
       </form>
     </section>
