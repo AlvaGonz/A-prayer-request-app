@@ -180,6 +180,7 @@
 .guest-notice a {
   color: var(--color-accent-gold);
   text-decoration: underline;
+  white-space: nowrap;
 }
 
 .privacy-notice {

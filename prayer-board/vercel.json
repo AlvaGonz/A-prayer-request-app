@@ -4,6 +4,10 @@
     "outputDirectory": "dist",
     "rewrites": [
         {
+            "source": "/api/og",
+            "destination": "/api/og.jsx"
+        },
+        {
             "source": "/api/:path*",
             "destination": "https://prayer-board-api.onrender.com/api/:path*"
         },
