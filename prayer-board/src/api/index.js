@@ -1,11 +1,12 @@
-const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000' : 'https://prayer-board-api.onrender.com';
+import { safeStorage } from '../utils/storage';
 
+const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000' : 'https://prayer-board-api.onrender.com';
 // Clear old cache version marker
 if (typeof window !== 'undefined') {
-  const cacheVersion = localStorage.getItem('app_cache_version');
+  const cacheVersion = safeStorage.getItem('app_cache_version');
   if (cacheVersion !== '2.0') {
     console.log('Clearing old cache (v2.0)...');
-    localStorage.setItem('app_cache_version', '2.0');
+    safeStorage.setItem('app_cache_version', '2.0');
   }
 }
 
@@ -21,7 +22,7 @@ class APIError extends Error {
 // Helper for API calls
 const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  const token = localStorage.getItem('prayerBoard_token');
+  const token = safeStorage.getItem('prayerBoard_token');
 
   const config = {
     headers: {
@@ -63,8 +64,8 @@ export const authAPI = {
   me: async () => apiCall('/api/auth/me'),
 
   logout: () => {
-    localStorage.removeItem('prayerBoard_user');
-    localStorage.removeItem('prayerBoard_token');
+    safeStorage.removeItem('prayerBoard_user');
+    safeStorage.removeItem('prayerBoard_token');
   }
 };
 
@@ -81,6 +82,10 @@ export const requestsAPI = {
   }),
 
   pray: async (requestId) => apiCall(`/api/requests/${requestId}/pray`, {
+    method: 'POST'
+  }),
+
+  unpray: async (requestId) => apiCall(`/api/requests/${requestId}/unpray`, {
     method: 'POST'
   }),
 
@@ -117,6 +122,10 @@ export const shareAPI = {
   getShared: async (token) => apiCall(`/api/shared/${token}`),
 
   prayShared: async (token) => apiCall(`/api/shared/${token}/pray`, {
+    method: 'POST'
+  }),
+
+  unprayShared: async (token) => apiCall(`/api/shared/${token}/unpray`, {
     method: 'POST'
   }),
 

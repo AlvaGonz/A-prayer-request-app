@@ -4,6 +4,7 @@ const {
   getRequests,
   createRequest,
   pray,
+  unpray,
   updateStatus,
   deleteRequest,
   generateShareLink
@@ -14,6 +15,7 @@ const { protect, adminOnly } = require('../middleware/auth');
 router.get('/', getRequests);
 router.post('/', createRequest); // Guests allowed
 router.post('/:id/pray', pray);
+router.post('/:id/unpray', unpray);
 
 // Protected routes
 router.post('/:id/share', protect, generateShareLink);

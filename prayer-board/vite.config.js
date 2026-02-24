@@ -6,6 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 const APP_VERSION = '1.0.3';
 
 export default defineConfig({
+  build: {
+    target: 'es2015',
+  },
   plugins: [
     react(),
     VitePWA({
