@@ -4,7 +4,6 @@ import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
-import CommentSection from './CommentSection';
 import ShareButton from './ShareButton';
 import { useAuth } from '../context/AuthContext';
 import './PrayerRequestCard.css';
@@ -15,7 +14,6 @@ const PrayerRequestCard = ({
   onUpdateStatus,
   onDelete
 }) => {
-  const [showComments, setShowComments] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const locale = i18n.language.startsWith('es') ? es : enUS;
@@ -92,17 +90,6 @@ const PrayerRequestCard = ({
             onPrayed={onPrayed}
           />
 
-          <button
-            className="action-btn comments-btn"
-            onClick={() => setShowComments(!showComments)}
-            aria-expanded={showComments}
-            aria-controls={`comments-section-${request.id}`}
-            aria-label={showComments ? t('prayerCard.hideComments') : t('prayerCard.showComments', { count: request.commentCount || 0 })}
-          >
-            <MessageCircle size={16} aria-hidden="true" />
-            <span aria-hidden="true">{request.commentCount || 0}</span>
-          </button>
-
           {isAuthenticated && (
             <ShareButton requestId={request.id} />
           )}
@@ -151,14 +138,6 @@ const PrayerRequestCard = ({
           </div>
         )}
       </footer>
-
-      <CommentSection
-        requestId={request.id}
-        isOpen={showComments}
-        onToggle={() => setShowComments(!showComments)}
-        requestAuthorId={request.author}
-        id={`comments-section-${request.id}`}
-      />
     </article>
   );
 };
