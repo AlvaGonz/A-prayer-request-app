@@ -1,4 +1,6 @@
 const sanitizeHtml = require('sanitize-html');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const Comment = require('../models/Comment');
 const PrayerRequest = require('../models/PrayerRequest');
 
@@ -20,14 +22,16 @@ const getComments = async (req, res) => {
       prayerRequest: req.params.id,
       isDeleted: false
     })
-    .sort({ createdAt: 1 })
-    .lean();
+      .sort({ createdAt: 1 })
+      .lean();
 
     const formattedComments = comments.map(c => ({
       id: c._id,
       body: c.body,
       authorName: c.authorName,
       authorId: c.author ? c.author.toString() : null,
+      guestId: c.guestId,
+      isEdited: c.isEdited,
       createdAt: c.createdAt
     }));
 
@@ -46,7 +50,7 @@ const getComments = async (req, res) => {
 // @access  Public (supports both authenticated and anonymous)
 const createComment = async (req, res) => {
   try {
-    let { body, authorName, isAnonymous } = req.body;
+    let { body, authorName, isAnonymous, guestId } = req.body;
 
     // Sanitize input
     body = sanitizeInput(body);
@@ -54,8 +58,8 @@ const createComment = async (req, res) => {
 
     // Validation
     if (!body || body.length < 1 || body.length > 500) {
-      return res.status(400).json({ 
-        error: 'Comment must be between 1 and 500 characters' 
+      return res.status(400).json({
+        error: 'Comment must be between 1 and 500 characters'
       });
     }
 
@@ -69,22 +73,32 @@ const createComment = async (req, res) => {
       return res.status(404).json({ error: 'Prayer request not found' });
     }
 
-    // Determine author info
-    const isUserAuthenticated = !!req.user;
-    const commentAuthorName = isUserAuthenticated 
-      ? req.user.displayName 
+    // Optional Auth Support
+    let user = null;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = await User.findById(decoded.id).select('-password');
+      } catch (err) { }
+    }
+
+    const isUserAuthenticated = !!user;
+    const commentAuthorName = isUserAuthenticated
+      ? user.displayName
       : (authorName && authorName.trim() ? authorName.trim() : 'Anonymous');
-    
+
     // Create comment
     const commentData = {
       prayerRequest: req.params.id,
       body,
-      authorName: commentAuthorName
+      authorName: commentAuthorName,
+      guestId: guestId || null
     };
 
     // Add author ID only if authenticated
     if (isUserAuthenticated) {
-      commentData.author = req.user._id;
+      commentData.author = user._id;
     }
 
     const comment = await Comment.create(commentData);
@@ -102,6 +116,8 @@ const createComment = async (req, res) => {
         body: comment.body,
         authorName: comment.authorName,
         authorId: comment.author ? comment.author.toString() : null,
+        guestId: comment.guestId,
+        isEdited: comment.isEdited,
         createdAt: comment.createdAt
       },
       message: 'Comment added successfully'
@@ -154,8 +170,69 @@ const deleteComment = async (req, res) => {
   }
 };
 
+// @desc    Update comment
+// @route   PUT /api/comments/:id
+// @access  Public (conditionally Private)
+const updateComment = async (req, res) => {
+  try {
+    let { body, guestId } = req.body;
+    body = sanitizeInput(body);
+
+    if (!body || body.length < 1 || body.length > 500) {
+      return res.status(400).json({ error: 'Comment must be between 1 and 500 characters' });
+    }
+
+    const comment = await Comment.findById(req.params.id);
+    if (!comment || comment.isDeleted) {
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    let isAuthorized = false;
+    let user = null;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+      try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = await User.findById(decoded.id);
+      } catch (err) { }
+    }
+
+    if (user && (user.role === 'admin' || (comment.author && comment.author.toString() === user._id.toString()))) {
+      isAuthorized = true;
+    } else if (!user && comment.guestId && comment.guestId === guestId) {
+      isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
+      return res.status(403).json({ error: 'Not authorized to edit this comment' });
+    }
+
+    comment.body = body;
+    comment.isEdited = true;
+    await comment.save();
+
+    res.json({
+      comment: {
+        id: comment._id,
+        body: comment.body,
+        authorName: comment.authorName,
+        authorId: comment.author ? comment.author.toString() : null,
+        guestId: comment.guestId,
+        isEdited: comment.isEdited,
+        createdAt: comment.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Update comment error:', error.message);
+    res.status(500).json({ error: 'Failed to update comment' });
+  }
+};
+
 module.exports = {
   getComments,
   createComment,
+  updateComment,
   deleteComment
 };

@@ -23,6 +23,14 @@ const commentSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 500
   },
+  guestId: {
+    type: String,
+    default: null
+  },
+  isEdited: {
+    type: Boolean,
+    default: false
+  },
   isDeleted: {
     type: Boolean,
     default: false
