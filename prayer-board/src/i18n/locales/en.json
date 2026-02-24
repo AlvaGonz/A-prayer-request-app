@@ -50,10 +50,14 @@
     "deleteError": "Failed to delete comment",
     "deleteAria": "Delete comment",
     "namePlaceholder": "Your name (optional)",
-    "quickOptions": {
-      "praying": "Praying for you",
-      "encouragement": "Stay strong",
-      "blessing": "God bless you"
+    "anonymous_author": "Someone who prays 🙏",
+    "rate_limit": "You've shared a lot of love 💛 Thank you",
+    "load_more": "Load more comments",
+    "error_send": "Could not send. Try again.",
+    "quick": {
+      "praying": "🙏 Praying for you",
+      "strength": "💪 God strengthens you",
+      "not_alone": "❤️ You are not alone"
     }
   },
   "newRequest": {
