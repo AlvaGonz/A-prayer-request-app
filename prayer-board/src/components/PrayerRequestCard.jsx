@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
 import PrayedButton from './PrayedButton';
 import ShareButton from './ShareButton';
+import CommentSection from './CommentSection';
 import { useAuth } from '../context/AuthContext';
 import './PrayerRequestCard.css';
 
@@ -17,6 +18,8 @@ const PrayerRequestCard = ({
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const locale = i18n.language.startsWith('es') ? es : enUS;
+
+  const [showComments, setShowComments] = useState(false);
 
   const isAuthor = isAuthenticated && request.author === user?.id;
   const isAdmin = isAuthenticated && user?.role === 'admin';
@@ -138,6 +141,14 @@ const PrayerRequestCard = ({
           </div>
         )}
       </footer>
+
+      <CommentSection
+        requestId={request.id}
+        requestAuthorId={request.author}
+        isOpen={showComments}
+        onToggle={() => setShowComments(!showComments)}
+        id={`comments-${request.id}`}
+      />
     </article>
   );
 };
