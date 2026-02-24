@@ -163,6 +163,14 @@
   background-color: var(--color-bg-secondary);
   border-radius: var(--radius-md);
   border-left: 3px solid var(--color-accent-gold);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.icon-inline {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .guest-notice {
@@ -186,6 +194,9 @@
   border-radius: var(--radius-md);
   margin-bottom: 16px;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .form-actions {
