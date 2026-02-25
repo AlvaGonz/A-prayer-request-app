@@ -104,11 +104,11 @@ const createComment = async (req, res) => {
     const comment = await Comment.create(commentData);
 
     // Update comment count
-    prayerRequest.commentCount = await Comment.countDocuments({
+    const commentCount = await Comment.countDocuments({
       prayerRequest: req.params.id,
       isDeleted: false
     });
-    await prayerRequest.save();
+    await PrayerRequest.findByIdAndUpdate(req.params.id, { commentCount });
 
     res.status(201).json({
       comment: {
@@ -154,14 +154,11 @@ const deleteComment = async (req, res) => {
     await comment.save();
 
     // Update comment count on prayer request
-    const prayerRequest = await PrayerRequest.findById(comment.prayerRequest);
-    if (prayerRequest) {
-      prayerRequest.commentCount = await Comment.countDocuments({
-        prayerRequest: comment.prayerRequest,
-        isDeleted: false
-      });
-      await prayerRequest.save();
-    }
+    const commentCount = await Comment.countDocuments({
+      prayerRequest: comment.prayerRequest,
+      isDeleted: false
+    });
+    await PrayerRequest.findByIdAndUpdate(comment.prayerRequest, { commentCount });
 
     res.json({ message: 'Comment removed' });
   } catch (error) {
