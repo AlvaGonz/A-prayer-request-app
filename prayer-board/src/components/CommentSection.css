@@ -303,17 +303,19 @@
   min-height: 44px;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1.5px solid var(--color-border);
+  border: 1px solid var(--color-text-muted);
   background: transparent;
+  color: var(--color-text-secondary);
   cursor: pointer;
   font-size: 0.875rem;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .comment-section__chip:hover:not(:disabled),
 .comment-section__chip:active:not(:disabled) {
   background: var(--color-bg-secondary);
   border-color: var(--color-accent-gold);
+  color: var(--color-text-primary);
 }
 
 .comment-section__chip:disabled {
