@@ -23,9 +23,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
   const guestId = React.useMemo(() => {
     let id;
     try {
-      id = import('../utils/storage').then(m => m.safeStorage.getItem('prayer_guest_comment_id'));
+      id = localStorage.getItem('prayer_guest_comment_id');
     } catch (e) { }
-    // Fallback sync code because we can't import safeStorage easily inline without breaking hook rules
     return id || Date.now().toString(36);
   }, []);
 
