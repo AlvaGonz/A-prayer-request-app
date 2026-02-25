@@ -7,7 +7,7 @@ import CommentItem from './CommentItem';
 import { commentsAPI } from '../api';
 import './CommentSection.css';
 
-const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) => {
+const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -259,11 +259,13 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
     }
   };
 
+  const displayCount = (comments.length > 0 || isOpen) ? comments.length : initialCommentCount;
+
   if (!isOpen) {
     return (
       <button className="comments-toggle-btn" onClick={onToggle}>
         <MessageCircle size={16} />
-        {comments.length > 0 ? t('comments.title', { count: comments.length }) : t('prayerCard.addComment')}
+        {displayCount > 0 ? t('comments.title', { count: displayCount }) : t('prayerCard.addComment')}
       </button>
     );
   }

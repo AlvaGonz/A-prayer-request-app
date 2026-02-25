@@ -145,6 +145,7 @@ const PrayerRequestCard = ({
       <CommentSection
         requestId={request.id}
         requestAuthorId={request.author}
+        initialCommentCount={request.commentCount || 0}
         isOpen={showComments}
         onToggle={() => setShowComments(!showComments)}
         id={`comments-${request.id}`}
