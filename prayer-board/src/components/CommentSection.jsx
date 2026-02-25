@@ -65,14 +65,19 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id }) =>
 
     const handleNewComment = (data) => {
       if (data.requestId === requestId) {
-        setComments(prev => [...prev, {
-          id: data.id,
-          body: data.body,
-          authorName: data.authorName,
-          authorId: data.authorId,
-          createdAt: data.createdAt,
-          canDelete: data.authorId === user?.id || user?.role === 'admin'
-        }]);
+        setComments(prev => {
+          // Prevenir duplicados checkeando si el ID ya existe en nuestra lista
+          if (prev.some(c => c.id === data.id)) return prev;
+
+          return [...prev, {
+            id: data.id,
+            body: data.body,
+            authorName: data.authorName,
+            authorId: data.authorId,
+            createdAt: data.createdAt,
+            canDelete: data.authorId === user?.id || user?.role === 'admin'
+          }];
+        });
       }
     };
 
