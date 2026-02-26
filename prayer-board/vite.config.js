@@ -45,13 +45,29 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
+            // Prayer requests: serve from cache INSTANTLY, update in background
+            urlPattern: /^https:\/\/.*\/api\/requests/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: `prayers-cache-v${APP_VERSION}`,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 5 * 60 // 5 minutes
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            // Other API calls: network first with cache fallback
             urlPattern: /^https:\/\/.*\/api\//,
             handler: 'NetworkFirst',
             options: {
               cacheName: `api-cache-v${APP_VERSION}`,
               expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 // 1 hour - shorter cache for API
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60
               },
               cacheableResponse: {
                 statuses: [0, 200]

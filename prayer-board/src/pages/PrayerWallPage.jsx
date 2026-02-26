@@ -23,7 +23,10 @@ const PrayerWallPage = () => {
   const fetchRequests = useCallback(async (pageNum = 1, append = false) => {
     try {
       setLoading(true);
-      const data = await requestsAPI.getAll({ page: pageNum, limit: 20 });
+      const data = await requestsAPI.getAll({
+        page: pageNum,
+        limit: pageNum === 1 ? 10 : 20
+      });
 
       if (append) {
         setRequests(prev => [...prev, ...data.requests]);
