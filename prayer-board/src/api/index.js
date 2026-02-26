@@ -27,12 +27,16 @@ const apiCall = async (endpoint, options = {}) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
       ...(token && { 'Authorization': `Bearer ${token}` }),
       ...options.headers
     },
     ...options
   };
+
+  // Only block caching on mutations (POST/PUT/PATCH/DELETE), allow SW to cache GETs
+  if (options.method && options.method !== 'GET') {
+    config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+  }
 
   try {
     const response = await fetch(url, config);
