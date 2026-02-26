@@ -16,13 +16,19 @@ A meaningful Progressive Web App (PWA) designed for communities to share prayer 
 - **Responsive Design**: A reverent, gold-accented dark theme that works beautifully on mobile and desktop.
 
 ### Community & Real-Time
-- **Live Updates**: See new prayer requests and comments appear in real-time.
-- **Comments**: Offer words of encouragement on specific requests.
-- **Answered Prayers**: meaningful way to mark requests as answered and celebrate with the community.
+- **Comments**: Offer words of encouragement on specific requests. Users can edit or delete their own comments.
+- **Shareable Links**: Generate private, secure links to share specific prayer requests. Guests can pray and comment without creating an account.
+- **Answered Prayers**: A meaningful way to mark requests as answered and celebrate with the community.
 - **PWA Support**: Install the app on your home screen for a native-like experience with offline capabilities.
+
+### Performance & Reliability
+- **Instant Loads (<100ms)**: Implements aggressive Service Worker caching (`StaleWhileRevalidate`) to serve cached prayer requests instantly while updating in the background.
+- **Optimized Payloads**: Strategic pagination limits the initial load to reduce database serialization overhead.
+- **Zero Cold Starts**: A dedicated `/api/health` endpoint is used in conjunction with UptimeRobot to prevent Render's free tier from hibernating.
 
 ### Security & Administration
 - **Authentication**: Secure JWT-based login and registration.
+- **Guest Interactions**: Secure handling of anonymous or unauthenticated guest interactions via share tokens.
 - **Moderation**: Admin tools to hide or delete inappropriate content.
 - **Rate Limiting**: API protection against spam and abuse.
 - **Data Privacy**: Input sanitization and secure password hashing.
