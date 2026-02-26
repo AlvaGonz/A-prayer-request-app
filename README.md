@@ -80,23 +80,6 @@ prayer-board/
 └── vite.config.js
 ```
 
-## 🌍 Deployment
-
-### Frontend (Vercel)
-The frontend is optimized for **Vercel**.
-1. Import the repository to Vercel.
-2. Set **Root Directory** to `prayer-board`.
-3. Add Environment Variable: `VITE_API_URL` -> (Your Backend URL).
-4. Deploy.
-
-### Backend (Render)
-The backend is set up for **Render**.
-1. Create a **Web Service** on Render connected to the repo.
-2. Set **Root Directory** to `prayer-board/server`.
-3. **Build Command**: `npm install`
-4. **Start Command**: `node server.js`
-5. Add Environment Variables (`MONGO_URI`, `JWT_SECRET`, etc.).
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
