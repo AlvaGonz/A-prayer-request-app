@@ -25,7 +25,7 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -85,7 +85,11 @@ app.use('/api/requests', require('./routes/requests'));
 app.use('/api', require('./routes/comments'));
 app.use('/api/shared', require('./routes/shared'));
 
-// Health check
+// Health check — lightweight endpoint for keep-alive pings
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.get('/', (req, res) => {
   res.json({
     message: 'Prayer Board API is running',
