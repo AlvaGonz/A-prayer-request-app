@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import Header from '../components/Header';
 import PrayerRequestCard from '../components/PrayerRequestCard';
 import PrayerRequestSkeleton from '../components/PrayerRequestSkeleton';
@@ -13,6 +14,7 @@ import './PrayerWallPage.css';
 
 const PrayerWallPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [columnCount, setColumnCount] = useState(3);
   const { user } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -32,10 +34,45 @@ const PrayerWallPage = () => {
   const requests = data ? data.pages.flatMap((page) => page.requests) : [];
   const loading = status === 'pending';
 
-  const handleLoadMore = () => {
-    fetchNextPage();
-  };
+  // --- Virtualization Layout Logic ---
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) setColumnCount(1);
+      else if (width < 1100) setColumnCount(2);
+      else setColumnCount(3);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
+  const rows = React.useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < requests.length; i += columnCount) {
+      chunks.push(requests.slice(i, i + columnCount));
+    }
+    return chunks;
+  }, [requests, columnCount]);
+
+  const rowVirtualizer = useWindowVirtualizer({
+    count: hasNextPage || isFetchingNextPage ? rows.length + 1 : rows.length,
+    estimateSize: () => 280, // Approximate row height
+    overscan: 3,
+  });
+
+  // Auto Infinite Scroll Trigger
+  useEffect(() => {
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    if (!virtualItems.length) return;
+
+    const lastItem = virtualItems[virtualItems.length - 1];
+    if (lastItem.index >= rows.length && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage, rows.length, isFetchingNextPage, rowVirtualizer.getVirtualItems()]);
+
+  // --- Custom Mutation Handlers ---
   const handlePrayed = (requestId, newCount) => {
     queryClient.setQueryData(['prayerRequests'], (oldData) => {
       if (!oldData) return oldData;
@@ -51,7 +88,7 @@ const PrayerWallPage = () => {
     });
   };
 
-  const handleNewRequest = (newRequest) => {
+  const handleNewRequest = () => {
     queryClient.invalidateQueries({ queryKey: ['prayerRequests'] });
   };
 
@@ -106,39 +143,54 @@ const PrayerWallPage = () => {
               <p>{t('prayerWall.empty')}</p>
             </div>
           ) : (
-            <div className="requests-list">
-              {requests.map(request => (
-                <PrayerRequestCard
-                  key={request.id}
-                  request={request}
-                  onPrayed={handlePrayed}
-                  onUpdateStatus={handleUpdateStatus}
-                  onDelete={handleDelete}
-                />
-              ))}
-
-              {loading && requests.length === 0 && (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <PrayerRequestSkeleton key={index} />
-                ))
-              )}
-            </div>
-          )}
-
-          {isFetchingNextPage && requests.length > 0 && (
-            <div className="loading-state">
-              <Loader2 size={32} className="spinner" />
-              <p>{t('prayerWall.loading')}</p>
-            </div>
-          )}
-
-          {hasNextPage && !loading && !isFetchingNextPage && requests.length > 0 && (
-            <button
-              className="load-more-btn"
-              onClick={handleLoadMore}
+            <div
+              style={{
+                height: rowVirtualizer.getTotalSize(),
+                width: '100%',
+                position: 'relative',
+              }}
             >
-              {t('prayerWall.loadMore')}
-            </button>
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const isLoaderRow = virtualRow.index > rows.length - 1;
+                const rowItems = rows[virtualRow.index];
+
+                return (
+                  <div
+                    key={virtualRow.index}
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <div
+                      className="virtual-row-grid"
+                      style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}
+                    >
+                      {isLoaderRow || (!rowItems && loading) ? (
+                        Array.from({ length: columnCount }).map((_, index) => (
+                          <PrayerRequestSkeleton key={`skel-${index}`} />
+                        ))
+                      ) : (
+                        rowItems && rowItems.map(request => (
+                          <PrayerRequestCard
+                            key={request.id}
+                            request={request}
+                            onPrayed={handlePrayed}
+                            onUpdateStatus={handleUpdateStatus}
+                            onDelete={handleDelete}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </main>
