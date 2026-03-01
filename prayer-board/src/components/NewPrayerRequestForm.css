@@ -10,7 +10,6 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-  animation: fadeIn 0.2s ease;
 }
 
 .modal-content {
@@ -21,8 +20,11 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  animation: slideUp 0.3s ease;
   border: 1px solid var(--color-border);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1001;
 }
 
 .modal-header {
@@ -281,6 +283,9 @@
     width: 100vw;
     /* Full width on mobile */
     margin: 0;
+    top: auto;
+    bottom: 0;
+    left: 0;
   }
 
   .prayer-form {

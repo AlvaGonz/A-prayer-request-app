@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { m } from 'framer-motion';
 import Header from '../components/Header';
 import PrayerRequestCard from '../components/PrayerRequestCard';
 import PrayerRequestSkeleton from '../components/PrayerRequestSkeleton';
@@ -109,7 +110,13 @@ const PrayerWallPage = () => {
   };
 
   return (
-    <div className="prayer-wall-page">
+    <m.div
+      className="prayer-wall-page"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
       <Header />
 
       <main className="wall-content">
@@ -202,7 +209,7 @@ const PrayerWallPage = () => {
       />
 
       <NotificationBanner />
-    </div>
+    </m.div>
   );
 };
 

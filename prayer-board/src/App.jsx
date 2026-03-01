@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Analytics } from '@vercel/analytics/react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -10,6 +10,21 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import './styles/themes.css';
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PrayerWallPage />} />
+        <Route path="/shared/:token" element={<SharedPrayerPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -17,15 +32,9 @@ function App() {
         <AuthProvider>
           <SocketProvider>
             <Router>
-              <Routes>
-                <Route path="/" element={<PrayerWallPage />} />
-                <Route path="/shared/:token" element={<SharedPrayerPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-              </Routes>
+              <AnimatedRoutes />
             </Router>
           </SocketProvider>
-          <Analytics />
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

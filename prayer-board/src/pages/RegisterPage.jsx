@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Cross, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { m } from 'framer-motion';
 import './AuthPages.css';
 
 const RegisterPage = () => {
@@ -51,7 +52,13 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-page">
+    <m.div
+      className="auth-page"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+    >
       <div className="auth-container">
         <div className="auth-header">
           <Link to="/" className="auth-logo">
@@ -153,7 +160,7 @@ const RegisterPage = () => {
           {t('auth.hasAccount')} <Link to="/login">{t('header.login')}</Link>
         </p>
       </div>
-    </div>
+    </m.div>
   );
 };
 
