@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Sentry from '@sentry/react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,7 +12,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    Sentry.captureException(error, { contexts: { react: errorInfo } });
   }
 
   render() {
@@ -32,7 +33,7 @@ class ErrorBoundary extends React.Component {
           <p style={{ marginBottom: '24px', color: 'var(--color-text-secondary)' }}>
             We're sorry, but something unexpected happened. Please try refreshing the page.
           </p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             style={{
               padding: '12px 24px',

@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
@@ -37,7 +38,14 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma', 'Origin', 'Accept', 'X-Requested-With']
 };
 
-// Enable CORS for all routes
+// Security: Helmet — HTTP security headers (before CORS)
+// CSP disabled initially to avoid conflicts with PWA Service Worker
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
+
+// Security: CORS Configuration — Whitelist specific origins
 app.use(cors(corsOptions));
 
 // Security: Rate Limiting
@@ -71,13 +79,7 @@ app.use('/api', apiLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Security: Basic headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  next();
-});
+// Note: Security headers now handled by helmet middleware above
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
