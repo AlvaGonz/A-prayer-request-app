@@ -20,6 +20,11 @@ const PrayerRequestCard = ({
   const locale = i18n.language.startsWith('es') ? es : enUS;
 
   const [showComments, setShowComments] = useState(false);
+  const [localCommentCount, setLocalCommentCount] = useState(request.commentCount || 0);
+
+  React.useEffect(() => {
+    setLocalCommentCount(request.commentCount || 0);
+  }, [request.commentCount]);
 
   const isAuthor = isAuthenticated && request.author === user?.id;
   const isAdmin = isAuthenticated && user?.role === 'admin';
@@ -93,6 +98,15 @@ const PrayerRequestCard = ({
             onPrayed={onPrayed}
           />
 
+          <button
+            className="comments-toggle-btn"
+            onClick={() => setShowComments(!showComments)}
+            style={{ marginTop: 0 }}
+          >
+            <MessageCircle size={16} />
+            {localCommentCount > 0 ? t('comments.title', { count: localCommentCount }) : t('prayerCard.addComment')}
+          </button>
+
           {isAuthenticated && (
             <ShareButton requestId={request.id} />
           )}
@@ -148,6 +162,7 @@ const PrayerRequestCard = ({
         initialCommentCount={request.commentCount || 0}
         isOpen={showComments}
         onToggle={() => setShowComments(!showComments)}
+        onCommentCountUpdate={setLocalCommentCount}
         id={`comments-${request.id}`}
       />
     </article>

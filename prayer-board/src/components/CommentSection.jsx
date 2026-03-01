@@ -8,9 +8,10 @@ import CommentItem from './CommentItem';
 import { commentsAPI } from '../api';
 import './CommentSection.css';
 
-const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount }) => {
+const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount, onCommentCountUpdate }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
@@ -136,12 +137,19 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     try {
       const data = await commentsAPI.getByRequest(requestId);
       setComments(data.comments);
+      setHasLoaded(true);
     } catch (error) {
       console.error('Error loading comments:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (hasLoaded && onCommentCountUpdate) {
+      onCommentCountUpdate(comments.length);
+    }
+  }, [comments.length, hasLoaded, onCommentCountUpdate]);
 
   const handleQuickOption = async (optionText) => {
     // Quick options submit directly, bypassing the form hook validation since they are pre-canned
@@ -278,12 +286,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   const displayCount = (comments.length > 0 || isOpen) ? comments.length : initialCommentCount;
 
   if (!isOpen) {
-    return (
-      <button className="comments-toggle-btn" onClick={onToggle}>
-        <MessageCircle size={16} />
-        {displayCount > 0 ? t('comments.title', { count: displayCount }) : t('prayerCard.addComment')}
-      </button>
-    );
+    return null;
   }
 
   return (
