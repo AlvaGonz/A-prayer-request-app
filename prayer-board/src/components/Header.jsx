@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Cross, LogOut, Menu, X } from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
@@ -51,26 +52,36 @@ const Header = () => {
           </div>
 
           {isAuthenticated ? (
-            <div className="user-menu">
-              <div className="user-info">
-                <div className="user-avatar">
-                  {user.displayName.charAt(0).toUpperCase()}
-                </div>
-                <span className="user-name">{user.displayName}</span>
-                {user.role === 'admin' && (
-                  <span className="admin-badge">{t('header.admin')}</span>
-                )}
-              </div>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="user-menu-trigger dropdown-trigger">
+                  <div className="user-info">
+                    <div className="user-avatar">
+                      {user.displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="user-name">{user.displayName}</span>
+                    {user.role === 'admin' && (
+                      <span className="admin-badge">{t('header.admin')}</span>
+                    )}
+                  </div>
+                </button>
+              </DropdownMenu.Trigger>
 
-              <button
-                className="logout-btn"
-                onClick={handleLogout}
-                aria-label={t('header.logout')}
-              >
-                <LogOut size={18} />
-                <span>{t('header.logout')}</span>
-              </button>
-            </div>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="dropdown-menu-content" sideOffset={8} align="end">
+                  <DropdownMenu.Item asChild>
+                    <button
+                      className="logout-btn dropdown-item"
+                      onClick={handleLogout}
+                      aria-label={t('header.logout')}
+                    >
+                      <LogOut size={18} />
+                      <span>{t('header.logout')}</span>
+                    </button>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           ) : (
             <div className="auth-buttons">
               <Link to="/login" className="btn btn-secondary" onClick={closeMenu}>
