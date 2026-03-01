@@ -7,6 +7,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { AnimatePresence, m } from 'framer-motion';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
+import AnimatedCandle from './AnimatedCandle';
 import './NewPrayerRequestForm.css';
 
 const overlayVariants = {
@@ -143,7 +144,10 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                 >
                   <div className="modal-header">
                     <Dialog.Title asChild>
-                      <h3>{t('newRequest.title')}</h3>
+                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <AnimatedCandle size={26} />
+                        {t('newRequest.title')}
+                      </h3>
                     </Dialog.Title>
                     <Dialog.Close asChild>
                       <button

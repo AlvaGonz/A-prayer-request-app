@@ -29,8 +29,20 @@
   opacity: 0.9;
 }
 
-.logo-icon {
+.logo-icon-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: var(--color-accent-gold);
+}
+
+.logo-icon {
+  color: inherit;
+}
+
+.logo-candle {
+  margin-left: -6px;
+  transform: translateY(2px);
 }
 
 .logo-text {

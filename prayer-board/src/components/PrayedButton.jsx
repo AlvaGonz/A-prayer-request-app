@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
+import Sparkles from './Sparkles';
 import './PrayedButton.css';
 
 const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
@@ -40,6 +41,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   }, [requestId]);
 
   const [showMessage, setShowMessage] = useState(false);
+  const [showSparkles, setShowSparkles] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const messageTimeoutRef = useRef(null);
@@ -89,6 +91,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       } else {
         const result = await prayMutation.mutateAsync({ isPraying: false });
         setShowMessage(true);
+        setShowSparkles(true);
 
         // Save to local storage
         try {
@@ -134,6 +137,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         <span className="prayed-text">
           {isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')}
         </span>
+        <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
       </button>
 
       {showMessage && (

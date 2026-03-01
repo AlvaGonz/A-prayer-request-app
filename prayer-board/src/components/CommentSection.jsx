@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { m, AnimatePresence } from 'framer-motion';
 import CommentItem from './CommentItem';
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '../hooks/useComments';
 import './CommentSection.css';
@@ -263,96 +264,100 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
   const displayCount = (comments.length > 0 || isOpen) ? comments.length : initialCommentCount;
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <section
-      className="comment-section"
-      id={id}
-      aria-label={`Comments section for prayer request. ${comments.length} comments.`}
-    >
-      {notifications.length > 0 && (
-        <div className="notifications-container">
-          {notifications.map((notif, idx) => (
-            <div key={idx} className="notification-toast">
-              {notif.message}
+    <AnimatePresence>
+      {isOpen && (
+        <m.section
+          className="comment-section"
+          id={id}
+          aria-label={`Comments section for prayer request. ${comments.length} comments.`}
+          initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+          animate={{ opacity: 1, height: 'auto', overflow: 'visible' }}
+          exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          {notifications.length > 0 && (
+            <div className="notifications-container">
+              {notifications.map((notif, idx) => (
+                <div key={idx} className="notification-toast">
+                  {notif.message}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          )}
+
+          <div className="comment-section-header">
+            <h4>{t('comments.title', { count: comments.length })}</h4>
+            <button className="close-comments" onClick={onToggle} aria-label={t('comments.close')}>
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="comments-list">
+            {loading ? (
+              <p className="loading-text">{t('comments.loading')}</p>
+            ) : comments.length === 0 ? (
+              <p className="empty-comments">
+                {t('comments.empty')}
+              </p>
+            ) : (
+              comments.map(comment => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  onDelete={handleDelete}
+                  onEdit={handleEdit}
+                  canDelete={comment.authorId === user?.id || user?.role === 'admin'}
+                  canEdit={
+                    (comment.authorId && comment.authorId === user?.id) ||
+                    (!comment.authorId && comment.guestId === guestId)
+                  }
+                />
+              ))
+            )}
+            <div ref={commentsEndRef} />
+          </div>
+
+          <form className="comment-form" onSubmit={handleSubmit(onFormSubmit)}>
+            <div className="comment-section__quick-replies">
+              {quickOptions.map((option, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className="comment-section__chip"
+                  onClick={() => handleQuickOption(option.text)}
+                  disabled={isSubmitting || createMutation.isPending}
+                >
+                  {option.text}
+                </button>
+              ))}
+            </div>
+
+            <div className="comment-section__input-area">
+              <div className="comment-input-row">
+                <textarea
+                  {...register('newComment', { required: true, maxLength: 300 })}
+                  placeholder={t('comments.placeholder')}
+                  rows={2}
+                  disabled={isSubmitting || createMutation.isPending}
+                />
+                <button
+                  type="submit"
+                  disabled={!newCommentContent?.trim() || isSubmitting || !isValid || createMutation.isPending}
+                  className="submit-comment-btn"
+                  aria-label={t('comments.send')}
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+              <div className={`comment-section__char-count ${newCommentContent?.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
+                {newCommentContent?.length || 0} / 300
+              </div>
+            </div>
+          </form>
+        </m.section>
       )}
-
-      <div className="comment-section-header">
-        <h4>{t('comments.title', { count: comments.length })}</h4>
-        <button className="close-comments" onClick={onToggle} aria-label={t('comments.close')}>
-          <X size={18} />
-        </button>
-      </div>
-
-      <div className="comments-list">
-        {loading ? (
-          <p className="loading-text">{t('comments.loading')}</p>
-        ) : comments.length === 0 ? (
-          <p className="empty-comments">
-            {t('comments.empty')}
-          </p>
-        ) : (
-          comments.map(comment => (
-            <CommentItem
-              key={comment.id}
-              comment={comment}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-              canDelete={comment.authorId === user?.id || user?.role === 'admin'}
-              canEdit={
-                (comment.authorId && comment.authorId === user?.id) ||
-                (!comment.authorId && comment.guestId === guestId)
-              }
-            />
-          ))
-        )}
-        <div ref={commentsEndRef} />
-      </div>
-
-      <form className="comment-form" onSubmit={handleSubmit(onFormSubmit)}>
-        <div className="comment-section__quick-replies">
-          {quickOptions.map((option, index) => (
-            <button
-              key={index}
-              type="button"
-              className="comment-section__chip"
-              onClick={() => handleQuickOption(option.text)}
-              disabled={isSubmitting || createMutation.isPending}
-            >
-              {option.text}
-            </button>
-          ))}
-        </div>
-
-        <div className="comment-section__input-area">
-          <div className="comment-input-row">
-            <textarea
-              {...register('newComment', { required: true, maxLength: 300 })}
-              placeholder={t('comments.placeholder')}
-              rows={2}
-              disabled={isSubmitting || createMutation.isPending}
-            />
-            <button
-              type="submit"
-              disabled={!newCommentContent?.trim() || isSubmitting || !isValid || createMutation.isPending}
-              className="submit-comment-btn"
-              aria-label={t('comments.send')}
-            >
-              <Send size={16} />
-            </button>
-          </div>
-          <div className={`comment-section__char-count ${newCommentContent?.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
-            {newCommentContent?.length || 0} / 300
-          </div>
-        </div>
-      </form>
-    </section>
+    </AnimatePresence>
   );
 };
 
