@@ -1,3 +1,4 @@
+import './instrument'; // Sentry must init before all other imports
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
@@ -10,16 +11,16 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
         console.log('SW registered: ', registration)
-        
+
         // Check for updates every 5 minutes
         setInterval(() => {
           registration.update()
         }, 5 * 60 * 1000)
-        
+
         // Handle updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing
-          
+
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // New version available
