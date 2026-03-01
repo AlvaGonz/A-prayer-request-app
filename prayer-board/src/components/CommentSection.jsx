@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { m, AnimatePresence } from 'framer-motion';
 import CommentItem from './CommentItem';
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '../hooks/useComments';
+import { safeStorage } from '../utils/storage';
 import './CommentSection.css';
 
 const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount, onCommentCountUpdate }) => {
@@ -50,13 +51,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   const newCommentContent = useWatch({ control, name: 'newComment', defaultValue: '' });
 
   useEffect(() => {
-    import('../utils/storage').then(({ safeStorage }) => {
-      let id = safeStorage.getItem('prayer_guest_comment_id');
-      if (!id) {
-        id = window.crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
-        safeStorage.setItem('prayer_guest_comment_id', id);
-      }
-    });
+    let id = safeStorage.getItem('prayer_guest_comment_id');
+    if (!id) {
+      id = window.crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+      safeStorage.setItem('prayer_guest_comment_id', id);
+    }
   }, []);
 
   // Quick comment options
@@ -158,18 +157,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   };
 
   const submitComment = async (text) => {
-    let safeStorageModule;
-    try {
-      safeStorageModule = await import('../utils/storage');
-    } catch (e) { }
-
     const storeKey = `prayer_comments_${requestId}`;
     let userComments = 0;
     try {
-      if (safeStorageModule) {
-        const stored = safeStorageModule.safeStorage.getItem(storeKey);
-        if (stored) userComments = parseInt(stored, 10);
-      }
+      const stored = safeStorage.getItem(storeKey);
+      if (stored) userComments = parseInt(stored, 10);
     } catch (e) { }
 
     if (userComments >= 3) {
@@ -199,9 +191,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       });
 
       try {
-        if (safeStorageModule) {
-          safeStorageModule.safeStorage.setItem(storeKey, (userComments + 1).toString());
-        }
+        safeStorage.setItem(storeKey, (userComments + 1).toString());
       } catch (e) { }
 
       queryClient.setQueryData(['comments', requestId], (prev = []) => prev.map(c =>
