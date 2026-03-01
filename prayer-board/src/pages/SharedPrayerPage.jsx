@@ -6,6 +6,7 @@ import { enUS, es } from 'date-fns/locale';
 import { User, Heart, Loader2, Send, AlertCircle } from 'lucide-react';
 import { shareAPI } from '../api';
 import { safeStorage } from '../utils/storage';
+import { m } from 'framer-motion';
 import Header from '../components/Header';
 import './SharedPrayerPage.css';
 
@@ -125,19 +126,19 @@ const SharedPrayerPage = () => {
 
     if (loading) {
         return (
-            <div className="shared-page">
+            <m.div className="shared-page" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
                 <Header />
                 <div className="shared-loading">
                     <Loader2 size={32} className="spinner" />
                     <p>{t('share.loading') || t('prayerWall.loading')}</p>
                 </div>
-            </div>
+            </m.div>
         );
     }
 
     if (error) {
         return (
-            <div className="shared-page">
+            <m.div className="shared-page" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
                 <Header />
                 <div className="shared-error">
                     <AlertCircle size={48} />
@@ -145,14 +146,14 @@ const SharedPrayerPage = () => {
                     <p>{error}</p>
                     <Link to="/" className="shared-cta-btn">{t('share.visitWall')}</Link>
                 </div>
-            </div>
+            </m.div>
         );
     }
 
     const timeAgo = formatDistanceToNow(new Date(request.createdAt), { addSuffix: true });
 
     return (
-        <div className="shared-page">
+        <m.div className="shared-page" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
             <Header />
 
             <main className="shared-content">
@@ -265,7 +266,7 @@ const SharedPrayerPage = () => {
                     </div>
                 </div>
             </main>
-        </div>
+        </m.div>
     );
 };
 
