@@ -1,5 +1,5 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { X, MessageCircle, Globe, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -9,28 +9,33 @@ import useFocusTrap from '../hooks/useFocusTrap';
 import './NewPrayerRequestForm.css';
 
 const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
-  const [body, setBody] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const modalRef = useFocusTrap(isOpen);
   const closeButtonRef = useRef(null);
 
-  const maxLength = 1000;
-  const charCount = body.length;
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setError,
+    formState: { errors, isValid, isSubmitting },
+    clearErrors,
+  } = useForm({
+    defaultValues: { body: '', isAnonymous: true },
+    mode: 'onChange',
+  });
 
-  const validate = (text) => {
-    if (text.length < 10) return t('newRequest.minCharsError');
-    return null;
-  };
+  const bodyContent = useWatch({ control, name: 'body', defaultValue: '' });
+  const isAnonymousValue = useWatch({ control, name: 'isAnonymous', defaultValue: true });
+  const maxLength = 1000;
 
   // Handle Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen && !loading) {
-        onClose();
+      if (e.key === 'Escape' && isOpen && !isSubmitting) {
+        handleClose();
       }
     };
 
@@ -44,42 +49,29 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
     };
-  }, [isOpen, loading, onClose]);
+  }, [isOpen, isSubmitting]); // Using handleClose indirectly via state check, but safe
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-
-    const validationError = validate(body);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setLoading(true);
+  const onSubmit = async (data) => {
+    clearErrors('root');
 
     try {
       const result = await requestsAPI.create(
-        { body, isAnonymous },
+        { body: data.body.trim(), isAnonymous: data.isAnonymous },
         isAuthenticated ? user : null
       );
 
-      setBody('');
-      setIsAnonymous(true);
+      reset();
       onSuccess(result.request);
       onClose();
     } catch (err) {
-      setError(t('errors.creating'));
-    } finally {
-      setLoading(false);
+      setError('root', { type: 'manual', message: t('errors.creating') });
     }
   };
 
   const handleClose = () => {
-    if (!loading) {
-      setBody('');
-      setIsAnonymous(true);
-      setError(null);
+    if (!isSubmitting) {
+      reset();
+      clearErrors();
       onClose();
     }
   };
@@ -106,32 +98,40 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
           <h3 id="modal-title">{t('newRequest.title')}</h3>
           <button
             ref={closeButtonRef}
+            type="button"
             className="close-btn"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label={t('newRequest.close')}
-            disabled={loading}
+            disabled={isSubmitting}
           >
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="prayer-form">
+        <form onSubmit={handleSubmit(onSubmit)} className="prayer-form">
           <div className="form-group">
             <label htmlFor="prayer-body" className="sr-only">
               {t('newRequest.prayerBodyLabel')}
             </label>
             <textarea
               id="prayer-body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
+              {...register('body', {
+                required: t('newRequest.minCharsError'),
+                minLength: { value: 10, message: t('newRequest.minCharsError') },
+                maxLength: maxLength
+              })}
               placeholder={t('newRequest.placeholder')}
-              maxLength={maxLength}
               rows={6}
-              disabled={loading}
+              disabled={isSubmitting}
             />
             <div className="char-count">
-              {t('newRequest.charCount', { count: body.length, max: 1000 })}
+              {t('newRequest.charCount', { count: bodyContent?.length || 0, max: maxLength })}
             </div>
+            {errors.body && (
+              <div className="error-message error-message-field" role="alert">
+                {errors.body.message}
+              </div>
+            )}
           </div>
 
           {isAuthenticated && (
@@ -139,9 +139,8 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               <label className="checkbox-label">
                 <input
                   type="checkbox"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  disabled={!isAuthenticated || loading}
+                  {...register('isAnonymous')}
+                  disabled={!isAuthenticated || isSubmitting}
                 />
                 <span className="checkmark"></span>
                 <span className="checkbox-text">
@@ -149,7 +148,7 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                 </span>
               </label>
               <p id="anonymous-hint" className="checkbox-hint">
-                {isAnonymous ? t('newRequest.anonymousHint') : t('newRequest.privacyNotice')}
+                {isAnonymousValue ? t('newRequest.anonymousHint') : t('newRequest.privacyNotice')}
               </p>
             </div>
           )}
@@ -168,10 +167,10 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
             {t('newRequest.privacyNotice')}
           </p>
 
-          {error && (
+          {errors.root && (
             <div className="error-message" role="alert" aria-live="assertive">
               <AlertCircle size={16} className="icon-inline" aria-hidden="true" />
-              {error}
+              {errors.root.message}
             </div>
           )}
 
@@ -180,17 +179,17 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
               type="button"
               className="btn btn-secondary"
               onClick={handleClose}
-              disabled={loading}
+              disabled={isSubmitting}
             >
               {t('newRequest.cancel')}
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!body.trim() || loading}
-              aria-busy={loading}
+              disabled={!bodyContent?.trim() || !isValid || isSubmitting}
+              aria-busy={isSubmitting}
             >
-              {loading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 size={16} className="spinner" aria-hidden="true" />
                   {t('newRequest.submitting')}

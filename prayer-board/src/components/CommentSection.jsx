@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { MessageCircle, Send, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
@@ -10,14 +11,25 @@ import './CommentSection.css';
 const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [newComment, setNewComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const commentsEndRef = useRef(null);
   const notificationTimeoutsRef = useRef([]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState: { isSubmitting, isValid }
+  } = useForm({
+    defaultValues: { newComment: '' },
+    mode: 'onChange'
+  });
+
+  const newCommentContent = useWatch({ control, name: 'newComment', defaultValue: '' });
 
   // Generate guestId mirroring PrayedButton logic
   const guestId = React.useMemo(() => {
@@ -132,14 +144,19 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   };
 
   const handleQuickOption = async (optionText) => {
+    // Quick options submit directly, bypassing the form hook validation since they are pre-canned
     await submitComment(optionText);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!newComment.trim() || isSubmitting || newComment.length > 300) return;
-    await submitComment(newComment.trim());
-    setNewComment('');
+  const onFormSubmit = async (data) => {
+    const text = data.newComment.trim();
+    if (!text || text.length > 300) return;
+
+    // We await submitComment intentionally here so the form stays submitting until done
+    const success = await submitComment(text);
+    if (success) {
+      reset();
+    }
   };
 
   const submitComment = async (text) => {
@@ -164,10 +181,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         setNotifications(prev => prev.slice(1));
       }, 5000);
       notificationTimeoutsRef.current.push(timeoutId);
-      return;
+      return false;
     }
-
-    setIsSubmitting(true);
 
     const tempId = `temp-${Date.now()}`;
     const newCommentObj = {
@@ -216,6 +231,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         createdAt: result.comment.createdAt,
         targetUserId: requestAuthorId
       });
+
+      return true;
     } catch (error) {
       setComments(prev => prev.filter(c => c.id !== tempId));
       setNotifications(prev => [...prev, { message: t('comments.error_send') }]);
@@ -223,8 +240,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         setNotifications(prev => prev.slice(1));
       }, 5000);
       notificationTimeoutsRef.current.push(timeoutId);
-    } finally {
-      setIsSubmitting(false);
+      return false;
     }
   };
 
@@ -320,7 +336,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       </div>
 
       {/* Comment Form - Now available for everyone */}
-      <form className="comment-form" onSubmit={handleSubmit}>
+      <form className="comment-form" onSubmit={handleSubmit(onFormSubmit)}>
         {/* Quick Options chips */}
         <div className="comment-section__quick-replies">
           {quickOptions.map((option, index) => (
@@ -339,24 +355,22 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         <div className="comment-section__input-area">
           <div className="comment-input-row">
             <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              {...register('newComment', { required: true, maxLength: 300 })}
               placeholder={t('comments.placeholder')}
-              maxLength={300}
               rows={2}
               disabled={isSubmitting}
             />
             <button
               type="submit"
-              disabled={!newComment.trim() || isSubmitting || newComment.length > 300}
+              disabled={!newCommentContent?.trim() || isSubmitting || !isValid}
               className="submit-comment-btn"
               aria-label={t('comments.send')}
             >
               <Send size={16} />
             </button>
           </div>
-          <div className={`comment-section__char-count ${newComment.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
-            {newComment.length} / 300
+          <div className={`comment-section__char-count ${newCommentContent?.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
+            {newCommentContent?.length || 0} / 300
           </div>
         </div>
       </form>
