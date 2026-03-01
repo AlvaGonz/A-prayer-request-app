@@ -3,6 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
+import { m } from 'framer-motion';
 import PrayedButton from './PrayedButton';
 import ShareButton from './ShareButton';
 import CommentSection from './CommentSection';
@@ -50,7 +51,11 @@ const PrayerRequestCard = ({
   };
 
   return (
-    <article
+    <m.article
+      initial={{ opacity: 0, y: 20, scale: 0.98 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       className={`prayer-card ${isAnswered ? 'answered' : ''}`}
       aria-labelledby={`prayer-author-${request.id}`}
     >
@@ -165,7 +170,7 @@ const PrayerRequestCard = ({
         onCommentCountUpdate={setLocalCommentCount}
         id={`comments-${request.id}`}
       />
-    </article>
+    </m.article>
   );
 };
 

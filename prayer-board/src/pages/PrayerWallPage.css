@@ -50,11 +50,27 @@
   bottom: 24px;
   right: 24px;
   z-index: 50;
+  animation: breathingPulse 3s infinite ease-in-out;
 }
 
 .new-request-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(226, 185, 111, 0.3);
+  box-shadow: 0 6px 20px rgba(226, 185, 111, 0.4);
+  animation: none;
+}
+
+@keyframes breathingPulse {
+  0% {
+    box-shadow: 0 4px 16px rgba(226, 185, 111, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 4px 24px rgba(226, 185, 111, 0.6);
+  }
+
+  100% {
+    box-shadow: 0 4px 16px rgba(226, 185, 111, 0.2);
+  }
 }
 
 .error-banner {

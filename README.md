@@ -14,6 +14,7 @@ A meaningful Progressive Web App (PWA) designed for communities to share prayer 
 - **Prayer Counter**: Tap "I Prayed" to instantly encourage others and track community support.
 - **Translation / Internationalization**: Full support for **English** and **Spanish** (Español).
 - **Responsive Design**: A reverent, gold-accented dark theme that works beautifully on mobile and desktop.
+- **UI & Micro-interactions**: Smooth page transitions, animated SVG components (like a flickering candle and glowing cross), and ethereal particle effects that elevate the user experience.
 
 ### Community & Real-Time
 - **Comments**: Offer words of encouragement on specific requests. Users can edit or delete their own comments.
@@ -37,8 +38,8 @@ A meaningful Progressive Web App (PWA) designed for communities to share prayer 
 
 ### Frontend
 - **Framework**: React 19 + Vite
-- **Styling**: Vanilla CSS3 (Custom Properties & Responsive Design)
-- **State Management**: React Context API
+- **Styling & Animations**: Vanilla CSS3 & Framer Motion (Optimized with `LazyMotion`)
+- **State Management**: React Context API & React Query
 - **Routing**: React Router v7
 - **Real-Time**: Socket.IO Client
 - **PWA**: Vite PWA Plugin + Workbox

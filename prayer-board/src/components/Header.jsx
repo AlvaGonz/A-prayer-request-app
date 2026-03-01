@@ -6,6 +6,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
+import { m } from 'framer-motion';
 import './Header.css';
 
 const Header = () => {
@@ -32,7 +33,19 @@ const Header = () => {
     <header className="app-header">
       <div className="header-container">
         <Link to="/" className="header-logo" onClick={closeMenu}>
-          <Cross className="logo-icon" size={24} />
+          {/* Spiritual Animated Icon set: Cross with entrance animation */}
+          <m.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <m.div
+              initial={{ rotate: -15, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            >
+              <Cross className="logo-icon" size={24} />
+            </m.div>
+          </m.div>
           <span className="logo-text">{t('app.title')}</span>
         </Link>
 
