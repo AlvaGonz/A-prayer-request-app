@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { Cross, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { m } from 'framer-motion';
 import './AuthPages.css';
@@ -42,7 +42,12 @@ const LoginPage = () => {
       <div className="auth-container">
         <div className="auth-header">
           <Link to="/" className="auth-logo">
-            <Cross size={32} className="logo-icon" />
+            <img
+              src="/icons/Prayer%20Board%20ico%20no%20background.svg"
+              alt="Prayer Board Logo"
+              className="logo-icon"
+              style={{ width: 58, height: 58 }}
+            />
             <span>{t('app.title')}</span>
           </Link>
         </div>

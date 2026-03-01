@@ -7,4 +7,8 @@ Sentry.init({
     tracesSampleRate: 0.1,
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
+    ignoreErrors: [
+        /has no method 'updateFrom'/i,
+        /serviceWorker\.register/i
+    ]
 });

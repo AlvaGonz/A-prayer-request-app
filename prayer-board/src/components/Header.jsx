@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Cross, LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, X } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
@@ -34,18 +34,25 @@ const Header = () => {
       <div className="header-container">
         <Link to="/" className="header-logo" onClick={closeMenu}>
           {/* Spiritual Animated Icon set: Cross with entrance animation */}
-          <m.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <div className="logo-icon-wrapper">
             <m.div
-              initial={{ rotate: -15, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Cross className="logo-icon" size={24} />
+              <m.div
+                initial={{ rotate: -15, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                <img
+                  src="/icons/Prayer%20Board%20ico%20no%20background.svg"
+                  alt="Prayer Board Logo"
+                  className="logo-icon"
+                  style={{ width: 38, height: 38 }}
+                />
+              </m.div>
             </m.div>
-          </m.div>
+          </div>
           <span className="logo-text">{t('app.title')}</span>
         </Link>
 
