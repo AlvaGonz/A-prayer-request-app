@@ -1,23 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { MessageCircle, Send, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 import CommentItem from './CommentItem';
-import { commentsAPI } from '../api';
+import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '../hooks/useComments';
 import './CommentSection.css';
 
 const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount, onCommentCountUpdate }) => {
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const { socket, joinRequest, leaveRequest, emitToRequest, localEventEmitter } = useSocket();
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  const { socket, joinRequest, leaveRequest, emitToRequest } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const commentsEndRef = useRef(null);
   const notificationTimeoutsRef = useRef([]);
+
+  const queryClient = useQueryClient();
+  const { data: comments = [], isLoading: loading } = useComments(requestId, isOpen);
+
+  const createMutation = useCreateComment(requestId);
+  const updateMutation = useUpdateComment(requestId, guestId);
+  const deleteMutation = useDeleteComment(requestId, user);
 
   const {
     register,
@@ -58,11 +65,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     { text: t('comments.quick.not_alone') }
   ];
 
-  // Load comments when opened
+  // Join/leave rooms based on open state
   useEffect(() => {
     if (isOpen) {
-      loadComments();
       joinRequest(requestId);
+      setHasLoaded(true);
     } else {
       leaveRequest(requestId);
     }
@@ -72,14 +79,13 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     };
   }, [isOpen, requestId, joinRequest, leaveRequest]);
 
-  // Listen for real-time events
+  // Listen for real-time events, update React Query cache
   useEffect(() => {
     if (!socket) return;
 
     const handleNewComment = (data) => {
       if (data.requestId === requestId) {
-        setComments(prev => {
-          // Prevenir duplicados checkeando si el ID ya existe en nuestra lista
+        queryClient.setQueryData(['comments', requestId], (prev = []) => {
           if (prev.some(c => c.id === data.id)) return prev;
 
           return [...prev, {
@@ -96,12 +102,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
     const handleCommentDeleted = (data) => {
       if (data.requestId === requestId) {
-        setComments(prev => prev.filter(c => c.id !== data.commentId));
+        queryClient.setQueryData(['comments', requestId], (prev = []) => prev.filter(c => c.id !== data.commentId));
       }
     };
 
     const handleNotification = (notification) => {
-      // Only show notifications for the current user
       if (notification.targetUserId === user?.id && notification.requestId === requestId) {
         setNotifications(prev => [...prev, notification]);
         const timeoutId = setTimeout(() => {
@@ -119,11 +124,10 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       socket.off('new-comment', handleNewComment);
       socket.off('comment-deleted', handleCommentDeleted);
       socket.off('notification', handleNotification);
-      // Clear notification timeouts
       notificationTimeoutsRef.current.forEach(id => clearTimeout(id));
       notificationTimeoutsRef.current = [];
     };
-  }, [socket, requestId, user]);
+  }, [socket, requestId, user, queryClient]);
 
   // Auto-scroll to bottom when new comments arrive
   useEffect(() => {
@@ -132,27 +136,13 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     }
   }, [comments, isOpen]);
 
-  const loadComments = async () => {
-    setLoading(true);
-    try {
-      const data = await commentsAPI.getByRequest(requestId);
-      setComments(data.comments);
-      setHasLoaded(true);
-    } catch (error) {
-      console.error('Error loading comments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (hasLoaded && onCommentCountUpdate) {
+    if (hasLoaded && onCommentCountUpdate && !loading) {
       onCommentCountUpdate(comments.length);
     }
-  }, [comments.length, hasLoaded, onCommentCountUpdate]);
+  }, [comments.length, hasLoaded, onCommentCountUpdate, loading]);
 
   const handleQuickOption = async (optionText) => {
-    // Quick options submit directly, bypassing the form hook validation since they are pre-canned
     await submitComment(optionText);
   };
 
@@ -160,7 +150,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     const text = data.newComment.trim();
     if (!text || text.length > 300) return;
 
-    // We await submitComment intentionally here so the form stays submitting until done
     const success = await submitComment(text);
     if (success) {
       reset();
@@ -173,7 +162,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       safeStorageModule = await import('../utils/storage');
     } catch (e) { }
 
-    // 1. Rate verify visually
     const storeKey = `prayer_comments_${requestId}`;
     let userComments = 0;
     try {
@@ -184,11 +172,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     } catch (e) { }
 
     if (userComments >= 3) {
-      setNotifications(prev => [...prev, { message: t('comments.rate_limit') }]);
-      const timeoutId = setTimeout(() => {
-        setNotifications(prev => prev.slice(1));
-      }, 5000);
-      notificationTimeoutsRef.current.push(timeoutId);
+      addNotification(t('comments.rate_limit'));
       return false;
     }
 
@@ -203,19 +187,15 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       canDelete: false
     };
 
-    // Optimistic UI
-    setComments(prev => [...prev, newCommentObj]);
+    queryClient.setQueryData(['comments', requestId], (prev = []) => [...prev, newCommentObj]);
 
     try {
-      // Backend POST
-      const commentData = {
-        body: text,
+      const result = await createMutation.mutateAsync({
+        text,
         authorName: isAuthenticated ? user.displayName : t('comments.anonymous_author'),
         isAnonymous: !isAuthenticated,
         guestId
-      };
-
-      const result = await commentsAPI.create(requestId, commentData);
+      });
 
       try {
         if (safeStorageModule) {
@@ -223,8 +203,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         }
       } catch (e) { }
 
-      // Replace temp with real
-      setComments(prev => prev.map(c =>
+      queryClient.setQueryData(['comments', requestId], (prev = []) => prev.map(c =>
         c.id === tempId ? {
           ...result.comment,
           canDelete: result.comment.authorId === user?.id || user?.role === 'admin'
@@ -242,20 +221,24 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
       return true;
     } catch (error) {
-      setComments(prev => prev.filter(c => c.id !== tempId));
-      setNotifications(prev => [...prev, { message: t('comments.error_send') }]);
-      const timeoutId = setTimeout(() => {
-        setNotifications(prev => prev.slice(1));
-      }, 5000);
-      notificationTimeoutsRef.current.push(timeoutId);
+      queryClient.setQueryData(['comments', requestId], (prev = []) => prev.filter(c => c.id !== tempId));
+      addNotification(t('comments.error_send'));
       return false;
     }
   };
 
+  const addNotification = (message) => {
+    setNotifications(prev => [...prev, { message }]);
+    const timeoutId = setTimeout(() => {
+      setNotifications(prev => prev.slice(1));
+    }, 5000);
+    notificationTimeoutsRef.current.push(timeoutId);
+  }
+
   const handleEdit = async (commentId, newText) => {
     try {
-      const result = await commentsAPI.update(commentId, { body: newText, guestId });
-      setComments(prev => prev.map(c =>
+      const result = await updateMutation.mutateAsync({ commentId, newText });
+      queryClient.setQueryData(['comments', requestId], (prev = []) => prev.map(c =>
         c.id === commentId ? {
           ...c,
           body: result.comment.body,
@@ -263,11 +246,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         } : c
       ));
     } catch (error) {
-      setNotifications(prev => [...prev, { message: t('comments.error_send') }]);
-      const timeoutId = setTimeout(() => {
-        setNotifications(prev => prev.slice(1));
-      }, 5000);
-      notificationTimeoutsRef.current.push(timeoutId);
+      addNotification(t('comments.error_send'));
     }
   };
 
@@ -275,8 +254,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     if (!window.confirm(t('comments.deleteConfirm'))) return;
 
     try {
-      await commentsAPI.delete(commentId, user);
-      // Emit real-time event
+      await deleteMutation.mutateAsync(commentId);
       emitToRequest(requestId, 'comment-deleted', { commentId });
     } catch (error) {
       alert(t('comments.deleteError'));
@@ -295,7 +273,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       id={id}
       aria-label={`Comments section for prayer request. ${comments.length} comments.`}
     >
-      {/* Notifications */}
       {notifications.length > 0 && (
         <div className="notifications-container">
           {notifications.map((notif, idx) => (
@@ -338,9 +315,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
         <div ref={commentsEndRef} />
       </div>
 
-      {/* Comment Form - Now available for everyone */}
       <form className="comment-form" onSubmit={handleSubmit(onFormSubmit)}>
-        {/* Quick Options chips */}
         <div className="comment-section__quick-replies">
           {quickOptions.map((option, index) => (
             <button
@@ -348,7 +323,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
               type="button"
               className="comment-section__chip"
               onClick={() => handleQuickOption(option.text)}
-              disabled={isSubmitting}
+              disabled={isSubmitting || createMutation.isPending}
             >
               {option.text}
             </button>
@@ -361,11 +336,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
               {...register('newComment', { required: true, maxLength: 300 })}
               placeholder={t('comments.placeholder')}
               rows={2}
-              disabled={isSubmitting}
+              disabled={isSubmitting || createMutation.isPending}
             />
             <button
               type="submit"
-              disabled={!newCommentContent?.trim() || isSubmitting || !isValid}
+              disabled={!newCommentContent?.trim() || isSubmitting || !isValid || createMutation.isPending}
               className="submit-comment-btn"
               aria-label={t('comments.send')}
             >
