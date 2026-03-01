@@ -1,93 +1,74 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Loader2 } from 'lucide-react';
-import { requestsAPI } from '../api';
+import { useQueryClient } from '@tanstack/react-query';
 import Header from '../components/Header';
 import PrayerRequestCard from '../components/PrayerRequestCard';
 import PrayerRequestSkeleton from '../components/PrayerRequestSkeleton';
 import NewPrayerRequestForm from '../components/NewPrayerRequestForm';
 import NotificationBanner from '../components/NotificationBanner';
 import { useAuth } from '../context/AuthContext';
+import { usePrayerRequests, useUpdatePrayerStatus, useDeletePrayerRequest } from '../hooks/usePrayerRequests';
 import './PrayerWallPage.css';
 
 const PrayerWallPage = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
 
-  const fetchRequests = useCallback(async (pageNum = 1, append = false) => {
-    try {
-      setLoading(true);
-      const data = await requestsAPI.getAll({
-        page: pageNum,
-        limit: pageNum === 1 ? 10 : 20
-      });
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = usePrayerRequests();
 
-      if (append) {
-        setRequests(prev => [...prev, ...data.requests]);
-      } else {
-        setRequests(data.requests);
-      }
+  const updateMutation = useUpdatePrayerStatus();
+  const deleteMutation = useDeletePrayerRequest();
 
-      setHasMore(pageNum < data.pagination.totalPages);
-      setError(null);
-    } catch (err) {
-      setError(t('errors.loading'));
-      console.error('Error fetching requests:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+  const requests = data ? data.pages.flatMap((page) => page.requests) : [];
+  const loading = status === 'pending';
 
   const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchRequests(nextPage, true);
+    fetchNextPage();
   };
 
   const handlePrayed = (requestId, newCount) => {
-    setRequests(prev =>
-      prev.map(req =>
-        req.id === requestId
-          ? { ...req, prayedCount: newCount }
-          : req
-      )
-    );
+    queryClient.setQueryData(['prayerRequests'], (oldData) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          requests: page.requests.map((req) =>
+            req.id === requestId ? { ...req, prayedCount: newCount } : req
+          ),
+        })),
+      };
+    });
   };
 
   const handleNewRequest = (newRequest) => {
-    setRequests(prev => [newRequest, ...prev]);
+    queryClient.invalidateQueries({ queryKey: ['prayerRequests'] });
   };
 
-  const handleUpdateStatus = async (requestId, status) => {
-    try {
-      await requestsAPI.updateStatus(requestId, { status }, user);
-      setRequests(prev =>
-        prev.map(req =>
-          req.id === requestId ? { ...req, status } : req
-        )
-      );
-    } catch (err) {
-      alert(err.message || 'Failed to update request');
-    }
+  const handleUpdateStatus = async (requestId, reqStatus) => {
+    updateMutation.mutate({ requestId, data: { status: reqStatus }, user }, {
+      onError: (err) => {
+        alert(err.message || 'Failed to update request');
+      }
+    });
   };
 
   const handleDelete = async (requestId) => {
-    try {
-      await requestsAPI.delete(requestId, user);
-      setRequests(prev => prev.filter(req => req.id !== requestId));
-    } catch (err) {
-      alert(err.message || 'Failed to delete request');
-    }
+    deleteMutation.mutate({ requestId, user }, {
+      onError: (err) => {
+        alert(err.message || 'Failed to delete request');
+      }
+    });
   };
 
   return (
@@ -110,10 +91,12 @@ const PrayerWallPage = () => {
           </button>
         </div>
 
-        {error && (
+        {status === 'error' && (
           <div className="error-banner">
-            {error}
-            <button onClick={() => fetchRequests()}>Retry</button>
+            {error?.message || t('errors.loading')}
+            <button onClick={() => queryClient.invalidateQueries({ queryKey: ['prayerRequests'] })}>
+              Retry
+            </button>
           </div>
         )}
 
@@ -142,14 +125,14 @@ const PrayerWallPage = () => {
             </div>
           )}
 
-          {loading && requests.length > 0 && (
+          {isFetchingNextPage && requests.length > 0 && (
             <div className="loading-state">
               <Loader2 size={32} className="spinner" />
               <p>{t('prayerWall.loading')}</p>
             </div>
           )}
 
-          {hasMore && !loading && requests.length > 0 && (
+          {hasNextPage && !loading && !isFetchingNextPage && requests.length > 0 && (
             <button
               className="load-more-btn"
               onClick={handleLoadMore}

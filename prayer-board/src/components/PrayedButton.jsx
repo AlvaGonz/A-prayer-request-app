@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { requestsAPI } from '../api';
+import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
 import './PrayedButton.css';
@@ -21,6 +21,8 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     return false;
   });
 
+  const prayMutation = usePrayMutation(requestId);
+
   useEffect(() => {
     try {
       const stored = safeStorage.getItem('prayedRequests');
@@ -36,7 +38,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       console.error('Error reading from local storage', e);
     }
   }, [requestId]);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [showMessage, setShowMessage] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
@@ -51,19 +53,25 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     };
   }, []);
 
-  const handlePray = async () => {
-    if (isLoading) return;
+  // Sync prop updates if they change externally (e.g. from cache invalidate)
+  useEffect(() => {
+    setCount(initialCount);
+  }, [initialCount]);
 
-    setIsLoading(true);
+  const handlePray = async () => {
+    if (prayMutation.isPending) return;
 
     // Optimistic update
-    const newCount = isPrayed ? Math.max(0, count - 1) : count + 1;
+    const prevPrayed = isPrayed;
+    const prevCount = count;
+    const newCount = prevPrayed ? Math.max(0, count - 1) : count + 1;
+
     setCount(newCount);
+    setIsPrayed(!prevPrayed);
 
     try {
-      if (isPrayed) {
-        const result = await requestsAPI.unpray(requestId, user);
-        setIsPrayed(false);
+      if (prevPrayed) {
+        const result = await prayMutation.mutateAsync({ isPraying: true });
         setShowMessage(false);
 
         try {
@@ -76,11 +84,10 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         }
 
         if (onPrayed) {
-          onPrayed(requestId, result.prayedCount);
+          onPrayed(requestId, result.prayedCount || newCount);
         }
       } else {
-        const result = await requestsAPI.pray(requestId, user);
-        setIsPrayed(true);
+        const result = await prayMutation.mutateAsync({ isPraying: false });
         setShowMessage(true);
 
         // Save to local storage
@@ -99,25 +106,24 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 7000);
 
         if (onPrayed) {
-          onPrayed(requestId, result.prayedCount);
+          onPrayed(requestId, result.prayedCount || newCount);
         }
       }
     } catch (error) {
       // Revert optimistic update on error
-      setCount(initialCount);
+      setCount(prevCount);
+      setIsPrayed(prevPrayed);
       console.error('Error praying/unpraying:', error);
       alert(error.message || t('errors.pray'));
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="prayed-button-container">
       <button
-        className={`prayed-button ${isPrayed ? 'prayed' : ''} ${isLoading ? 'loading' : ''}`}
+        className={`prayed-button ${isPrayed ? 'prayed' : ''} ${prayMutation.isPending ? 'loading' : ''}`}
         onClick={handlePray}
-        disabled={isLoading}
+        disabled={prayMutation.isPending}
         aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
       >
         <Heart
