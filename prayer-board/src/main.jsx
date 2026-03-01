@@ -5,6 +5,7 @@ import './index.css'
 import './i18n' // Initialize i18n
 import App from './App.jsx'
 import { QueryProvider } from './providers/QueryProvider';
+import { Analytics } from '@vercel/analytics/react';
 
 // Register service worker for PWA with update handling
 if ('serviceWorker' in navigator) {
@@ -42,6 +43,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryProvider>
       <App />
+      <Analytics />
     </QueryProvider>
   </StrictMode>,
 )
