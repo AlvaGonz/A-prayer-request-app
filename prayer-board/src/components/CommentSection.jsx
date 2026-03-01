@@ -22,6 +22,15 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   const queryClient = useQueryClient();
   const { data: comments = [], isLoading: loading } = useComments(requestId, isOpen);
 
+  // Generate guestId mirroring PrayedButton logic
+  const guestId = React.useMemo(() => {
+    let id;
+    try {
+      id = localStorage.getItem('prayer_guest_comment_id');
+    } catch (e) { }
+    return id || Date.now().toString(36);
+  }, []);
+
   const createMutation = useCreateComment(requestId);
   const updateMutation = useUpdateComment(requestId, guestId);
   const deleteMutation = useDeleteComment(requestId, user);
@@ -38,15 +47,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
   });
 
   const newCommentContent = useWatch({ control, name: 'newComment', defaultValue: '' });
-
-  // Generate guestId mirroring PrayedButton logic
-  const guestId = React.useMemo(() => {
-    let id;
-    try {
-      id = localStorage.getItem('prayer_guest_comment_id');
-    } catch (e) { }
-    return id || Date.now().toString(36);
-  }, []);
 
   useEffect(() => {
     import('../utils/storage').then(({ safeStorage }) => {
