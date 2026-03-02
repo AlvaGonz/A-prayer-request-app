@@ -10,8 +10,8 @@
 }
 
 .theme-toggle-capsule.dark {
-  background-color: #09090b;
-  border: 1px solid #27272a;
+  background-color: #16213e;
+  border: 1px solid var(--color-accent-gold, #cba258);
 }
 
 .theme-toggle-capsule.light {
