@@ -11,6 +11,7 @@ import NewPrayerRequestForm from '../components/NewPrayerRequestForm';
 import NotificationBanner from '../components/NotificationBanner';
 import { useAuth } from '../context/AuthContext';
 import { usePrayerRequests, useUpdatePrayerStatus, useDeletePrayerRequest } from '../hooks/usePrayerRequests';
+import { TextLoop } from '../components/ui/text-loop';
 import './PrayerWallPage.css';
 
 const PrayerWallPage = () => {
@@ -122,7 +123,20 @@ const PrayerWallPage = () => {
       <main className="wall-content">
         <div className="wall-header">
           <div className="wall-intro">
-            <h1>{t('prayerWall.title')}</h1>
+            <h1>
+              {t('prayerWall.loopPrefix')}
+              <TextLoop interval={3}>
+                <span>{t('prayerWall.loopItems.enemies')}</span>
+                <span>{t('prayerWall.loopItems.friends')}</span>
+                <span>{t('prayerWall.loopItems.family')}</span>
+                <span>{t('prayerWall.loopItems.brothers')}</span>
+                <span>{t('prayerWall.loopItems.inlaws')}</span>
+                <span className="text-loop-long">{t('prayerWall.loopItems.change')}</span>
+                <span>{t('prayerWall.loopItems.stray')}</span>
+                <span>{t('prayerWall.loopItems.stranger')}</span>
+                <span>{t('prayerWall.loopItems.yourself')}</span>
+              </TextLoop>
+            </h1>
             <p>{t('prayerWall.subtitle')}</p>
           </div>
 

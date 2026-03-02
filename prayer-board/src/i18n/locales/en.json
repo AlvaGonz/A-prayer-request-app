@@ -15,6 +15,18 @@
   "prayerWall": {
     "title": "Community Prayer Wall",
     "subtitle": "Share your prayer requests and lift others up in prayer",
+    "loopPrefix": "Pray for: ",
+    "loopItems": {
+      "enemies": "Your enemies",
+      "friends": "Your friends",
+      "family": "Your family",
+      "brothers": "Your brothers",
+      "inlaws": "Your in-laws",
+      "change": "For discernment",
+      "stray": "The lost",
+      "stranger": "A stranger",
+      "yourself": "Yourself"
+    },
     "newRequest": "New Request",
     "loadMore": "Load More",
     "loading": "Loading prayer requests...",

@@ -15,6 +15,18 @@
   "prayerWall": {
     "title": "Muro de Oración Comunitario",
     "subtitle": "Comparte tus peticiones de oración y levanta oraciones por otros",
+    "loopPrefix": "Ora por: ",
+    "loopItems": {
+      "enemies": "Tus enemigos",
+      "friends": "Tus amigos",
+      "family": "Tu familia",
+      "brothers": "Tus hermanos",
+      "inlaws": "Tus suegros",
+      "change": "Por discernimiento",
+      "stray": "Un descarriado",
+      "stranger": "Un desconocido",
+      "yourself": "Ti"
+    },
     "newRequest": "Nueva Petición",
     "loadMore": "Cargar Más",
     "loading": "Cargando peticiones de oración...",

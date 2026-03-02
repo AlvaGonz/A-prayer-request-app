@@ -1,0 +1,28 @@
+/* Equivalent to Tailwind: relative inline-block whitespace-nowrap */
+.text-loop-wrapper {
+    position: relative;
+    display: inline-flex;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.text-loop-item {
+    display: inline-block;
+    color: var(--color-accent-gold, #cba258);
+    /* Adapting to your web style */
+}
+
+/* Specific fix for long texts inside the loop */
+.text-loop-long {
+    white-space: normal;
+    max-width: 90vw;
+    font-size: 0.7em;
+    line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+    .text-loop-long {
+        max-width: 600px;
+        font-size: 0.85em;
+    }
+}
