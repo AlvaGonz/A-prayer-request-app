@@ -1,29 +1,77 @@
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background-color: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  font-size: 0.85rem;
+.theme-toggle-capsule {
+  display: flex;
+  width: 64px;
+  height: 32px;
+  padding: 4px;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  box-sizing: border-box;
 }
 
-.theme-toggle:hover {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-accent-gold);
-  color: var(--color-accent-gold);
+.theme-toggle-capsule.dark {
+  background-color: #09090b;
+  border: 1px solid #27272a;
 }
 
-.theme-toggle-text {
-  display: none;
+.theme-toggle-capsule.light {
+  background-color: #ffffff;
+  border: 1px solid #e4e4e7;
 }
 
-@media (min-width: 600px) {
-  .theme-toggle-text {
-    display: inline;
-  }
+.theme-toggle-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.theme-toggle-puck,
+.theme-toggle-stationary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  position: absolute;
+}
+
+.theme-toggle-puck.puck-dark-left {
+  transform: translateX(0);
+  background-color: #27272a;
+}
+
+.theme-toggle-puck.puck-light-right {
+  transform: translateX(30px);
+  background-color: #e5e7eb;
+}
+
+.theme-toggle-stationary.station-dark-right {
+  background-color: transparent;
+  transform: translateX(30px);
+}
+
+.theme-toggle-stationary.station-light-left {
+  background-color: transparent;
+  transform: translateX(0px);
+}
+
+/* Base Icon Colors closely matching Tailwind */
+.icon-white {
+  color: #ffffff;
+}
+
+.icon-gray-700 {
+  color: #374151;
+}
+
+.icon-gray-500 {
+  color: #6b7280;
+}
+
+.icon-black {
+  color: #000000;
 }
