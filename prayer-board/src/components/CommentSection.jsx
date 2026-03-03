@@ -43,6 +43,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { isSubmitting, isValid }
   } = useForm({
     defaultValues: { newComment: '' },
@@ -143,8 +144,10 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     }
   }, [comments.length, hasLoaded, onCommentCountUpdate, loading]);
 
-  const handleQuickOption = async (optionText) => {
-    await submitComment(optionText);
+  const handleQuickOption = (optionText) => {
+    const currentText = newCommentContent || '';
+    const updatedText = currentText ? `${currentText} ${optionText}`.trim() : optionText;
+    setValue('newComment', updatedText, { shouldValidate: true, shouldDirty: true });
   };
 
   const onFormSubmit = async (data) => {
