@@ -131,10 +131,11 @@ const PrayerWallPage = () => {
                 <span>{t('prayerWall.loopItems.family')}</span>
                 <span>{t('prayerWall.loopItems.brothers')}</span>
                 <span>{t('prayerWall.loopItems.inlaws')}</span>
-                <span className="text-loop-long">{t('prayerWall.loopItems.change')}</span>
+                <span>{t('prayerWall.loopItems.change')}</span>
                 <span>{t('prayerWall.loopItems.stray')}</span>
                 <span>{t('prayerWall.loopItems.stranger')}</span>
                 <span>{t('prayerWall.loopItems.yourself')}</span>
+                <span>{t('prayerWall.loopItems.all')}</span>
               </TextLoop>
             </h1>
             <p>{t('prayerWall.subtitle')}</p>

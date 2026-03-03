@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
-import { User, Heart, Loader2, Send, AlertCircle } from 'lucide-react';
+import { User, Loader2, AlertCircle } from 'lucide-react';
+import { HeartIcon, SendIcon } from '../components/ui/animated-state-icons';
 import { shareAPI } from '../api';
 import { safeStorage } from '../utils/storage';
 import { m } from 'framer-motion';
@@ -195,7 +196,7 @@ const SharedPrayerPage = () => {
                                     onClick={handlePray}
                                     disabled={isPraying}
                                 >
-                                    <Heart size={20} fill={hasPrayed ? 'currentColor' : 'none'} />
+                                    <HeartIcon size={20} isFilled={hasPrayed} />
                                     <span>{hasPrayed ? t('share.prayed') : t('share.prayButton')}</span>
                                     <span className="pray-count">{prayedCount}</span>
                                 </button>
@@ -258,7 +259,7 @@ const SharedPrayerPage = () => {
                                         className="send-comment-btn"
                                         aria-label="Send comment"
                                     >
-                                        <Send size={16} />
+                                        <SendIcon size={16} isSent={false} />
                                     </button>
                                 </div>
                             </form>

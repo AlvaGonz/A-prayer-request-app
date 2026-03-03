@@ -2,7 +2,8 @@ import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { User, CheckCircle2, Trash2, EyeOff, Archive, MessageCircle } from 'lucide-react';
+import { User, CheckCircle2, Trash2, Archive, MessageCircle } from 'lucide-react';
+import { EyeToggleIcon } from './ui/animated-state-icons';
 import { m } from 'framer-motion';
 import PrayedButton from './PrayedButton';
 import ShareButton from './ShareButton';
@@ -137,7 +138,7 @@ const PrayerRequestCard = ({
                   onClick={() => handleStatusUpdate('hidden')}
                   aria-label={t('prayerCard.hide')}
                 >
-                  <EyeOff size={16} aria-hidden="true" />
+                  <EyeToggleIcon size={18} isHidden={true} />
                 </button>
 
                 <button
