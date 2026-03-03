@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { MessageCircle, Send, X } from 'lucide-react';
+import { MessageCircle, X } from 'lucide-react';
+import { SendIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
@@ -337,7 +338,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
                   className="submit-comment-btn"
                   aria-label={t('comments.send')}
                 >
-                  <Send size={16} />
+                  <SendIcon size={18} isSent={addCommentMutation.isPending} />
                 </button>
               </div>
               <div className={`comment-section__char-count ${newCommentContent?.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>

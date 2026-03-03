@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { MenuCloseIcon } from './ui/animated-state-icons';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
@@ -62,7 +63,7 @@ const Header = () => {
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          <MenuCloseIcon size={26} isOpen={isMenuOpen} />
         </button>
 
         <div className={`header-actions ${isMenuOpen ? 'open' : ''}`}>

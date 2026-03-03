@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
@@ -129,9 +130,10 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         disabled={prayMutation.isPending}
         aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
       >
-        <Heart
+        <HeartIcon
           size={18}
           className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
+          isFilled={isPrayed}
         />
         <span className="prayed-count">{count}</span>
         <span className="prayed-text">

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { EyeToggleIcon } from '../components/ui/animated-state-icons';
 import { useAuth } from '../context/AuthContext';
 import { m } from 'framer-motion';
 import './AuthPages.css';
@@ -94,7 +95,7 @@ const LoginPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <EyeToggleIcon size={20} isHidden={!showPassword} />
                 </button>
               </div>
             </div>
