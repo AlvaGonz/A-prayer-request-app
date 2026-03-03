@@ -120,4 +120,7 @@ Thumbs.db
 .idea
 .vscode
 
+# PRD Document
+PRD-v1.1.0.md
+
 .vercel
