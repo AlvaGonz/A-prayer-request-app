@@ -1,7 +1,9 @@
 {
   "name": "prayer-board",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.1.0",
+  "description": "Prayer Board PWA - Community Prayer Application",
+  "author": "AlvaGonz",
   "type": "module",
   "scripts": {
     "dev": "vite",

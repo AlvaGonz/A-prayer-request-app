@@ -41,8 +41,22 @@ const corsOptions = {
 // Security: Helmet — HTTP security headers (before CORS)
 // CSP disabled initially to avoid conflicts with PWA Service Worker
 app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      "default-src": ["'self'"],
+      "script-src": ["'self'", "'unsafe-inline'", "https://vercel.live", "https://vitals.vercel-insights.com"],
+      "connect-src": ["'self'", "https://*.sentry.io", "https://vitals.vercel-insights.com", "https://*.locize.app", "wss://*.locize.app"],
+      "img-src": ["'self'", "data:", "https://images.unsplash.com", "https://prayer-board-virid.vercel.app"],
+      "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      "font-src": ["'self'", "https://fonts.gstatic.com"],
+      "worker-src": ["'self'", "blob:"],
+      "manifest-src": ["'self'"]
+    },
+    // Gradual CSP rollout: Report only for now as requested in PRD
+    reportOnly: true
+  }
 }));
 
 // Security: CORS Configuration — Whitelist specific origins
@@ -107,7 +121,8 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  // Use structured logging or concise message instead of stack trace for production security
+  console.error(`[Error] ${err.message || 'Unknown error occurred'}`);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
