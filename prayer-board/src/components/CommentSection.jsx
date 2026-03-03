@@ -338,7 +338,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
                   className="submit-comment-btn"
                   aria-label={t('comments.send')}
                 >
-                  <SendIcon size={18} isSent={addCommentMutation.isPending} />
+                  <SendIcon size={18} isSent={createMutation.isPending} />
                 </button>
               </div>
               <div className={`comment-section__char-count ${newCommentContent?.length >= 300 ? 'comment-section__char-count--warning' : ''}`}>
