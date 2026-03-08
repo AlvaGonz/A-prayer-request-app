@@ -62,6 +62,19 @@ app.use(helmet({
 // Security: CORS Configuration — Whitelist specific origins
 app.use(cors(corsOptions));
 
+// Health check — lightweight endpoint for keep-alive pings
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Prayer Board API is running',
+    version: '1.0.0',
+    status: 'healthy'
+  });
+});
+
 // Security: Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -100,19 +113,6 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api', require('./routes/comments'));
 app.use('/api/shared', require('./routes/shared'));
-
-// Health check — lightweight endpoint for keep-alive pings
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Prayer Board API is running',
-    version: '1.0.0',
-    status: 'healthy'
-  });
-});
 
 // 404 handler
 app.use((req, res) => {
