@@ -9,9 +9,9 @@ export const ThemeProvider = ({ children }) => {
   const getInitialTheme = () => {
     if (typeof window === 'undefined') return 'light';
 
-    const savedTheme = safeStorage.getItem('prayerBoard_theme');
-    if (savedTheme) {
-      return savedTheme;
+    const manualPref = safeStorage.getItem('prayerBoard_themeManual');
+    if (manualPref) {
+      return manualPref;
     }
 
     // Check system preference
@@ -24,7 +24,6 @@ export const ThemeProvider = ({ children }) => {
   // Apply theme to document
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    safeStorage.setItem('prayerBoard_theme', theme);
   }, [theme]);
 
   // Listen for system preference changes
@@ -33,8 +32,8 @@ export const ThemeProvider = ({ children }) => {
 
     const handleChange = (e) => {
       // Only auto-switch if user hasn't manually set a preference
-      const savedTheme = safeStorage.getItem('prayerBoard_theme');
-      if (!savedTheme || savedTheme === 'auto') {
+      const manualPref = safeStorage.getItem('prayerBoard_themeManual');
+      if (!manualPref) {
         setTheme(e.matches ? 'dark' : 'light');
       }
     };
@@ -44,7 +43,11 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setTheme(prev => {
+      const next = prev === 'light' ? 'dark' : 'light';
+      safeStorage.setItem('prayerBoard_themeManual', next);
+      return next;
+    });
   };
 
   const setLightTheme = () => setTheme('light');
