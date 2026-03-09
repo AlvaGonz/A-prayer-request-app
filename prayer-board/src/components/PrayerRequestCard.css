@@ -218,3 +218,58 @@
     padding-top: 12px;
   }
 }
+
+/* Testimony Form Styles */
+.prayer-card__testimony-text {
+  background-color: rgba(226, 185, 111, 0.05);
+  border-left: 3px solid var(--color-accent-gold);
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.prayer-card__testimony-text strong {
+  display: block;
+  color: var(--color-accent-gold);
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.prayer-card__testimony-form {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.prayer-card__testimony-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 12px;
+}
+
+.prayer-card__testimony-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 0 2px rgba(226, 185, 111, 0.2);
+}
+
+.prayer-card__testimony-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}

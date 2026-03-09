@@ -98,6 +98,11 @@ export const requestsAPI = {
     body: JSON.stringify(data)
   }),
 
+  markAnswered: async (requestId, data = {}) => apiCall(`/api/requests/${requestId}/answer`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
+
   delete: async (requestId) => apiCall(`/api/requests/${requestId}`, {
     method: 'DELETE'
   })

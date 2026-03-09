@@ -31,7 +31,9 @@
     "newRequest": "Nueva Petición",
     "loadMore": "Cargar Más",
     "loading": "Cargando peticiones de oración...",
-    "empty": "No hay peticiones de oración aún. ¡Sé el primero en compartir!"
+    "empty": "No hay peticiones de oración aún. ¡Sé el primero en compartir!",
+    "filterPending": "Pendientes",
+    "filterAnswered": "Respondidas"
   },
   "prayerCard": {
     "anonymous": "Anónimo",
@@ -49,7 +51,12 @@
     "hideComments": "Ocultar comentarios",
     "showComments": "Mostrar {{count}} comentarios",
     "youPrayedAria": "Has orado por esta petición",
-    "prayAria": "Orar por esta petición"
+    "prayAria": "Orar por esta petición",
+    "testimony": "Testimonio",
+    "testimonyPlaceholder": "Comparte cómo Dios respondió esta oración (opcional)...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "signInToMark": "Inicia sesión para marcar tu oración como respondida."
   },
   "comments": {
     "title": "Comentarios ({{count}})",

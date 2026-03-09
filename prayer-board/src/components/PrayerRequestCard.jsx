@@ -9,6 +9,7 @@ import PrayedButton from './PrayedButton';
 import ShareButton from './ShareButton';
 import CommentSection from './CommentSection';
 import { useAuth } from '../context/AuthContext';
+import { useMarkAnswered } from '../hooks/usePrayerRequests';
 import './PrayerRequestCard.css';
 
 const PrayerRequestCard = ({
@@ -20,9 +21,12 @@ const PrayerRequestCard = ({
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
   const locale = i18n.language.startsWith('es') ? es : enUS;
+  const markAnsweredMutation = useMarkAnswered();
 
   const [showComments, setShowComments] = useState(false);
   const [localCommentCount, setLocalCommentCount] = useState(request.commentCount || 0);
+  const [showTestimonyForm, setShowTestimonyForm] = useState(false);
+  const [testimonyText, setTestimonyText] = useState('');
 
   React.useEffect(() => {
     setLocalCommentCount(request.commentCount || 0);
@@ -49,6 +53,30 @@ const PrayerRequestCard = ({
         onDelete(request.id);
       }
     }
+  };
+
+  const handleMarkAnswered = () => {
+    setShowTestimonyForm(true);
+  };
+
+  const handleSaveTestimony = () => {
+    markAnsweredMutation.mutate(
+      { requestId: request.id, testimony: testimonyText || null },
+      {
+        onSuccess: () => {
+          setShowTestimonyForm(false);
+          setTestimonyText('');
+        },
+        onError: (err) => {
+          alert(err.message || 'Failed to mark as answered');
+        }
+      }
+    );
+  };
+
+  const handleCancelTestimony = () => {
+    setShowTestimonyForm(false);
+    setTestimonyText('');
   };
 
   return (
@@ -96,6 +124,43 @@ const PrayerRequestCard = ({
         <p className="prayer-text">{request.body}</p>
       </div>
 
+      {/* Testimony display for answered prayers */}
+      {isAnswered && request.testimony && (
+        <div className="prayer-card__testimony-text">
+          <strong>{t('prayerCard.testimony')}:</strong>
+          <p>{request.testimony}</p>
+        </div>
+      )}
+
+      {/* Inline testimony form */}
+      {showTestimonyForm && (
+        <div className="prayer-card__testimony-form">
+          <textarea
+            className="prayer-card__testimony-textarea"
+            placeholder={t('prayerCard.testimonyPlaceholder')}
+            value={testimonyText}
+            onChange={(e) => setTestimonyText(e.target.value)}
+            maxLength={1000}
+            rows={3}
+          />
+          <div className="prayer-card__testimony-actions">
+            <button
+              className="action-btn mark-answered"
+              onClick={handleSaveTestimony}
+              disabled={markAnsweredMutation.isPending}
+            >
+              {t('prayerCard.save')}
+            </button>
+            <button
+              className="action-btn"
+              onClick={handleCancelTestimony}
+            >
+              {t('prayerCard.cancel')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <footer className="prayer-card-footer">
         <div className="prayer-card-actions-left">
           <PrayedButton
@@ -120,10 +185,10 @@ const PrayerRequestCard = ({
 
         {(isAuthor || isAdmin) && (
           <div className="prayer-card-actions" role="group" aria-label="Prayer request actions">
-            {isAuthor && !isAnswered && (
+            {isAuthor && !isAnswered && !showTestimonyForm && (
               <button
                 className="action-btn mark-answered"
-                onClick={() => handleStatusUpdate('answered')}
+                onClick={handleMarkAnswered}
                 aria-label={t('prayerCard.markAnswered')}
               >
                 <CheckCircle2 size={16} aria-hidden="true" />
