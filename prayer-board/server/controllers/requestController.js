@@ -2,6 +2,7 @@ const sanitizeHtml = require('sanitize-html');
 const crypto = require('crypto');
 const PrayerRequest = require('../models/PrayerRequest');
 const Comment = require('../models/Comment');
+const { isValidObjectId } = require('../middleware/validateObjectId');
 
 // Sanitize input
 const sanitizeInput = (input) => {
@@ -75,7 +76,7 @@ const createRequest = async (req, res) => {
     body = sanitizeInput(body);
 
     // Validation
-    if (!body || body.length < 10 || body.length > 1000) {
+    if (!body || !body.trim() || body.length < 10 || body.length > 1000) {
       return res.status(400).json({
         error: 'Request body must be between 10 and 1000 characters'
       });
@@ -112,6 +113,10 @@ const createRequest = async (req, res) => {
 // @access  Public
 const pray = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -139,6 +144,10 @@ const pray = async (req, res) => {
 // @access  Public
 const unpray = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -168,6 +177,11 @@ const unpray = async (req, res) => {
 const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
+
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -210,6 +224,10 @@ const updateStatus = async (req, res) => {
 // @access  Private (Admin only)
 const deleteRequest = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request) {
@@ -234,6 +252,10 @@ const deleteRequest = async (req, res) => {
 // @access  Private (author or admin)
 const generateShareLink = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {

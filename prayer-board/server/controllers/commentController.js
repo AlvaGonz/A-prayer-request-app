@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Comment = require('../models/Comment');
 const PrayerRequest = require('../models/PrayerRequest');
+const { isValidObjectId } = require('../middleware/validateObjectId');
 
 // Sanitize input
 const sanitizeInput = (input) => {
@@ -18,6 +19,10 @@ const sanitizeInput = (input) => {
 // @access  Public
 const getComments = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const comments = await Comment.find({
       prayerRequest: req.params.id,
       isDeleted: false
@@ -57,10 +62,14 @@ const createComment = async (req, res) => {
     authorName = sanitizeInput(authorName);
 
     // Validation
-    if (!body || body.length < 1 || body.length > 500) {
+    if (!body || !body.trim() || body.length < 1 || body.length > 500) {
       return res.status(400).json({
         error: 'Comment must be between 1 and 500 characters'
       });
+    }
+
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
     }
 
     // Check if prayer request exists
@@ -133,6 +142,10 @@ const createComment = async (req, res) => {
 // @access  Private
 const deleteComment = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
+    }
+
     const comment = await Comment.findById(req.params.id);
 
     if (!comment) {
@@ -177,6 +190,10 @@ const updateComment = async (req, res) => {
 
     if (!body || body.length < 1 || body.length > 500) {
       return res.status(400).json({ error: 'Comment must be between 1 and 500 characters' });
+    }
+
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid comment ID' });
     }
 
     const comment = await Comment.findById(req.params.id);
