@@ -31,7 +31,9 @@
     "newRequest": "New Request",
     "loadMore": "Load More",
     "loading": "Loading prayer requests...",
-    "empty": "No prayer requests yet. Be the first to share!"
+    "empty": "No prayer requests yet. Be the first to share!",
+    "filterPending": "Pending",
+    "filterAnswered": "Answered"
   },
   "prayerCard": {
     "anonymous": "Anonymous",
@@ -49,7 +51,12 @@
     "hideComments": "Hide comments",
     "showComments": "Show {{count}} comments",
     "youPrayedAria": "You have prayed for this request",
-    "prayAria": "Pray for this request"
+    "prayAria": "Pray for this request",
+    "testimony": "Testimony",
+    "testimonyPlaceholder": "Share how God answered this prayer (optional)...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "signInToMark": "Sign in to mark your prayer as answered."
   },
   "comments": {
     "title": "Comments ({{count}})",
