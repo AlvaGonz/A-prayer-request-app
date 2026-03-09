@@ -1,13 +1,14 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requestsAPI } from '../api';
 
-export const usePrayerRequests = () => {
+export const usePrayerRequests = (statusFilter = 'open') => {
     return useInfiniteQuery({
-        queryKey: ['prayerRequests'],
+        queryKey: ['prayerRequests', statusFilter],
         queryFn: async ({ pageParam = 1 }) => {
             return await requestsAPI.getAll({
                 page: pageParam,
-                limit: pageParam === 1 ? 10 : 20
+                limit: pageParam === 1 ? 10 : 20,
+                status: statusFilter
             });
         },
         initialPageParam: 1,
@@ -38,6 +39,19 @@ export const useUpdatePrayerStatus = () => {
     return useMutation({
         mutationFn: async ({ requestId, data, user }) => {
             return await requestsAPI.updateStatus(requestId, data, user);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['prayerRequests'] });
+        }
+    });
+};
+
+export const useMarkAnswered = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ requestId, testimony }) => {
+            return await requestsAPI.markAnswered(requestId, { testimony });
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['prayerRequests'] });

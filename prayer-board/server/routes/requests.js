@@ -7,7 +7,8 @@ const {
   unpray,
   updateStatus,
   deleteRequest,
-  generateShareLink
+  generateShareLink,
+  markAnswered
 } = require('../controllers/requestController');
 const { protect, adminOnly } = require('../middleware/auth');
 
@@ -20,6 +21,7 @@ router.post('/:id/unpray', unpray);
 // Protected routes
 router.post('/:id/share', protect, generateShareLink);
 router.patch('/:id/status', protect, updateStatus);
+router.patch('/:id/answer', protect, markAnswered);
 router.delete('/:id', protect, adminOnly, deleteRequest);
 
 module.exports = router;

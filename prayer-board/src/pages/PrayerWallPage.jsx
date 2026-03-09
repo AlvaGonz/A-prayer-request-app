@@ -17,6 +17,7 @@ import './PrayerWallPage.css';
 const PrayerWallPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [columnCount, setColumnCount] = useState(3);
+  const [statusFilter, setStatusFilter] = useState('open');
   const { user } = useAuth();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -28,7 +29,7 @@ const PrayerWallPage = () => {
     hasNextPage,
     isFetchingNextPage,
     status,
-  } = usePrayerRequests();
+  } = usePrayerRequests(statusFilter);
 
   const updateMutation = useUpdatePrayerStatus();
   const deleteMutation = useDeletePrayerRequest();
@@ -158,6 +159,21 @@ const PrayerWallPage = () => {
             </button>
           </div>
         )}
+
+        <div className="wall-filters">
+          <button
+            className={`filter-tab ${statusFilter === 'open' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('open')}
+          >
+            {t('prayerWall.filterPending')}
+          </button>
+          <button
+            className={`filter-tab ${statusFilter === 'answered' ? 'active' : ''}`}
+            onClick={() => setStatusFilter('answered')}
+          >
+            {t('prayerWall.filterAnswered')}
+          </button>
+        </div>
 
         <div className="requests-container">
           {requests.length === 0 && !loading ? (

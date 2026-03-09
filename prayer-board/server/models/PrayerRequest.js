@@ -35,6 +35,21 @@ const prayerRequestSchema = new mongoose.Schema({
     enum: ['open', 'answered', 'archived', 'hidden'],
     default: 'open'
   },
+  testimony: {
+    type: String,
+    default: null,
+    trim: true,
+    maxlength: 1000
+  },
+  answeredAt: {
+    type: Date,
+    default: null
+  },
+  answeredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   isDeleted: {
     type: Boolean,
     default: false
