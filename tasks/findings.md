@@ -1,48 +1,88 @@
-# Findings: PrayerRequestCard UI Bugs
+# Findings: Card Footer Bugs Analysis
 
-## BUG 1 — Author name overflow
-**Root Cause:** 
-- `.prayer-card-header` missing `gap` and `min-width: 0`
-- `.prayer-card-author` missing `overflow: hidden`
-- `.author-name` missing `max-width: 100%`
-- `.prayer-card-meta` missing `white-space: nowrap`
+## BUG 1 — Heart Icon Overlap Analysis
+**File**: RipplePrayedButton.jsx (lines 148-158)
 
-**Fix Location:** PrayerRequestCard.css
+The heart icon is rendered INSIDE the RippleButton as part of the content, not absolute positioned:
+```jsx
+<RippleButton ...>
+  <HeartIcon ... />
+  <span className="prayed-count">{count}</span>
+  <div className="prayed-label-stack">...</div>
+  <Sparkles ... />
+</RippleButton>
+```
 
-## BUG 2 — Ghost button investigation
-**Investigation:**
-- Checked PrayerRequestCard.jsx footer: 4 components rendered
-- RipplePrayedButton, RippleCommentButton, RippleShareButton (always)
-- RippleMarkAnsweredButton (conditional)
-- All components return single wrapper element
-- No empty `<div>` or ghost elements found in code
+The `.ripple-prayed-button` class has:
+- `display: flex`
+- `gap: 6px`
+- `justify-content: center`
 
-**Conclusion:** 
-No actual ghost button in code. The issue was flex layout not distributing space properly, which is fixed in BUG 3.
+**Conclusion**: No overlap issue with current implementation. The PrayedButton.css styles with absolute positioning are for the OLD PrayedButton component, not RipplePrayedButton.
 
-## BUG 3 — Footer button layout
-**Root Cause:**
-- Buttons lack `flex: 1` for equal distribution
-- No `flex-shrink: 0` on admin actions container
-- Missing `flex-wrap: wrap` on footer
+## BUG 2 — Ghost Button Analysis ✅ FIXED
+**File**: PrayerRequestCard.css
 
-**Fix Location:** PrayerRequestCard.css
+**Root Cause**: Buttons weren't filling container width due to flex child sizing issues.
 
-## BUG 4 — Prayer message position
-**Root Cause:**
-In RipplePrayedButton.css line 81:
+**Fix Applied**:
 ```css
-.prayed-message {
-  top: calc(100% + 8px);  /* Places BELOW button */
+.prayer-card-actions-left > * {
+  flex: 1 1 0;
+  min-width: 80px;
+  max-width: none;
+  width: 100% !important;  /* Force override */
 }
 ```
 
-**Fix:**
-Change to `bottom: calc(100% + 8px)` to place ABOVE button.
+Added `!important` to ensure width is enforced regardless of component-specific styles.
 
-**Decision:** Using Fix A (absolute positioning with bottom) since:
-- `.prayer-card` does NOT have `overflow: hidden`
-- `.prayer-card-footer` does NOT have `overflow: hidden`
-- Safe to use absolute positioning
+## BUG 3 — Ripple Animation Analysis
+**File**: RippleButton.css (lines 89-99)
 
-**Fix Location:** RipplePrayedButton.css
+Animation exists:
+```css
+@keyframes rippling {
+  0% { opacity: 0.5; transform: scale(0); }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+```
+
+**Status**: Animation is defined and should work.
+
+## BUG 4 — Responsive Layout Analysis ✅ FIXED
+**File**: PrayerRequestCard.css
+
+**Changes Made**:
+
+1. **Desktop/Tablet**: Added `min-width: 80px` to prevent extreme shrinking
+   ```css
+   .prayer-card-actions-left > * {
+     min-width: 80px;
+   }
+   ```
+
+2. **Mobile (≤600px)**: Changed from flex column to grid layout
+   ```css
+   .prayer-card-actions-left {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 8px;
+   }
+   ```
+
+3. **Grid span for odd buttons**: When odd number of buttons, last one spans 2 columns
+   ```css
+   .prayer-card-actions-left > *:last-child:nth-child(odd) {
+     grid-column: span 2;
+   }
+   ```
+
+4. **3-button layout**: Equal 1fr columns when exactly 3 buttons
+   ```css
+   .prayer-card-actions-left > *:nth-child(1):nth-last-child(3),
+   .prayer-card-actions-left > *:nth-child(2):nth-last-child(2),
+   .prayer-card-actions-left > *:nth-child(3):nth-last-child(1) {
+     grid-column: span 1;
+   }
+   ```
