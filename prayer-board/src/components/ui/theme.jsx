@@ -5,17 +5,15 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Check,
   ChevronDown,
-  Monitor,
-  Moon,
-  Sun,
+  Globe,
 } from "lucide-react"
 import { useTranslation } from 'react-i18next';
 
 import { cn } from "../../lib/utils"
 
 const languageIcons = {
-  en: Sun,
-  es: Moon,
+  en: Globe,
+  es: Globe,
 }
 
 const languageConfigs = {
