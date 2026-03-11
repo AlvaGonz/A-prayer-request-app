@@ -33,10 +33,9 @@ const apiCall = async (endpoint, options = {}) => {
     ...options
   };
 
-  // Only block caching on mutations (POST/PUT/PATCH/DELETE), allow SW to cache GETs
-  if (options.method && options.method !== 'GET') {
-    config.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-  }
+  // Ensure fresh data from server, relying on SW for cache
+  config.headers['Cache-Control'] = 'no-cache';
+  config.headers['Pragma'] = 'no-cache';
 
   try {
     const response = await fetch(url, config);
@@ -94,6 +93,11 @@ export const requestsAPI = {
   }),
 
   updateStatus: async (requestId, data) => apiCall(`/api/requests/${requestId}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
+
+  markAnswered: async (requestId, data = {}) => apiCall(`/api/requests/${requestId}/answer`, {
     method: 'PATCH',
     body: JSON.stringify(data)
   }),

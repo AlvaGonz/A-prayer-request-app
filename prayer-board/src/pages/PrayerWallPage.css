@@ -18,16 +18,20 @@
 }
 
 .wall-intro h1 {
-  font-size: 2rem;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .wall-intro p {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--color-text-secondary);
+  font-weight: 400;
+  opacity: 0.9;
 }
 
 .new-request-btn {
@@ -101,6 +105,38 @@
   color: white;
 }
 
+.wall-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.filter-tab {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(8px);
+}
+
+.filter-tab:hover {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.filter-tab.active {
+  background-color: var(--color-accent-gold);
+  color: white;
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.25);
+}
+
 .requests-container {
   display: flex;
   flex-direction: column;
@@ -146,16 +182,6 @@
 .spinner {
   animation: spin 1s linear infinite;
   color: var(--color-accent-gold);
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 768px) {

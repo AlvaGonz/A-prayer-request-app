@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { X, MessageCircle, Globe, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Globe, AlertCircle } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -8,6 +8,7 @@ import { AnimatePresence, m } from 'framer-motion';
 import { requestsAPI } from '../api';
 import { useAuth } from '../context/AuthContext';
 import AnimatedCandle from './AnimatedCandle';
+import { InteractiveHoverButton } from './ui/InteractiveHoverButton';
 import './NewPrayerRequestForm.css';
 
 const overlayVariants = {
@@ -98,7 +99,11 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(result.request);
       onClose();
     } catch (err) {
-      setError('root', { type: 'manual', message: t('errors.creating') });
+      if (err.statusCode === 429) {
+        setError('root', { type: 'manual', message: t('auth.errors.rateLimit') });
+      } else {
+        setError('root', { type: 'manual', message: t('errors.creating') });
+      }
     }
   };
 
@@ -238,24 +243,13 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                           {t('newRequest.cancel')}
                         </button>
                       </Dialog.Close>
-                      <button
+                      <InteractiveHoverButton
+                        text={isSubmitting ? t('newRequest.submitting') : t('newRequest.submit')}
                         type="submit"
-                        className="btn btn-primary"
                         disabled={!bodyContent?.trim() || !isValid || isSubmitting}
                         aria-busy={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 size={16} className="spinner" aria-hidden="true" />
-                            {t('newRequest.submitting')}
-                          </>
-                        ) : (
-                          <>
-                            <MessageCircle size={16} aria-hidden="true" />
-                            {t('newRequest.submit')}
-                          </>
-                        )}
-                      </button>
+                        className="submit-prayer-btn"
+                      />
                     </div>
                   </form>
                 </m.div>

@@ -45,11 +45,12 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            // Prayer requests: serve from cache INSTANTLY, update in background
+            // Prayer requests: serve from network first, fallback to cache
             urlPattern: /^https:\/\/.*\/api\/requests/,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: `prayers-cache-v${APP_VERSION}`,
+              networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 5 * 60 // 5 minutes
@@ -85,5 +86,11 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.js'],
+    include: ['src/**/*.test.{js,jsx}']
   }
 })

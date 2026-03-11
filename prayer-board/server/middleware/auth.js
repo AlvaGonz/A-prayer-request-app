@@ -26,13 +26,27 @@ const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error('JWT verification failed:', error.message);
-      res.status(401).json({ error: 'Not authorized, token failed' });
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  } else {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
+const optionalAuth = async (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).select('-password');
+      if (user && user.isActive) {
+        req.user = user;
+      }
+    } catch (error) {
+      // Just fallback to guest
     }
   }
-
-  if (!token) {
-    res.status(401).json({ error: 'Not authorized, no token' });
-  }
+  next();
 };
 
 const adminOnly = (req, res, next) => {
@@ -43,4 +57,4 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly };
+module.exports = { protect, adminOnly, optionalAuth };

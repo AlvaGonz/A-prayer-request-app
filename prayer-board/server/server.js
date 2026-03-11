@@ -9,8 +9,10 @@ const connectDB = require('./config/db');
 // Load env vars
 dotenv.config();
 
-// Connect to database
-connectDB();
+// Connect to database only if not testing
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 const app = express();
 
@@ -78,7 +80,7 @@ app.get('/', (req, res) => {
 // Security: Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per window
+  max: isDevRateLimit ? 1000 : 5, // 5 attempts per window explicitly in prod
   message: { error: 'Too many attempts from this IP, please try again after 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false
@@ -86,13 +88,13 @@ const authLimiter = rateLimit({
 
 const apiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 100, // 100 requests per hour
+  max: isDevRateLimit ? 5000 : 100, // 100 requests per hour
   message: { error: 'Too many requests from this IP, please try again later' }
 });
 
 const prayerLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 prayers per minute
+  max: isDevRateLimit ? 500 : 30, // 30 prayers per minute
   message: { error: 'Please slow down, too many prayer actions' }
 });
 
@@ -128,6 +130,10 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  });
+}
+
+module.exports = app;
