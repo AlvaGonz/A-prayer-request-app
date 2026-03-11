@@ -26,7 +26,11 @@ const LoginPage = () => {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.message || t('auth.errors.invalidCredentials'));
+      if (err.statusCode === 429) {
+        setError(t('auth.errors.rateLimit'));
+      } else {
+        setError(err.message || t('auth.errors.invalidCredentials'));
+      }
     } finally {
       setIsLoading(false);
     }
