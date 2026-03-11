@@ -12,6 +12,10 @@ export const usePrayerRequests = (statusFilter = 'open') => {
             });
         },
         initialPageParam: 1,
+        staleTime: 0,
+        gcTime: 5 * 60 * 1000,
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
         getNextPageParam: (lastPage) => {
             if (!lastPage || !lastPage.pagination) return undefined;
             const { currentPage, totalPages } = lastPage.pagination;
