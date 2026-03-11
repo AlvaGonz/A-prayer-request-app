@@ -42,11 +42,16 @@ const CommentItem = ({ comment, onDelete, onEdit, canDelete, canEdit }) => {
           </span>
         </div>
         <span className="comment-time">
-          {timeAgo}
-          {comment.isEdited && <span className="comment-edited-mark"> (editado)</span>}
+          {comment.isPending ? (
+            <span className="comment-pending-mark" data-testid="pending-indicator"> (sending...)</span>
+          ) : (
+            <>
+              {timeAgo}
+              {comment.isEdited && <span className="comment-edited-mark"> (editado)</span>}
+            </>
+          )}
         </span>
       </div>
-
       <div className="comment-body-container">
         {isEditing ? (
           <div className="comment-edit-state">
