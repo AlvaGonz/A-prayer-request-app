@@ -1,37 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 :root {
-  /* Dark theme with warm accents - reverent palette */
-  --color-bg-primary: #1a1a2e;
-  --color-bg-secondary: #16213e;
-  --color-bg-tertiary: #0f3460;
-  --color-bg-card: #252544;
+  /* 
+   * Color tokens are defined in themes.css (light + dark).
+   * Do NOT duplicate them here.
+   */
 
-  --color-text-primary: #eaeaea;
-  --color-text-secondary: #a0a0b0;
-  --color-text-muted: #6b6b7b;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
 
-  --color-accent-gold: #e2b96f;
-  --color-accent-gold-hover: #d4a85c;
-  --color-accent-blue: #4a9eff;
-  --color-accent-green: #4ade80;
-  --color-accent-red: #f87171;
-
-  --color-border: #2d2d4a;
-  --color-shadow: rgba(0, 0, 0, 0.3);
-
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-
-  --shadow-sm: 0 2px 4px var(--color-shadow);
-  --shadow-md: 0 4px 12px var(--color-shadow);
-  --shadow-lg: 0 8px 24px var(--color-shadow);
-
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
@@ -141,6 +119,32 @@ a:hover {
   50% {
     box-shadow: 0 0 20px rgba(226, 185, 111, 0.6);
   }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ripple Animation for RippleButton component */
+@keyframes rippling {
+  0% {
+    opacity: 0.5;
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.animate-rippling {
+  animation: rippling 600ms ease-out forwards;
 }
 
 /* Utility classes */

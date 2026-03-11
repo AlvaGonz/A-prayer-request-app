@@ -32,6 +32,7 @@
     "loadMore": "Cargar Más",
     "loading": "Cargando peticiones de oración...",
     "empty": "No hay peticiones de oración aún. ¡Sé el primero en compartir!",
+    "retry": "Reintentar",
     "filterPending": "Pendientes",
     "filterAnswered": "Respondidas"
   },
@@ -61,6 +62,7 @@
   "comments": {
     "title": "Comentarios ({{count}})",
     "close": "Cerrar comentarios",
+    "sectionAria": "Sección de comentarios. {{count}} comentarios.",
     "loading": "Cargando comentarios...",
     "empty": "Sé el primero en ofrecer ánimo y oraciones",
     "placeholder": "Comparte ánimo u oraciones...",
@@ -108,6 +110,14 @@
     "noAccount": "¿No tienes una cuenta?",
     "hasAccount": "¿Ya tienes una cuenta?",
     "guest": "Continuar como Invitado",
+    "or": "o",
+    "emailPlaceholder": "Ingresa tu correo",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "createPasswordPlaceholder": "Crea una contraseña",
+    "displayNamePlaceholder": "Cómo quieres que te conozcan",
+    "passwordHint": "Mínimo 8 caracteres con 1 mayúscula y 1 número",
+    "creatingAccount": "Creando cuenta...",
+    "createAccountBtn": "Crear Cuenta",
     "errors": {
       "invalidCredentials": "Correo o contraseña inválidos",
       "accountDeactivated": "Tu cuenta ha sido desactivada",
@@ -115,7 +125,12 @@
       "weakPassword": "La contraseña debe contener al menos una mayúscula, una minúscula y un número",
       "invalidEmail": "Por favor ingresa un correo electrónico válido",
       "rateLimit": "Demasiados intentos. Por favor intenta más tarde.",
-      "network": "No se puede conectar al servidor. Por favor verifica tu conexión a internet."
+      "network": "No se puede conectar al servidor. Por favor verifica tu conexión a internet.",
+      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+      "passwordUppercase": "La contraseña debe contener al menos una letra mayúscula",
+      "passwordNumber": "La contraseña debe contener al menos un número",
+      "displayNameMin": "El nombre debe tener al menos 2 caracteres",
+      "createFailed": "Error al crear la cuenta"
     }
   },
   "notifications": {
@@ -127,6 +142,11 @@
     "creating": "Error al crear la petición. Por favor intenta de nuevo.",
     "generic": "Algo salió mal. Por favor intenta de nuevo.",
     "pray": "No se pudo registrar tu oración. Por favor intenta de nuevo."
+  },
+  "errorBoundary": {
+    "title": "Algo salió mal",
+    "message": "Lo sentimos, ocurrió algo inesperado. Por favor intenta refrescar la página.",
+    "refresh": "Refrescar Página"
   },
   "theme": {
     "light": "Claro",

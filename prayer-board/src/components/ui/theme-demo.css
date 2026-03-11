@@ -1,0 +1,38 @@
+/* Theme Demo Styles */
+
+.theme-demo {
+  padding: 24px;
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.theme-demo h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-text-primary);
+  margin: 0 0 20px 0;
+}
+
+.theme-demo-section {
+  margin-bottom: 24px;
+}
+
+.theme-demo-section:last-child {
+  margin-bottom: 0;
+}
+
+.theme-demo-section h4 {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.theme-demo-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}

@@ -10,11 +10,11 @@ const {
   generateShareLink,
   markAnswered
 } = require('../controllers/requestController');
-const { protect, adminOnly } = require('../middleware/auth');
+const { protect, adminOnly, optionalAuth } = require('../middleware/auth');
 
 // Public routes
 router.get('/', getRequests);
-router.post('/', createRequest); // Guests allowed
+router.post('/', optionalAuth, createRequest); // Guests allowed
 router.post('/:id/pray', pray);
 router.post('/:id/unpray', unpray);
 

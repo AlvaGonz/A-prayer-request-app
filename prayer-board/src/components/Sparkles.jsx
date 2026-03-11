@@ -1,8 +1,20 @@
-import React from 'react';
-import { m } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { m, useReducedMotion } from 'framer-motion';
 
 const Sparkles = ({ isTriggered, onComplete }) => {
-    if (!isTriggered) return null;
+    const shouldReduceMotion = useReducedMotion();
+
+    // Generate 8 particles with random flight paths outside conditional to keep hooks consistent
+    // (though we return early if not triggered, useReducedMotion must be above)
+    
+    useEffect(() => {
+        if (isTriggered && shouldReduceMotion && onComplete) {
+            const timer = setTimeout(onComplete, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [isTriggered, shouldReduceMotion, onComplete]);
+
+    if (!isTriggered || shouldReduceMotion) return null;
 
     // Generate 8 particles with random flight paths
     const particles = Array.from({ length: 8 }).map((_, i) => ({

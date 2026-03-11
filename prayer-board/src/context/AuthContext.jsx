@@ -38,6 +38,11 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const { token, user } = await authAPI.login({ email, password });
+      
+      // Save to storage
+      safeStorage.setItem('prayerBoard_token', token);
+      safeStorage.setItem('prayerBoard_user', JSON.stringify(user));
+      
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
@@ -60,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 
@@ -68,6 +73,11 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const { token, user } = await authAPI.register(data);
+      
+      // Save to storage
+      safeStorage.setItem('prayerBoard_token', token);
+      safeStorage.setItem('prayerBoard_user', JSON.stringify(user));
+      
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
@@ -92,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 
