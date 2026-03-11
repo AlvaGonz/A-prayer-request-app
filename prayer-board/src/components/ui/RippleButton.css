@@ -54,8 +54,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   pointer-events: none;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Ensure text doesn't overflow */
+.ripple-button-content > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* Ripple Effect Container */
@@ -142,9 +152,13 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .ripple-button {
-    padding: 10px 16px;
+    padding: 8px 12px;
     font-size: 0.85rem;
     min-height: 48px;
+  }
+  
+  .ripple-button-content {
+    gap: 4px;
   }
 }
 
