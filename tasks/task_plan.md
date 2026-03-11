@@ -1,23 +1,39 @@
-# Task Plan: Testing "Answered" Flow and UX Enhancement
+# Task Plan: Fix Prayer Card Button Alignment
 
-## Phase 1: Exploration and Baseline Verification
-- [ ] Read `PrayerWallPage.jsx` to understand tab switching (Pending vs Answered).
-- [ ] Identify a user and a prayer request to use for testing.
-- [ ] Use Browser Subagent to manually verify the current flow.
+## Objective
+Fix the button distribution in the PrayerRequestCard footer so buttons are evenly spaced across the full width.
 
-## Phase 2: TDD - Failing E2E Test
-- [ ] Create `e2e/answered_flow.spec.js`.
-- [ ] Write a test that:
-    1. Registers/Logins a user.
-    2. Creates a prayer request.
-    3. Finds the request and marks it as answered with a testimony.
-    4. Verifies it moves to the "Answered" tab.
-- [ ] Watch the test fails (if the flow has issues or to prove current state).
+## Current Issues
+1. Buttons cluster to the left with unequal spacing
+2. On mobile, buttons wrap inconsistently
+3. Footer feels visually unbalanced
 
-## Phase 3: UX Enhancement (ui-ux-pro-max)
-- [ ] Use `ui-ux-pro-max` to design a celebration effect (e.g., confetti or sparkles) when a prayer is answered.
-- [ ] Implement the enhanced UI feedback in `PrayerRequestCard.jsx`.
+## Implementation Steps
 
-## Phase 4: Final Verification
-- [ ] Run the E2E test again and ensure it passes.
-- [ ] Manually verify the UX enhancement in the browser.
+### Step 1: Update `.prayer-card-footer`
+- Remove `justify-content: space-between` 
+- Add `gap: 8px` for consistent spacing
+- Keep `padding-top` and `border-top` as-is
+
+### Step 2: Update `.prayer-card-actions-left`
+- Keep `flex: 1` to fill available width
+- Add `justify-content: space-between` for even distribution
+- Keep `gap: 8px` for spacing between buttons
+
+### Step 3: Update `.prayer-card-actions-left > *` (child elements)
+- Keep `flex: 1` so all buttons share equal width
+- Add `justify-content: center` to center content
+
+### Step 4: Update mobile media query (`@media (max-width: 600px)`)
+- Stack buttons in column layout
+- Make buttons full width with `width: 100%`
+- Ensure touch targets remain ≥ 44px
+
+## Files to Modify
+- `prayer-board/src/components/PrayerRequestCard.css` ONLY
+
+## Constraints
+- CSS only - no JS changes
+- No new CSS classes
+- Preserve all existing colors, borders, hover states
+- Preserve CSS variable references

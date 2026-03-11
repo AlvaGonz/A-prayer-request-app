@@ -1,0 +1,63 @@
+/* RippleShareButton Styles */
+
+.ripple-share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 52px;
+  font-weight: 500;
+}
+
+.ripple-share-button .share-icon {
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.ripple-share-button:hover .share-icon {
+  transform: scale(1.1) rotate(15deg);
+  color: var(--color-accent-gold);
+}
+
+.ripple-share-button.copied {
+  border-color: var(--color-accent-green, #4ade80);
+  background: linear-gradient(
+    135deg,
+    rgba(74, 222, 128, 0.1) 0%,
+    transparent 100%
+  );
+}
+
+.ripple-share-button.copied .share-icon {
+  color: var(--color-accent-green, #4ade80);
+}
+
+.ripple-share-button.copied .share-text {
+  color: var(--color-accent-green, #4ade80);
+  font-weight: 600;
+}
+
+.share-text {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ripple-share-button {
+    padding: 8px 12px;
+    min-height: 48px;
+  }
+  
+  .share-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ripple-share-button {
+    padding: 6px 10px;
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,66 @@
+/* RippleMarkAnsweredButton Styles */
+
+.ripple-mark-answered-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  min-height: 52px;
+  font-weight: 500;
+  border-color: var(--color-accent-green, #4ade80);
+  color: var(--color-accent-green, #4ade80);
+  background: linear-gradient(
+    135deg,
+    rgba(74, 222, 128, 0.05) 0%,
+    transparent 100%
+  );
+}
+
+.ripple-mark-answered-button .mark-answered-icon {
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.ripple-mark-answered-button:hover:not(:disabled) .mark-answered-icon {
+  transform: scale(1.1);
+  color: var(--color-accent-green, #4ade80);
+}
+
+.ripple-mark-answered-button:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    rgba(74, 222, 128, 0.15) 0%,
+    transparent 100%
+  );
+  border-color: var(--color-accent-green, #4ade80);
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15);
+}
+
+.ripple-mark-answered-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mark-answered-text {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .ripple-mark-answered-button {
+    padding: 8px 12px;
+    min-height: 48px;
+  }
+  
+  .mark-answered-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ripple-mark-answered-button {
+    padding: 6px 10px;
+    min-height: 44px;
+  }
+}

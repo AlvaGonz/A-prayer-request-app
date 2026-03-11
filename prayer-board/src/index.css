@@ -131,6 +131,22 @@ a:hover {
   }
 }
 
+/* Ripple Animation for RippleButton component */
+@keyframes rippling {
+  0% {
+    opacity: 0.5;
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.animate-rippling {
+  animation: rippling 600ms ease-out forwards;
+}
+
 /* Utility classes */
 .sr-only {
   position: absolute;

@@ -2,11 +2,13 @@ import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { User, CheckCircle2, Trash2, Archive, MessageCircle } from 'lucide-react';
+import { User, CheckCircle2, Trash2, Archive } from 'lucide-react';
 import { EyeToggleIcon } from './ui/animated-state-icons';
 import { m, AnimatePresence } from 'framer-motion';
-import PrayedButton from './PrayedButton';
-import ShareButton from './ShareButton';
+import RipplePrayedButton from './RipplePrayedButton';
+import RippleShareButton from './RippleShareButton';
+import RippleCommentButton from './RippleCommentButton';
+import RippleMarkAnsweredButton from './RippleMarkAnsweredButton';
 import CommentSection from './CommentSection';
 import Celebration from './ui/Celebration';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
@@ -202,31 +204,24 @@ const PrayerRequestCard = ({
 
       <footer className="prayer-card-footer">
         <div className="prayer-card-actions-left">
-          <PrayedButton
+          <RipplePrayedButton
             requestId={request.id}
             initialCount={request.prayedCount}
             onPrayed={onPrayed}
           />
 
-          <button
-            className="comments-toggle-btn"
+          <RippleCommentButton
+            commentCount={localCommentCount}
+            isOpen={showComments}
             onClick={() => setShowComments(!showComments)}
-          >
-            <MessageCircle size={16} />
-            <span>{localCommentCount > 0 ? t('comments.title', { count: localCommentCount }) : t('prayerCard.addComment')}</span>
-          </button>
+          />
 
-          <ShareButton requestId={request.id} />
+          <RippleShareButton requestId={request.id} />
 
           {isAuthor && !isAnswered && !showTestimonyForm && (
-            <button
-              className="action-btn mark-answered"
+            <RippleMarkAnsweredButton
               onClick={handleMarkAnswered}
-              aria-label={t('prayerCard.markAnswered')}
-            >
-              <CheckCircle2 size={16} aria-hidden="true" />
-              <span>{t('prayerCard.markAnswered')}</span>
-            </button>
+            />
           )}
         </div>
 
