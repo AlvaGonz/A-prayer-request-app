@@ -9,8 +9,8 @@ export function MenuCloseIcon({ size = 40, color = "currentColor", className = "
         <svg viewBox="0 0 40 40" fill="none" className={className} style={{ width: size, height: size }}>
             <motion.line x1="10" y1="12" x2="30" y2="12" stroke={color} strokeWidth={2.5} strokeLinecap="round"
                 animate={isOpen
-                    ? { y1: 20, y2: 20, rotate: 45 }
-                    : { y1: 12, y2: 12, rotate: 0 }}
+                    ? { y: 8, rotate: 45 }
+                    : { y: 0, rotate: 0 }}
                 transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
                 style={{ transformOrigin: "20px 20px" }}
             />
@@ -21,8 +21,8 @@ export function MenuCloseIcon({ size = 40, color = "currentColor", className = "
             />
             <motion.line x1="10" y1="28" x2="30" y2="28" stroke={color} strokeWidth={2.5} strokeLinecap="round"
                 animate={isOpen
-                    ? { y1: 20, y2: 20, rotate: -45 }
-                    : { y1: 28, y2: 28, rotate: 0 }}
+                    ? { y: -8, rotate: -45 }
+                    : { y: 0, rotate: 0 }}
                 transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
                 style={{ transformOrigin: "20px 20px" }}
             />
