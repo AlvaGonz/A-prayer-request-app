@@ -14,6 +14,18 @@ import { usePrayerRequests, useUpdatePrayerStatus, useDeletePrayerRequest } from
 import { TextLoop } from '../components/ui/text-loop';
 import './PrayerWallPage.css';
 
+// Row container animation variants for staggered card reveals
+const rowContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05
+    }
+  }
+};
+
 const PrayerWallPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [columnCount, setColumnCount] = useState(3);
@@ -209,26 +221,34 @@ const PrayerWallPage = () => {
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                   >
-                    <div
+                    <m.div
                       className="virtual-row-grid"
                       style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}
+                      variants={rowContainerVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: "-50px" }}
                     >
                       {isLoaderRow || (!rowItems && loading) ? (
                         Array.from({ length: columnCount }).map((_, index) => (
                           <PrayerRequestSkeleton key={`skel-${index}`} />
                         ))
                       ) : (
-                        rowItems && rowItems.map(request => (
-                          <PrayerRequestCard
-                            key={request.id}
-                            request={request}
-                            onPrayed={handlePrayed}
-                            onUpdateStatus={handleUpdateStatus}
-                            onDelete={handleDelete}
-                          />
-                        ))
+                        rowItems && rowItems.map((request, itemIndex) => {
+                          const globalIndex = virtualRow.index * columnCount + itemIndex;
+                          return (
+                            <PrayerRequestCard
+                              key={request.id}
+                              request={request}
+                              onPrayed={handlePrayed}
+                              onUpdateStatus={handleUpdateStatus}
+                              onDelete={handleDelete}
+                              index={itemIndex}
+                            />
+                          );
+                        })
                       )}
-                    </div>
+                    </m.div>
                   </div>
                 );
               })}

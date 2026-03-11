@@ -1,31 +1,45 @@
-# Task Plan: Card Footer - Responsive Buttons + Ripple Visibility + Share Ghost
+# Task Plan - Card Footer Fixes
 
-## BUG 1 — "Yo Oro" count and heart icon overlap ✅
-- [x] Verified: No overlap in RipplePrayedButton
-- [x] Heart icon properly positioned inside button with flex layout
-- [x] No fix needed - implementation is correct
+## Bug List
 
-## BUG 2 — RippleShareButton renders invisible (ghost button) ✅ FIXED
-- [x] Added `width: 100% !important` to force buttons to fill container
-- [x] Changed `min-width: 0` to `min-width: 80px` to prevent extreme shrink
-- [x] File: PrayerRequestCard.css
+- [x] **BUG 1**: "Yo Oro" count and heart icon overlap
+  - [x] Reduce gap in button content (6px → 4px)
+  - [x] Change min-width from 100px to 0 for flex shrinking
+  - [x] Reduce font sizes for better fit
+  - [x] Add flex-shrink properties
 
-## BUG 3 — Ripple buttons animations not visible ✅
-- [x] Verified: @keyframes rippling exists in RippleButton.css
-- [x] Animation is properly defined and working
-- [x] No fix needed - implementation is correct
+- [x] **BUG 2**: RippleShareButton renders invisible (ghost button)
+  - [x] Add width: 100% to all Ripple buttons
+  - [x] Ensure display: flex (not inline-flex) in footer context
+  - [x] Add proper min-width: 0 for flex containers
+  - [x] Ensure ripple-button-content fills width
 
-## BUG 4 — Full responsive audit of footer buttons ✅ FIXED
-- [x] Desktop (≥1024px): Even distribution with min-width: 80px
-- [x] Tablet (769px – 1023px): Proper sizing maintained
-- [x] Small tablet (601px – 768px): Font-size adjustments preserved
-- [x] Mobile (≤600px): Grid layout with 2 columns
-  - Odd number of buttons: last spans 2 columns
-  - 3 buttons: equal 1fr columns
-  - min-height: 52px maintained
+- [x] **BUG 3**: Ripple buttons animations not visible
+  - [x] Added purple CSS variables (--color-accent-purple, --color-accent-purple-hover, etc.)
+  - [x] Added green CSS variables (--color-accent-green, --color-accent-green-hover, etc.)
+  - [x] Verified @keyframes rippling exists in RippleButton.css and index.css
 
-## Files Modified
-- ✅ prayer-board/src/components/PrayerRequestCard.css
+- [x] **BUG 4**: Full responsive audit of footer buttons
+  - [x] Desktop (≥1024px): Equal flex distribution with gap: 8px
+  - [x] Tablet (769px–1023px): Reduced gap: 6px
+  - [x] Small tablet (601px–768px): Proper padding and font sizes
+  - [x] Mobile (≤600px): Grid layout with proper spanning
+  - [x] All buttons maintain min-height: 44px minimum
 
-## Build Status
-- ✅ Build successful (7.22s)
+## Implementation Summary
+
+**Files Modified:**
+1. `prayer-board/src/components/PrayerRequestCard.css` - Main footer layout and responsive styles
+2. `prayer-board/src/components/PrayedButton.css` - Removed absolute positioning, added flex layout
+3. `prayer-board/src/components/RipplePrayedButton.css` - Fixed overlap, improved responsive text
+4. `prayer-board/src/components/RippleShareButton.css` - Added full width, responsive text
+5. `prayer-board/src/components/RippleCommentButton.css` - Added full width, responsive text
+6. `prayer-board/src/components/RippleMarkAnsweredButton.css` - Added full width, responsive text
+7. `prayer-board/src/styles/themes.css` - Added purple/green theme variables
+
+**Commit:**
+```
+fix: responsive card footer, ripple visibility, share button, Yo Oro overlap
+```
+
+**Status:** ✅ Pushed to origin/feat/ui-overhaul-purple-green

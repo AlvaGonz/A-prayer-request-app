@@ -16,11 +16,33 @@ import { useAuth } from '../context/AuthContext';
 import { useMarkAnswered } from '../hooks/usePrayerRequests';
 import './PrayerRequestCard.css';
 
+const cardVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 40, 
+    scale: 0.95,
+    rotateX: 5
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    rotateX: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+      mass: 1
+    }
+  }
+};
+
 const PrayerRequestCard = ({
   request,
   onPrayed,
   onUpdateStatus,
-  onDelete
+  onDelete,
+  index = 0
 }) => {
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
@@ -93,12 +115,14 @@ const PrayerRequestCard = ({
 
   return (
     <m.article
-      initial={{ opacity: 0, y: 20, scale: 0.98 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: "0px 0px -40px 0px" }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "0px 0px -80px 0px" }}
+      transition={{ delay: index * 0.08 }}
       className={`prayer-card ${isAnswered ? 'answered' : ''}`}
       aria-labelledby={`prayer-author-${request.id}`}
+      style={{ perspective: 1000 }}
     >
       <header className="prayer-card-header">
         <div className="prayer-card-author">

@@ -182,6 +182,39 @@
   max-width: 100%;
 }
 
+/* Comet Browser & Chromium-specific fixes for button visibility */
+.prayer-card-actions-left .ripple-button .share-text {
+  /* Force visibility */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-block !important;
+  /* Ensure minimum width for text */
+  min-width: 30px;
+  /* Prevent flexbox shrinking issues */
+  flex: 0 1 auto;
+}
+
+.prayer-card-actions-left .ripple-button .share-icon {
+  /* Force SVG visibility in Comet/Chromium */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-flex !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  /* Fix transform issues */
+  transform-origin: center center;
+  -webkit-transform-origin: center center;
+}
+
+/* Ensure Share button wrapper is visible */
+.prayer-card-actions-left > *:has(.ripple-share-button) {
+  min-width: 0;
+  flex: 1 1 0;
+  display: flex;
+}
+
 .prayer-card-actions {
   display: flex;
   gap: 8px;
@@ -497,10 +530,26 @@
   gap: 12px;
 }
 
+/* Scroll Animation Performance Optimization */
+.prayer-card {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Pause animations when card is not in viewport */
+.prayer-card[data-in-view="false"] {
+  animation-play-state: paused;
+}
+
 /* Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
   .prayer-card {
     animation: none;
+    will-change: auto;
+    transform: none !important;
+    opacity: 1 !important;
   }
 
   .success-icon-ring {
@@ -512,4 +561,12 @@
   .prayer-card {
     transition: none;
   }
+}
+
+/* Disable animations for users who prefer reduced motion via class */
+.prayer-card.no-animation {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+  animation: none !important;
 }

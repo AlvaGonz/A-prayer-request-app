@@ -68,12 +68,22 @@
   text-overflow: ellipsis;
   min-width: 0;
   flex-shrink: 1;
+  /* Comet browser fix: ensure text visibility */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-block;
 }
 
 /* Ensure icons don't shrink */
 .ripple-button-content > svg,
 .ripple-button-content > [class*="icon"] {
   flex-shrink: 0;
+  /* Comet browser fix: ensure SVG visibility */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-flex;
+  min-width: 16px;
+  min-height: 16px;
 }
 
 /* Ripple Effect Container */
