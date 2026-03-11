@@ -30,3 +30,12 @@
 - [x] Inject `optionalAuth` middleware into `server/middleware/auth.js`.
 - [x] Bind `optionalAuth` to the public `POST /api/requests` endpoint to unpack JWTs.
 - [x] Unpack explicit boolean `isAnonymous` in `requestController.js` and map it strictly to MongoDB without falling back to defaulting `true` unless `undefined`.
+
+## Phase 9: Frontend Generic Error Handling Audit
+- [x] Audit and patch `NewPrayerRequestForm.jsx` generic `try/catch` block for 429 rate limit errors.
+- [x] Audit and patch `CommentSection.jsx` generic `try/catch` block for 429 rate limit errors.
+- [x] Audit and patch `PrayedButton.jsx` generic `try/catch` block for 429 rate limit errors.
+
+## Phase 10: Playwright E2E Setup
+- [x] Install Playwright (`@playwright/test`) and initialize config.
+- [x] Create E2E test file for Auth workflows including Rate Limiting behavior.

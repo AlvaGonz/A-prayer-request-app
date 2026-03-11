@@ -22,6 +22,17 @@
 ## T4: Optimistic Comments
 - Analyzed `useComments.js`. Currently lacks `onMutate` rollback capabilities required for optimistic rendering. Pending implementation.
 
+### Phase 8
+- [x] Fix anonymous post bug bypassing `isAnonymous` flag.
+
+## Phase 9
+- [x] Audited frontend files for insecure defaults (`localStorage`, `import.meta.env`).
+- [x] Identified and patched `NewPrayerRequestForm.jsx`, `CommentSection.jsx` and `PrayedButton.jsx` to intercept `429` rate limit status codes from the backend.
+
+## Phase 10
+- [x] Setup Playwright E2E for persistent testing of Auth constraints (`npx playwright test`).
+- [x] Uncovered and fixed major architectural bug where `AuthContext.jsx` swallowed API HTTP Exceptions preventing generic error branches in UI components from rendering.
+
 ### Phase 8: Anonymous Bug
 - **Status: FIXED**
 - Identified that `req.user` was discarded by the router for `createRequest`. Integrated `optionalAuth` to restore user identity payload before DB mapping.
