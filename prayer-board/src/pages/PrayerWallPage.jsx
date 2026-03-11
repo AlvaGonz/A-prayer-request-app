@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { m } from 'framer-motion';
@@ -155,21 +155,25 @@ const PrayerWallPage = () => {
           <div className="error-banner">
             {error?.message || t('errors.loading')}
             <button onClick={() => queryClient.invalidateQueries({ queryKey: ['prayerRequests'] })}>
-              Retry
+              {t('prayerWall.retry')}
             </button>
           </div>
         )}
 
-        <div className="wall-filters">
+        <div className="wall-filters" role="tablist">
           <button
             className={`filter-tab ${statusFilter === 'open' ? 'active' : ''}`}
             onClick={() => setStatusFilter('open')}
+            role="tab"
+            aria-selected={statusFilter === 'open'}
           >
             {t('prayerWall.filterPending')}
           </button>
           <button
             className={`filter-tab ${statusFilter === 'answered' ? 'active' : ''}`}
             onClick={() => setStatusFilter('answered')}
+            role="tab"
+            aria-selected={statusFilter === 'answered'}
           >
             {t('prayerWall.filterAnswered')}
           </button>

@@ -10,7 +10,6 @@
 
 .prayer-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
 }
 
 .prayer-card.answered {
@@ -159,18 +158,6 @@
 .action-btn.delete:hover {
   border-color: var(--color-accent-red);
   color: var(--color-accent-red);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (max-width: 600px) {
