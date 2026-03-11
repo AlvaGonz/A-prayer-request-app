@@ -262,6 +262,22 @@
   color: var(--color-text-primary);
 }
 
+/* InteractiveHoverButton submit button overrides */
+.submit-prayer-btn {
+  min-width: 140px;
+}
+
+.submit-prayer-btn .interactive-hover-btn__blob {
+  background-color: var(--color-accent-gold);
+}
+
+@media (max-width: 600px) {
+  .submit-prayer-btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
 @media (max-width: 600px) {
   .modal-overlay {
     padding: 0;

@@ -4,6 +4,48 @@
   flex: 1;
 }
 
+/* Wrapper for InteractiveHoverButton with heart icon overlay */
+.prayed-button-wrapper {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.prayed-button-heart-icon {
+  position: absolute;
+  left: 16px;
+  z-index: 20;
+  pointer-events: none;
+  transition: transform var(--transition-normal);
+  color: var(--color-accent-gold);
+}
+
+.prayed-button-wrapper:hover .prayed-button-heart-icon {
+  transform: scale(1.1);
+}
+
+/* InteractiveHoverButton integration styles */
+.prayed-btn-interactive {
+  width: 100%;
+  min-height: 52px;
+  padding-left: 44px; /* Make room for heart icon */
+}
+
+.prayed-btn-interactive.is-prayed .interactive-hover-btn__blob {
+  background-color: var(--color-accent-gold);
+}
+
+.prayed-btn-interactive.is-prayed {
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+}
+
+.prayed-btn-interactive:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .prayed-button {
   display: inline-flex;
   align-items: center;

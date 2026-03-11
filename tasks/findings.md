@@ -1,110 +1,102 @@
-# Findings: Prayer Card Button Alignment Analysis
+# Findings: InteractiveHoverButton Integration
 
-## Current Implementation Analysis
+## Project Analysis
 
-### File: `prayer-board/src/components/PrayerRequestCard.css`
+### Existing Setup
+- **React 19 + JSX**: Confirmed (NOT TypeScript)
+- **CSS Custom Properties**: Uses `--color-*` and `--radius-*` variables
+- **lucide-react**: Already installed (used in PrayedButton.jsx, NewPrayerRequestForm.jsx)
+- **Vite**: Build tool configured
 
-#### `.prayer-card-footer` (Lines 120-126)
+### Key CSS Variables Available
 ```css
-.prayer-card-footer {
-  display: flex;
-  justify-content: space-between;  /* ISSUE: Creates uneven spacing */
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
-}
+--color-bg-card
+--color-bg-primary
+--color-border
+--color-text-primary
+--color-accent-gold
+--transition-fast
 ```
-**Problem**: Using `space-between` pushes content to edges but doesn't distribute evenly when there are multiple buttons in the left container.
 
-#### `.prayer-card-actions-left` (Lines 128-135)
-```css
-.prayer-card-actions-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: nowrap;
-  flex: 1;           /* Has flex:1 but needs justify-content */
-  min-width: 0;
-}
+## Implementation Notes
+
+### STEP 1: Component Creation
+- Folder `src/components/ui/` already exists
+- Will create InteractiveHoverButton.jsx and .css files
+
+### STEP 2: PrayedButton Integration
+**Current State:**
+- Uses `<button className="prayed-button">` 
+- Contains: HeartIcon, prayed-count span, prayed-label-stack div
+- Has Sparkles component inside (needs to move outside)
+- Has prayed-message div outside (keep as-is)
+
+**Challenges:**
+- The current button has complex internal structure (HeartIcon + count + label stack)
+- InteractiveHoverButton expects simple `text` prop
+- Need to build text string: `"Yo Oro 5"` or similar
+- Sparkles must render outside InteractiveHoverButton
+
+**Solution:**
+- Build text: `${isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')} ${count}`
+- Move Sparkles to wrapper div
+- Keep prayed-message outside
+
+### STEP 3: NewPrayerRequestForm Integration
+**Current State:**
+- Submit button has complex content: Loader2 spinner OR MessageCircle icon + text
+- Disabled logic: `!bodyContent?.trim() || !isValid || isSubmitting`
+
+**Challenges:**
+- InteractiveHoverButton has simple text prop
+- Loading state with spinner needs special handling
+- Button needs to be full width on mobile
+
+**Solution:**
+- For loading state: show "Submitting..." text (no spinner inside)
+- Normal state: show submit text
+- Add CSS: `.submit-prayer-btn { width: 100%; }`
+
+### STEP 4: lucide-react
+- Already in dependencies
+- ArrowRight import will work
+
+### STEP 5: Testing
+- Need to create test file in src/components/ui/tests/
+- Tests follow React Testing Library patterns
+- Project uses Vitest for testing
+
+## Implementation Complete
+
+### Files Created:
+1. `src/components/ui/InteractiveHoverButton.jsx`
+2. `src/components/ui/InteractiveHoverButton.css`
+3. `src/components/ui/tests/InteractiveHoverButton.test.jsx`
+
+### Files Modified:
+1. `src/components/PrayedButton.jsx` - Integrated InteractiveHoverButton
+2. `src/components/PrayedButton.css` - Added wrapper styles and overrides
+3. `src/components/NewPrayerRequestForm.jsx` - Integrated InteractiveHoverButton
+4. `src/components/NewPrayerRequestForm.css` - Added submit button overrides
+
+### Test Results:
 ```
-**Current state**: Has `flex: 1` to fill width but missing `justify-content: space-between` to distribute children evenly.
-
-#### `.prayer-card-actions-left > *` (Lines 137-140)
-```css
-.prayer-card-actions-left > * {
-  flex: 1;           /* Equal width */
-  min-width: 0;
-}
+✓ src/components/ui/tests/InteractiveHoverButton.test.jsx (6 tests)
+  ✓ renders with default text "Button"
+  ✓ renders custom text prop
+  ✓ calls onClick when clicked and not disabled
+  ✓ does NOT call onClick when disabled
+  ✓ applies additional className correctly
+  ✓ forwards ref to button element
 ```
-**Current state**: Already has `flex: 1` for equal width children.
 
-#### `.action-btn`, `.comments-toggle-btn` (Lines 152-169)
-```css
-.action-btn,
-.comments-toggle-btn {
-  /* ... other styles ... */
-  height: 52px;      /* Good: Meets 44px touch target */
-  width: 100%;       /* Full width of container */
-}
-```
-**Current state**: Height is 52px (exceeds 44px minimum). Width is 100%.
+### Build Status:
+✅ Build successful (7.01s)
+✅ No compilation errors
+✅ All tests passing
 
-#### Mobile Media Query (Lines 214-254)
-```css
-@media (max-width: 600px) {
-  .prayer-card-footer {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  .prayer-card-actions-left {
-    justify-content: space-between;  /* Present but needs adjustment */
-    width: 100%;
-    flex-wrap: wrap;                 /* ISSUE: Causes uneven wrapping */
-    gap: 10px;
-  }
-}
-```
-**Problem**: Uses `flex-wrap: wrap` which causes inconsistent button layouts on small screens.
-
-## Root Cause
-1. `.prayer-card-footer` uses `justify-content: space-between` but only has 2 direct children (`.prayer-card-actions-left` and `.prayer-card-actions`)
-2. The buttons inside `.prayer-card-actions-left` need explicit `justify-content: space-between` to distribute evenly
-3. Mobile view uses `flex-wrap: wrap` causing inconsistent layouts
-
-## Changes Made
-
-### 1. `.prayer-card-footer` (Line 120-126)
-- Removed `justify-content: space-between`
-- Added `gap: 8px` for consistent spacing
-
-### 2. `.prayer-card-actions-left` (Line 128-136)
-- Added `justify-content: space-between` for even button distribution
-
-### 3. `.prayer-card-actions-left > *` (Line 138-142)
-- Added `justify-content: center` to center button content
-
-### 4. Mobile Media Query `@media (max-width: 600px)` (Line 243-253)
-- Changed `.prayer-card-actions-left` to use `flex-direction: column` and `align-items: stretch`
-- Added explicit rule for `.prayer-card-actions-left > *` with `width: 100%` and `justify-content: center`
-
-## Verification Results
-
-### Desktop (≥1024px) ✅
-- Buttons evenly spaced in one row
-- Each button same width
-- No button touches the card edge
-
-### Tablet (768px) ✅
-- Same as desktop — single row, even spacing
-
-### Mobile (375px) ✅
-- Buttons are full-width stacked vertically
-- No button is cut off
-- Touch target height is 52px (exceeds 44px minimum)
-
-### All sizes ✅
-- Admin actions (.prayer-card-actions) do not overlap main buttons
-- Card visual identity unchanged (colors, shadows, borders preserved)
-- No JavaScript changes required
+## Deviations from Original Plan
+1. **Sparkles placement**: Moving outside InteractiveHoverButton instead of overlay
+2. **Loading state**: Using text only instead of spinner inside button (spinner doesn't fit hover animation)
+3. **Button text format**: Combining prayer text + count into single string
+4. **Heart icon**: Placed as overlay on left side of button instead of inside text

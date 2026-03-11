@@ -6,6 +6,7 @@ import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
 import Sparkles from './Sparkles';
+import { InteractiveHoverButton } from './ui/InteractiveHoverButton';
 import './PrayedButton.css';
 
 const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
@@ -128,27 +129,26 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     }
   };
 
+  // Build button text with count
+  const buttonText = `${isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')} ${count}`;
+
   return (
     <div className="prayed-button-container">
-      <button
-        className={`prayed-button ${isPrayed ? 'prayed' : ''} ${prayMutation.isPending ? 'loading' : ''}`}
-        onClick={handlePray}
-        disabled={prayMutation.isPending}
-        aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
-      >
+      <div className="prayed-button-wrapper">
         <HeartIcon
-          size={25}
-          className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
+          size={22}
+          className={`prayed-button-heart-icon ${isPrayed ? 'animate' : ''}`}
           isFilled={isPrayed}
         />
-        <span className="prayed-count">{count}</span>
-        <div className="prayed-label-stack">
-          {t('prayerCard.iPrayed').split(' ').map((word, i) => (
-            <span key={i}>{word}</span>
-          ))}
-        </div>
+        <InteractiveHoverButton
+          text={buttonText}
+          onClick={handlePray}
+          disabled={prayMutation.isPending}
+          aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
+          className={`prayed-btn-interactive ${isPrayed ? 'is-prayed' : ''}`}
+        />
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
-      </button>
+      </div>
 
       {showMessage && (
         <div className="prayed-message animate-in">

@@ -1,39 +1,41 @@
-# Task Plan: Fix Prayer Card Button Alignment
+# Task Plan: InteractiveHoverButton Integration
 
-## Objective
-Fix the button distribution in the PrayerRequestCard footer so buttons are evenly spaced across the full width.
+## STEP 1 — Create the component folder and file
+- [x] Create directory: prayer-board/src/components/ui/
+- [x] Create: prayer-board/src/components/ui/InteractiveHoverButton.jsx
+- [x] Create: prayer-board/src/components/ui/InteractiveHoverButton.css
 
-## Current Issues
-1. Buttons cluster to the left with unequal spacing
-2. On mobile, buttons wrap inconsistently
-3. Footer feels visually unbalanced
+## STEP 2 — Integrate into PrayedButton.jsx (CTA: "Yo Oro")
+- [ ] Read PrayedButton.jsx
+- [ ] Import InteractiveHoverButton
+- [ ] Build dynamic text string with count
+- [ ] Replace button with InteractiveHoverButton
+- [ ] Add CSS override rules for prayed state
+- [ ] Keep Sparkles and prayed-message outside
 
-## Implementation Steps
+## STEP 3 — Integrate into NewPrayerRequestForm.jsx (CTA: Submit)
+- [ ] Read NewPrayerRequestForm.jsx
+- [ ] Import InteractiveHoverButton
+- [ ] Build dynamic submit text
+- [ ] Replace submit button with InteractiveHoverButton
+- [ ] Add CSS override rules
+- [ ] Keep cancel button logic
 
-### Step 1: Update `.prayer-card-footer`
-- Remove `justify-content: space-between` 
-- Add `gap: 8px` for consistent spacing
-- Keep `padding-top` and `border-top` as-is
+## STEP 4 — Verify lucide-react
+- [ ] Check package.json for lucide-react
+- [ ] ArrowRight import should work (already used in project)
 
-### Step 2: Update `.prayer-card-actions-left`
-- Keep `flex: 1` to fill available width
-- Add `justify-content: space-between` for even distribution
-- Keep `gap: 8px` for spacing between buttons
+## STEP 5 — Write Unit Tests
+- [ ] Create test file: src/components/ui/tests/InteractiveHoverButton.test.jsx
+- [ ] Test 1: renders with default text "Button"
+- [ ] Test 2: renders custom text prop
+- [ ] Test 3: calls onClick when clicked and not disabled
+- [ ] Test 4: does NOT call onClick when disabled
+- [ ] Test 5: applies additional className correctly
+- [ ] Test 6: forwards ref to button element
+- [ ] Run: npm test
 
-### Step 3: Update `.prayer-card-actions-left > *` (child elements)
-- Keep `flex: 1` so all buttons share equal width
-- Add `justify-content: center` to center content
-
-### Step 4: Update mobile media query (`@media (max-width: 600px)`)
-- Stack buttons in column layout
-- Make buttons full width with `width: 100%`
-- Ensure touch targets remain ≥ 44px
-
-## Files to Modify
-- `prayer-board/src/components/PrayerRequestCard.css` ONLY
-
-## Constraints
-- CSS only - no JS changes
-- No new CSS classes
-- Preserve all existing colors, borders, hover states
-- Preserve CSS variable references
+## FINAL VERIFICATION
+- [ ] Build succeeds
+- [ ] All tests pass
+- [ ] Components animate correctly
