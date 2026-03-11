@@ -72,7 +72,8 @@ const getRequests = async (req, res) => {
 // @access  Public (guests allowed)
 const createRequest = async (req, res) => {
   try {
-    let { body, isAnonymous = true } = req.body;
+    let { body, isAnonymous } = req.body;
+    if (isAnonymous === undefined) isAnonymous = true;
 
     // Sanitize input
     body = sanitizeInput(body);

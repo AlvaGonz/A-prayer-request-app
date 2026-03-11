@@ -19,9 +19,16 @@
 - Executed `vitest` successfully (tests passed)
 - Committed to branch `feat/adversarial-audit`
 
+## T4: Optimistic Comments
+- Analyzed `useComments.js`. Currently lacks `onMutate` rollback capabilities required for optimistic rendering. Pending implementation.
+
+### Phase 8: Anonymous Bug
+- **Status: FIXED**
+- Identified that `req.user` was discarded by the router for `createRequest`. Integrated `optionalAuth` to restore user identity payload before DB mapping.
+- Verified Answered Prayers rules inside `PrayerRequestCard.jsx` accurately gatekeeping modification tools to specific non-anonymous authenticated authors.
+
 ## [Phase 4: Optimistic Comments]
 - Created `fix/comment-optimistic-update` branch
-- Analyzed `useComments.js` for missing `onMutate` rollback properties
 - Configured frontend Vitest integration cases for optimistic input clear & UX tracking
 - Replaced frontend duplicate logic directly within `useCreateComment`
 - Executed `vitest` successfully (tests passed)
