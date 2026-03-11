@@ -57,7 +57,8 @@
   gap: 6px;
   pointer-events: none;
   min-width: 0;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
 }
 
 /* Ensure text doesn't overflow */
@@ -66,6 +67,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  flex-shrink: 1;
+}
+
+/* Ensure icons don't shrink */
+.ripple-button-content > svg,
+.ripple-button-content > [class*="icon"] {
+  flex-shrink: 0;
 }
 
 /* Ripple Effect Container */
@@ -164,8 +172,12 @@
 
 @media (max-width: 480px) {
   .ripple-button {
-    padding: 8px 12px;
+    padding: 6px 8px;
     font-size: 0.8rem;
     min-height: 44px;
+  }
+  
+  .ripple-button-content {
+    gap: 3px;
   }
 }

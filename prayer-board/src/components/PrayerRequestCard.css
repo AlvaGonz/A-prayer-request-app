@@ -153,12 +153,22 @@
   width: 100%;
   min-width: 0;
   display: flex;
+  padding: 10px 6px;
 }
 
-/* Ensure button content doesn't overflow */
+/* Ensure button content is visible and doesn't collapse */
 .prayer-card-actions-left .ripple-button .ripple-button-content {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   min-width: 0;
+  gap: 4px;
+}
+
+/* Ensure icons are always visible */
+.prayer-card-actions-left .ripple-button .ripple-button-content svg,
+.prayer-card-actions-left .ripple-button .ripple-button-content [class*="icon"] {
+  flex-shrink: 0;
+  min-width: 16px;
 }
 
 /* Text truncation for button content */

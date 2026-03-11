@@ -21,6 +21,10 @@
 
 .ripple-mark-answered-button .mark-answered-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ripple-mark-answered-button:hover:not(:disabled) .mark-answered-icon {

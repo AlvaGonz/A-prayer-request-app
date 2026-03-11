@@ -10,10 +10,16 @@
   font-weight: 500;
   width: 100%;
   min-width: 0;
+  color: var(--color-text-primary);
 }
 
 .ripple-share-button .share-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ripple-share-button:hover .share-icon {
@@ -48,6 +54,8 @@
   transition: color var(--transition-fast);
   flex-shrink: 1;
   min-width: 0;
+  color: inherit;
+  display: block;
 }
 
 /* Responsive */
