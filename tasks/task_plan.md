@@ -1,41 +1,27 @@
-# Task Plan: InteractiveHoverButton Integration
+# Task Plan: PrayerRequestCard UI Fixes
 
-## STEP 1 — Create the component folder and file
-- [x] Create directory: prayer-board/src/components/ui/
-- [x] Create: prayer-board/src/components/ui/InteractiveHoverButton.jsx
-- [x] Create: prayer-board/src/components/ui/InteractiveHoverButton.css
+## BUG 1 — Author name overflows and breaks header layout
+- [x] Add `gap: 8px` to `.prayer-card-header`
+- [x] Add `min-width: 0` to `.prayer-card-header`
+- [x] Add `overflow: hidden` to `.prayer-card-author`
+- [x] Add `max-width: 100%` to `.author-name`
+- [x] Add `white-space: nowrap` to `.prayer-card-meta`
 
-## STEP 2 — Integrate into PrayedButton.jsx (CTA: "Yo Oro")
-- [ ] Read PrayedButton.jsx
-- [ ] Import InteractiveHoverButton
-- [ ] Build dynamic text string with count
-- [ ] Replace button with InteractiveHoverButton
-- [ ] Add CSS override rules for prayed state
-- [ ] Keep Sparkles and prayed-message outside
+## BUG 2 — Ghost empty button (3rd slot in footer)
+- [x] Investigation: Components render correctly, no ghost button found in code
+- [x] Flex layout issue: Ensure buttons distribute properly
 
-## STEP 3 — Integrate into NewPrayerRequestForm.jsx (CTA: Submit)
-- [ ] Read NewPrayerRequestForm.jsx
-- [ ] Import InteractiveHoverButton
-- [ ] Build dynamic submit text
-- [ ] Replace submit button with InteractiveHoverButton
-- [ ] Add CSS override rules
-- [ ] Keep cancel button logic
+## BUG 3 — Footer buttons clip text and don't fill space evenly
+- [x] Add `flex-wrap: wrap` to `.prayer-card-footer`
+- [x] Update `.action-btn` to include `flex: 1`, `min-width: 0`
+- [x] Add `flex-shrink: 0` to `.prayer-card-actions`
+- [x] Update mobile media query
 
-## STEP 4 — Verify lucide-react
-- [ ] Check package.json for lucide-react
-- [ ] ArrowRight import should work (already used in project)
+## BUG 4 — "Yo Oré" confirmation message appears BELOW button
+- [x] Change `.prayed-message` from `top: calc(100% + 8px)` to `bottom: calc(100% + 8px)`
+- [x] Add `z-index: 50` to ensure visibility
+- [x] File: RipplePrayedButton.css
 
-## STEP 5 — Write Unit Tests
-- [ ] Create test file: src/components/ui/tests/InteractiveHoverButton.test.jsx
-- [ ] Test 1: renders with default text "Button"
-- [ ] Test 2: renders custom text prop
-- [ ] Test 3: calls onClick when clicked and not disabled
-- [ ] Test 4: does NOT call onClick when disabled
-- [ ] Test 5: applies additional className correctly
-- [ ] Test 6: forwards ref to button element
-- [ ] Run: npm test
-
-## FINAL VERIFICATION
+## Verification
 - [ ] Build succeeds
-- [ ] All tests pass
-- [ ] Components animate correctly
+- [ ] Visual test in browser

@@ -40,6 +40,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .prayer-card-author {
@@ -48,6 +50,7 @@
   gap: 12px;
   min-width: 0;
   flex: 1;
+  overflow: hidden;
 }
 
 .author-avatar {
@@ -75,6 +78,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .prayer-card-meta {
@@ -82,6 +86,7 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .status-badge {
@@ -123,6 +128,7 @@
   padding-top: 16px;
   border-top: 1px solid var(--color-border);
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .prayer-card-actions-left {
@@ -162,6 +168,7 @@
 .prayer-card-actions {
   display: flex;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .action-btn.comments-btn:hover {
