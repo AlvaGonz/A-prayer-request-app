@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 

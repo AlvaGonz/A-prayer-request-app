@@ -123,7 +123,7 @@
   box-shadow: var(--shadow-md);
   z-index: 10;
   opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
+  animation: fadeIn 3s ease forwards;
   display: flex;
   align-items: center;
   gap: 10px;

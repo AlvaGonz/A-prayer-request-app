@@ -98,7 +98,11 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(result.request);
       onClose();
     } catch (err) {
-      setError('root', { type: 'manual', message: t('errors.creating') });
+      if (err.statusCode === 429) {
+        setError('root', { type: 'manual', message: t('auth.errors.rateLimit') });
+      } else {
+        setError('root', { type: 'manual', message: t('errors.creating') });
+      }
     }
   };
 

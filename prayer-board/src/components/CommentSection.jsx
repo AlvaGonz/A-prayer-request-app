@@ -196,7 +196,11 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
       return true;
     } catch (error) {
-      addNotification(t('comments.error_send'));
+      if (error.statusCode === 429) {
+        addNotification(t('comments.rate_limit'));
+      } else {
+        addNotification(t('comments.error_send'));
+      }
       return false;
     }
   };

@@ -5,8 +5,13 @@
 - **Action**: Verified functionality solely through robust frontend unit tests using mocking in Vitest, bypassing the need for implementation edits.
 
 ## T2: Answered Prayers Section
-- **Discovery**: Prayer categories exist in the UI naturally (already split by tabs mapping to "open" and "answered" states).
-- **Action**: Added assertions that correctly map these filter states against the actual rendering components. No backend or route changes required.
+- **Discovery**: `NewPrayerRequestForm.jsx` accepts explicit `isAnonymous` booleans but the backend default fallback mechanism instantly overrides explicit checks if the user is unauthenticated. By migrating to a generic parser, it properly reads the user input directly.
+
+### Frontend Generic Error Audit (429 Rate Limits)
+**Discovery**: The `NewPrayerRequestForm.jsx`, `CommentSection.jsx`, and `PrayedButton.jsx` components handle API calls asynchronously but process the returned `catch (error)` entirely blindly. If the rate limit (`authLimiter`, `prayerLimiter`) hits, it swallows the `HTTP 429` Status Exception and maps it to a generic `"Something went wrong"` translation text. We must intercept `err.statusCode === 429` precisely as we retrofitted in `LoginPage.jsx`.
+
+### Insecure Defaults Scan
+**Discovery**: Searched for fallbacks across `process.env`, `localStorage` and `import.meta.env`. Current configuration persists the raw JWT directly inside `localStorage` instead of leveraging `httponly` persistent cookies. This is technically an insecure SPA default rendering standard React apps highly susceptible to raw XSS extraction. Noting this as architectural debt since an `httpOnly` cookie migration warrants a full backend rewrite.
 
 ## T3: Adversarial Audit
 - **Discovery**: A full-text grep regex search (`\brezo\b|\brezar\b|\brezando\b|\brezos\b`) across all `src/` files returned **zero** occurrences on frontend source files.
