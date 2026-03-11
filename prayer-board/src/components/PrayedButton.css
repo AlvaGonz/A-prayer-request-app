@@ -1,26 +1,27 @@
 .prayed-button-container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex: 1;
 }
 
 .prayed-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  background-color: var(--color-bg-secondary, rgba(255, 255, 255, 0.05));
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), border-color var(--transition-normal), color var(--transition-normal), opacity var(--transition-normal);
   position: relative;
   overflow: hidden;
-  min-width: 44px;
-  min-height: 44px;
+  height: 52px;
+  width: 100%;
 }
 
 .prayed-button:hover:not(:disabled) {
@@ -99,9 +100,24 @@
 }
 
 .prayed-count {
-  font-weight: 600;
-  min-width: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  min-width: 14px;
   text-align: center;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.prayed-label-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+  font-size: 0.75rem;
+  text-transform: none;
+  font-weight: 500;
+  color: inherit;
+  opacity: 0.9;
 }
 
 .prayed-text {

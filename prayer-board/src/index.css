@@ -1,10 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 :root {
   /* 
    * Color tokens are defined in themes.css (light + dark).
    * Do NOT duplicate them here.
    */
 
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+
+  font-family: var(--font-body);
   line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;

@@ -1,41 +1,23 @@
-# Local Development Environment Setup Plan
+# Task Plan: Testing "Answered" Flow and UX Enhancement
 
-## Phase 1: Environment Variables
-- [ ] Create `prayer-board/.env.local` containing `VITE_API_URL=http://localhost:5000`
-- [ ] Create `prayer-board/server/.env` containing backend dev variables (MONGODB_URI, PORT, JWT_SECRET, FRONTEND_URL).
-- [ ] Add `.env.local` to `.gitignore` to prevent secret leaks.
+## Phase 1: Exploration and Baseline Verification
+- [ ] Read `PrayerWallPage.jsx` to understand tab switching (Pending vs Answered).
+- [ ] Identify a user and a prayer request to use for testing.
+- [ ] Use Browser Subagent to manually verify the current flow.
 
-## Phase 2: Server Dev Scripts
-- [ ] Update `prayer-board/server/package.json` with `"dev": "node --watch server.js"`.
+## Phase 2: TDD - Failing E2E Test
+- [ ] Create `e2e/answered_flow.spec.js`.
+- [ ] Write a test that:
+    1. Registers/Logins a user.
+    2. Creates a prayer request.
+    3. Finds the request and marks it as answered with a testimony.
+    4. Verifies it moves to the "Answered" tab.
+- [ ] Watch the test fails (if the flow has issues or to prove current state).
 
-## Phase 3: CORS Fixes
-- [ ] Modify `prayer-board/server/server.js` to ensure `http://localhost:5173` is explicitly whitelisted in `allowedOrigins`.
+## Phase 3: UX Enhancement (ui-ux-pro-max)
+- [ ] Use `ui-ux-pro-max` to design a celebration effect (e.g., confetti or sparkles) when a prayer is answered.
+- [ ] Implement the enhanced UI feedback in `PrayerRequestCard.jsx`.
 
-## Phase 4: Test DB (Mongo Memory Server)
-- [x] Create `prayer-board/server/tests/setup.js` to spawn and tear down `mongodb-memory-server` around tests.
-- [x] Update `prayer-board/server/vitest.config.js` to use `setupFiles: ['./tests/setup.js']`.
-
-## Phase 5: Concurrent Runner
-- [x] Install `concurrently` in `prayer-board`.
-- [x] Add `"dev"`, `"dev:server"`, and `"dev:client"` scripts in `prayer-board/package.json` to spawn both node instances natively.
-
-## Phase 6: Seed Script
-- [x] Create `prayer-board/server/seed.js` script to clear and inject baseline development data into the local DB.
-- [x] Add `"seed": "node seed.js"` script to `prayer-board/server/package.json`.
-
-## Phase 7: Verification
-- [x] Execute `npm run dev` to verify concurrent spin-up.
-- [x] Run `npm test` verifying db-memory integration logs.
-## Phase 8: Anonymous Posts Bug Fix
-- [x] Inject `optionalAuth` middleware into `server/middleware/auth.js`.
-- [x] Bind `optionalAuth` to the public `POST /api/requests` endpoint to unpack JWTs.
-- [x] Unpack explicit boolean `isAnonymous` in `requestController.js` and map it strictly to MongoDB without falling back to defaulting `true` unless `undefined`.
-
-## Phase 9: Frontend Generic Error Handling Audit
-- [x] Audit and patch `NewPrayerRequestForm.jsx` generic `try/catch` block for 429 rate limit errors.
-- [x] Audit and patch `CommentSection.jsx` generic `try/catch` block for 429 rate limit errors.
-- [x] Audit and patch `PrayedButton.jsx` generic `try/catch` block for 429 rate limit errors.
-
-## Phase 10: Playwright E2E Setup
-- [x] Install Playwright (`@playwright/test`) and initialize config.
-- [x] Create E2E test file for Auth workflows including Rate Limiting behavior.
+## Phase 4: Final Verification
+- [ ] Run the E2E test again and ensure it passes.
+- [ ] Manually verify the UX enhancement in the browser.

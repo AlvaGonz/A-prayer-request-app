@@ -137,14 +137,16 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
         aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
       >
         <HeartIcon
-          size={18}
+          size={25}
           className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
           isFilled={isPrayed}
         />
         <span className="prayed-count">{count}</span>
-        <span className="prayed-text">
-          {isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')}
-        </span>
+        <div className="prayed-label-stack">
+          {t('prayerCard.iPrayed').split(' ').map((word, i) => (
+            <span key={i}>{word}</span>
+          ))}
+        </div>
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
       </button>
 
@@ -158,7 +160,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
             onClick={() => setShowMessage(false)}
             aria-label={t('common.close')}
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </div>
       )}
