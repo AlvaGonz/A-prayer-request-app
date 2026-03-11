@@ -4,32 +4,19 @@
   flex: 1;
 }
 
-/* Wrapper for InteractiveHoverButton with heart icon overlay */
-.prayed-button-wrapper {
-  position: relative;
-  display: flex;
-  flex: 1;
-  align-items: center;
-}
+/* 
+ * NOTE: Old absolute positioning styles for heart icon have been removed.
+ * The RipplePrayedButton component now handles the heart icon inline
+ * with a flex layout to prevent overlap issues.
+ * See: RipplePrayedButton.jsx and RipplePrayedButton.css
+ */
 
-.prayed-button-heart-icon {
-  position: absolute;
-  left: 16px;
-  z-index: 20;
-  pointer-events: none;
-  transition: transform var(--transition-normal);
-  color: var(--color-accent-gold);
-}
-
-.prayed-button-wrapper:hover .prayed-button-heart-icon {
-  transform: scale(1.1);
-}
-
-/* InteractiveHoverButton integration styles */
+/* Legacy InteractiveHoverButton styles - kept for reference */
 .prayed-btn-interactive {
   width: 100%;
   min-height: 52px;
-  padding-left: 44px; /* Make room for heart icon */
+  padding-left: 12px; /* Standard padding - icon is inline */
+  padding-right: 12px;
 }
 
 .prayed-btn-interactive.is-prayed .interactive-hover-btn__blob {
@@ -44,6 +31,14 @@
 .prayed-btn-interactive:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Ensure button text uses flex layout */
+.prayed-btn-interactive .interactive-hover-btn__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 0;
 }
 
 .prayed-button {

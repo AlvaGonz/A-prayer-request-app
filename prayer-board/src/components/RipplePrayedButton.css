@@ -11,12 +11,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 10px 14px;
+  gap: 4px;
+  padding: 10px 8px;
   min-height: 52px;
-  min-width: 100px;
+  min-width: 0;
   font-weight: 600;
   letter-spacing: 0.3px;
+  flex-shrink: 1;
 }
 
 .ripple-prayed-button .prayed-icon {
@@ -51,24 +52,24 @@
 }
 
 .prayed-count {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-text-primary);
-  min-width: 20px;
+  min-width: 16px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .prayed-label-stack {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .prayed-label-stack span {
@@ -132,24 +133,34 @@
 /* Responsive */
 @media (max-width: 768px) {
   .ripple-prayed-button {
-    padding: 8px 12px;
+    padding: 8px 6px;
     min-height: 48px;
-    min-width: 90px;
   }
   
   .prayed-label-stack {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.2px;
   }
   
   .prayed-count {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    min-width: 14px;
   }
 }
 
 @media (max-width: 480px) {
   .ripple-prayed-button {
-    padding: 6px 10px;
+    padding: 6px 4px;
     min-height: 44px;
+    gap: 2px;
+  }
+  
+  .prayed-label-stack {
+    font-size: 0.6rem;
+  }
+  
+  .prayed-count {
+    font-size: 0.8rem;
   }
   
   .prayed-message {

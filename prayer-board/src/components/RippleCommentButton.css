@@ -4,10 +4,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 10px 8px;
   min-height: 52px;
   font-weight: 500;
+  width: 100%;
+  min-width: 0;
 }
 
 .ripple-comment-button .comment-icon {
@@ -34,28 +36,35 @@
 }
 
 .comment-text {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .ripple-comment-button {
-    padding: 8px 12px;
+    padding: 8px 6px;
     min-height: 48px;
   }
   
   .comment-text {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .ripple-comment-button {
-    padding: 6px 10px;
+    padding: 6px 4px;
     min-height: 44px;
+    gap: 4px;
+  }
+  
+  .comment-text {
+    font-size: 0.7rem;
   }
 }

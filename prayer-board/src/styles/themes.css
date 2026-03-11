@@ -9,10 +9,22 @@
   --color-text-secondary: #16213e;
   --color-text-muted: #6b6b7b;
   
+  /* Primary Accent - Gold */
   --color-accent-gold: #ddb368;
   --color-accent-gold-hover: #c9a159;
+  
+  /* Purple-Green Overhaul Theme */
+  --color-accent-purple: #7c3aed;
+  --color-accent-purple-hover: #6d28d9;
+  --color-accent-purple-light: rgba(124, 58, 237, 0.1);
+  --color-accent-purple-glow: rgba(124, 58, 237, 0.3);
+  
+  --color-accent-green: #10b981;
+  --color-accent-green-hover: #059669;
+  --color-accent-green-light: rgba(16, 185, 129, 0.1);
+  --color-accent-green-glow: rgba(16, 185, 129, 0.3);
+  
   --color-accent-blue: #16213e;
-  --color-accent-green: #2d8a4e;
   --color-accent-red: #dc2626;
   
   --color-border: #bbbbbb;
@@ -43,10 +55,22 @@
   --color-text-secondary: #ddb368;
   --color-text-muted: #8b8b8b;
   
+  /* Primary Accent - Gold */
   --color-accent-gold: #ddb368;
   --color-accent-gold-hover: #c9a159;
+  
+  /* Purple-Green Overhaul Theme */
+  --color-accent-purple: #8b5cf6;
+  --color-accent-purple-hover: #a78bfa;
+  --color-accent-purple-light: rgba(139, 92, 246, 0.15);
+  --color-accent-purple-glow: rgba(139, 92, 246, 0.4);
+  
+  --color-accent-green: #34d399;
+  --color-accent-green-hover: #6ee7b7;
+  --color-accent-green-light: rgba(52, 211, 153, 0.15);
+  --color-accent-green-glow: rgba(52, 211, 153, 0.4);
+  
   --color-accent-blue: #16213e;
-  --color-accent-green: #4ade80;
   --color-accent-red: #f87171;
   
   --color-border: #1a1a2e;
