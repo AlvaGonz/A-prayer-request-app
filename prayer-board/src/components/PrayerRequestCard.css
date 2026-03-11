@@ -1,23 +1,38 @@
+:root {
+  --gold-tint-light: rgba(226, 185, 111, 0.05);
+  --gold-tint-medium: rgba(226, 185, 111, 0.15);
+  --gold-tint-strong: rgba(226, 185, 111, 0.2);
+  --gold-glow: rgba(221, 179, 104, 0.1);
+  --gold-glow-strong: rgba(221, 179, 104, 0.3);
+}
+
+[data-theme="dark"] {
+  --gold-tint-light: rgba(221, 179, 104, 0.08);
+  --gold-tint-medium: rgba(221, 179, 104, 0.2);
+  --gold-tint-strong: rgba(221, 179, 104, 0.25);
+  --gold-glow: rgba(221, 179, 104, 0.15);
+  --gold-glow-strong: rgba(221, 179, 104, 0.4);
+}
+
 .prayer-card {
   background-color: var(--color-bg-card);
   border-radius: var(--radius-lg);
   padding: 20px;
   box-shadow: var(--shadow-sm);
-  transition: all var(--transition-normal);
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
   animation: slideUp 0.4s ease;
   border: 1px solid var(--color-border);
 }
 
 .prayer-card:hover {
   box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
 }
 
 .prayer-card.answered {
   border-color: var(--color-accent-gold);
   background: linear-gradient(135deg,
       var(--color-bg-card) 0%,
-      rgba(226, 185, 111, 0.05) 100%);
+      var(--gold-tint-light) 100%);
 }
 
 .prayer-card-header {
@@ -25,12 +40,17 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .prayer-card-author {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .author-avatar {
@@ -55,12 +75,18 @@
   font-weight: 500;
   color: var(--color-text-primary);
   font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .prayer-card-meta {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .status-badge {
@@ -76,7 +102,7 @@
 }
 
 .status-badge.answered {
-  background-color: rgba(226, 185, 111, 0.2);
+  background-color: var(--gold-tint-strong);
   color: var(--color-accent-gold);
 }
 
@@ -98,21 +124,101 @@
 
 .prayer-card-footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding-top: 16px;
   border-top: 1px solid var(--color-border);
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .prayer-card-actions-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* All direct children (RippleButton wrappers) should flex equally */
+.prayer-card-actions-left>* {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+}
+
+/* Ensure RippleButtons inside take full width of their container */
+.prayer-card-actions-left .ripple-button {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  padding: 10px 6px;
+}
+
+/* Ensure button content is visible and doesn't collapse */
+.prayer-card-actions-left .ripple-button .ripple-button-content {
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  gap: 4px;
+}
+
+/* Ensure icons are always visible */
+.prayer-card-actions-left .ripple-button .ripple-button-content svg,
+.prayer-card-actions-left .ripple-button .ripple-button-content [class*="icon"] {
+  flex-shrink: 0;
+  min-width: 16px;
+}
+
+/* Text truncation for button content */
+.prayer-card-actions-left .ripple-button .prayed-label-stack,
+.prayer-card-actions-left .ripple-button .comment-text,
+.prayer-card-actions-left .ripple-button .share-text,
+.prayer-card-actions-left .ripple-button .mark-answered-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Comet Browser & Chromium-specific fixes for button visibility */
+.prayer-card-actions-left .ripple-button .share-text {
+  /* Force visibility */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-block !important;
+  /* Ensure minimum width for text */
+  min-width: 30px;
+  /* Prevent flexbox shrinking issues */
+  flex: 0 1 auto;
+}
+
+.prayer-card-actions-left .ripple-button .share-icon {
+  /* Force SVG visibility in Comet/Chromium */
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: inline-flex !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  /* Fix transform issues */
+  transform-origin: center center;
+  -webkit-transform-origin: center center;
+}
+
+/* Ensure Share button wrapper is visible */
+.prayer-card-actions-left > *:has(.ripple-share-button) {
+  min-width: 0;
+  flex: 1 1 0;
+  display: flex;
 }
 
 .prayer-card-actions {
   display: flex;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .action-btn.comments-btn:hover {
@@ -120,25 +226,29 @@
   color: var(--color-accent-gold);
 }
 
-.action-btn {
+.action-btn,
+.comments-toggle-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 10px;
   padding: 8px 12px;
-  background-color: transparent;
+  background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
-  min-width: 44px;
-  min-height: 44px;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  height: 52px;
+  width: 100%;
 }
 
-.action-btn:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.action-btn:hover,
+.comments-toggle-btn:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-accent-gold);
 }
 
 .action-btn.mark-answered:hover {
@@ -161,18 +271,52 @@
   color: var(--color-accent-red);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* Tablet (769px - 1023px) */
+@media (max-width: 1023px) and (min-width: 769px) {
+  .prayer-card-actions-left {
+    gap: 6px;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .prayer-card-actions-left .ripple-button {
+    padding: 8px 6px;
   }
 }
 
+/* Small Tablet (601px - 768px) */
+@media (max-width: 768px) {
+  .prayer-card {
+    padding: 18px;
+  }
+
+  .prayer-card-footer {
+    gap: 12px;
+  }
+
+  .prayer-card-actions-left {
+    gap: 6px;
+  }
+
+  .prayer-card-actions-left .ripple-button {
+    padding: 8px 6px;
+    min-height: 48px;
+  }
+
+  .prayer-card-actions-left .ripple-button .comment-text,
+  .prayer-card-actions-left .ripple-button .share-text,
+  .prayer-card-actions-left .ripple-button .mark-answered-text,
+  .prayer-card-actions-left .ripple-button .prayed-label-stack {
+    font-size: 0.75rem;
+  }
+
+  .action-btn,
+  .comments-toggle-btn {
+    height: 48px;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile (≤600px) */
 @media (max-width: 600px) {
   .prayer-card {
     padding: 16px;
@@ -180,7 +324,6 @@
 
   .prayer-card-header {
     flex-wrap: wrap;
-    /* Allow header to wrap (author / time) */
     gap: 10px;
   }
 
@@ -197,31 +340,45 @@
 
   .prayer-card-footer {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
-    /* Full width items */
   }
 
   .prayer-card-actions-left {
-    justify-content: space-between;
-    /* Spread out main interaction buttons */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
     width: 100%;
-    flex-wrap: wrap;
-    gap: 10px;
+  }
+
+  .prayer-card-actions-left>* {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+  }
+
+  /* Ensure ripple buttons fill their grid cells completely */
+  .prayer-card-actions-left .ripple-button {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  /* When odd number of buttons, last one spans 2 columns */
+  .prayer-card-actions-left>*:last-child:nth-child(odd) {
+    grid-column: span 2;
   }
 
   .prayer-card-actions {
     justify-content: flex-end;
     width: 100%;
     border-top: 1px dashed var(--color-border);
-    /* Separator for admin actions */
-    padding-top: 12px;
+    padding-top: 10px;
   }
 }
 
 /* Testimony Form Styles */
 .prayer-card__testimony-text {
-  background-color: rgba(226, 185, 111, 0.05);
+  background-color: var(--gold-tint-light);
   border-left: 3px solid var(--color-accent-gold);
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -246,6 +403,57 @@
   background-color: var(--color-bg-tertiary);
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.testimony-success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 0;
+  text-align: center;
+  position: relative;
+}
+
+.testimony-success-message p {
+  color: var(--color-accent-gold);
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin: 0;
+  text-shadow: 0 1px 2px var(--color-shadow);
+}
+
+.success-icon-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gold-tint-light);
+  box-shadow: 0 0 20px var(--gold-glow);
+  animation: pulse-gold 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes pulse-gold {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 var(--gold-glow-strong);
+  }
+
+  70% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 20px transparent;
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
 
 .prayer-card__testimony-textarea {
@@ -260,16 +468,105 @@
   resize: vertical;
   min-height: 80px;
   margin-bottom: 12px;
+  transition: all var(--transition-fast);
 }
 
 .prayer-card__testimony-textarea:focus {
   outline: none;
   border-color: var(--color-accent-gold);
-  box-shadow: 0 0 0 2px rgba(226, 185, 111, 0.2);
+  box-shadow: 0 0 0 2px var(--gold-tint-medium);
 }
 
 .prayer-card__testimony-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+/* Alert Dialog Styles */
+.alert-dialog-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-dialog-content {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-xl);
+  max-width: 400px;
+  width: 90%;
+  border: 1px solid var(--color-border);
+  z-index: 1001;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.alert-dialog-title {
+  margin: 0 0 8px 0;
+  color: var(--color-text-primary);
+  font-size: 1.2rem;
+  font-family: var(--font-heading);
+}
+
+.alert-dialog-description {
+  margin: 0 0 24px 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.alert-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Scroll Animation Performance Optimization */
+.prayer-card {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Pause animations when card is not in viewport */
+.prayer-card[data-in-view="false"] {
+  animation-play-state: paused;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .prayer-card {
+    animation: none;
+    will-change: auto;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .success-icon-ring {
+    animation: none;
+  }
+
+  .action-btn,
+  .comments-toggle-btn,
+  .prayer-card {
+    transition: none;
+  }
+}
+
+/* Disable animations for users who prefer reduced motion via class */
+.prayer-card.no-animation {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+  animation: none !important;
 }
