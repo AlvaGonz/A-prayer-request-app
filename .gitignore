@@ -15,3 +15,5 @@ node_modules
 prayer-board-plan/
 prayer-board-plan
 *.txt
+.agent/skills/
+_tmp_skills/
