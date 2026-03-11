@@ -46,7 +46,11 @@ const RegisterPage = () => {
       await register({ displayName, email, password });
       navigate('/');
     } catch (err) {
-      setError(err.message || t('auth.errors.createFailed'));
+      if (err.statusCode === 429) {
+        setError(t('auth.errors.rateLimit'));
+      } else {
+        setError(err.message || t('auth.errors.createFailed'));
+      }
     } finally {
       setIsLoading(false);
     }
