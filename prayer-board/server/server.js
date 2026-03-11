@@ -77,9 +77,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Detect dev mode for rate limit relaxation
-const isDevRateLimit = process.env.NODE_ENV === 'development';
-
 // Security: Rate Limiting
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -126,12 +123,9 @@ app.use((req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  const isDev = process.env.NODE_ENV === 'development';
+  // Use structured logging or concise message instead of stack trace for production security
   console.error(`[Error] ${err.message || 'Unknown error occurred'}`);
-  res.status(err.status || 500).json({
-    error: 'Something went wrong!',
-    ...(isDev && { message: err.message, stack: err.stack })
-  });
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 const PORT = process.env.PORT || 5000;
