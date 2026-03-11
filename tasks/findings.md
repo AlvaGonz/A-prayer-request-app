@@ -14,8 +14,15 @@
 
 ## T4: Optimistic Comments
 - **Discovery**: `useComments.js` currently uses `useMutation` for `useCreateComment` but only invalidates Queries upon `onSuccess`. There is NO optimistic query updating (`onMutate` with rollback via `onError`).
-- **Action**: Wrote `CommentSection.test.jsx` that fails or asserts expectations of immediate inputs clearing and pending elements rendering. Now I need to implement `onMutate` logic on the hook itself, and adapt `CommentSection` to respect its output immediately.
+- **Action**: Wrote `CommentSection.test.jsx` that fails or asserts expectations of immediate inputs clearing and pending elements rendering.
+- `tests/setup.js` successfully isolates DB runs
+- Found that seeding script requires string mapping alignments for Enums and referencing fields natively in Mongo.
 
-## T5: Network-First Strategy 
-- **Discovery**: `vite.config.js` is perfectly configured for Workbox `NetworkFirst` cache handlers towards `/api/*`. However, `usePrayerRequests.js` defaults to standard fetching states. 
+### Phase 8: Anonymous Bug
+- **Bug**: `POST /api/requests` was mapped to public access without any auth middleware passing. `req.user` remained unconditionally undefined.
+- **Fix**: Wrote an `optionalAuth` middleware inside `auth.js` that unpacks JWTs gently for public routes. Adjusted `requestController.js` to strictly parse the destructuring without unconditionally mapping to boolean constants.
+- **Answered Prayers Module**: It natively requires an authenticated `user.id`. Anonymous authors intrinsically do not own an immutable ID tied to their submissions in the DOM context, preserving the system boundaries successfully.
+
+## T5: Network-First Strategy
+- **Discovery**: `vite.config.js` is perfectly configured for Workbox `NetworkFirst` cache handlers towards `/api/*`. However, `usePrayerRequests.js` defaults to standard fetching states.
 - **Action**: Need to enforce `staleTime: 0`, and manual `refetchOnWindowFocus/refetchOnMount` to be highly reactive, simulating network-first data invalidation.
