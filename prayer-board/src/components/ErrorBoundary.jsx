@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Sentry from '@sentry/react';
+import i18next from 'i18next';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -29,9 +30,9 @@ class ErrorBoundary extends React.Component {
           backgroundColor: 'var(--color-bg-primary)',
           color: 'var(--color-text-primary)'
         }}>
-          <h1 style={{ marginBottom: '16px' }}>Something went wrong</h1>
+          <h1 style={{ marginBottom: '16px' }}>{i18next.t('errorBoundary.title')}</h1>
           <p style={{ marginBottom: '24px', color: 'var(--color-text-secondary)' }}>
-            We're sorry, but something unexpected happened. Please try refreshing the page.
+            {i18next.t('errorBoundary.message')}
           </p>
           <button
             onClick={() => window.location.reload()}
@@ -45,7 +46,7 @@ class ErrorBoundary extends React.Component {
               fontWeight: '600'
             }}
           >
-            Refresh Page
+            {i18next.t('errorBoundary.refresh')}
           </button>
         </div>
       );

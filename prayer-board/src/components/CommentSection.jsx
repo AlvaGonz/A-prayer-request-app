@@ -276,7 +276,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
           <m.section
             className="comment-section"
             id={id}
-            aria-label={`Comments section for prayer request. ${comments.length} comments.`}
+            aria-label={t('comments.sectionAria', { count: comments.length })}
             initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
             animate={{ opacity: 1, height: 'auto', overflow: 'visible' }}
             exit={{ opacity: 0, height: 0, overflow: 'hidden' }}

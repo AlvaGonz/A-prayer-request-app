@@ -9,8 +9,8 @@
   --color-text-secondary: #4a4a5c;
   --color-text-muted: #6b6b7b;
   
-  --color-accent-gold: #b4884d;
-  --color-accent-gold-hover: #9a7440;
+  --color-accent-gold: #946d2d;
+  --color-accent-gold-hover: #7a5a25;
   --color-accent-blue: #1a495a;
   --color-accent-green: #2d8a4e;
   --color-accent-red: #dc2626;
@@ -53,10 +53,13 @@
   --color-shadow: rgba(0, 0, 0, 0.3);
 }
 
-/* Apply transitions when theme changes */
-*,
-*::before,
-*::after {
+/* Apply transitions when theme changes — scoped to key UI elements */
+.app-header,
+.prayer-card,
+.auth-card,
+.comment-section,
+.prayed-button,
+.action-btn {
   transition: background-color var(--transition-normal),
               color var(--transition-fast),
               border-color var(--transition-fast);

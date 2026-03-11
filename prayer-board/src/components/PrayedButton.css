@@ -167,7 +167,7 @@
 }
 
 .animate-in {
-  animation: fadeIn 0.3s ease, slideUp 0.3s ease;
+  animation: fadeIn 0.3s ease, slideUpCentered 0.3s ease;
 }
 
 @keyframes heartBurst {
@@ -204,17 +204,8 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
+/* Component-specific slideUp variant (includes translateX centering) */
+@keyframes slideUpCentered {
   from {
     transform: translateX(-50%) translateY(10px);
   }
