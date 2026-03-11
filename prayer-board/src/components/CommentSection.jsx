@@ -154,10 +154,9 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     const text = data.newComment.trim();
     if (!text || text.length > 300) return;
 
-    const success = await submitComment(text);
-    if (success) {
-      reset();
-    }
+    // Clear input immediately for optimal UX during optimistic update
+    reset();
+    await submitComment(text);
   };
 
   const submitComment = async (text) => {
@@ -173,20 +172,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       return false;
     }
 
-    const tempId = `temp-${Date.now()}`;
-    const newCommentObj = {
-      id: tempId,
-      body: text,
-      authorName: isAuthenticated ? user.displayName : t('comments.anonymous_author'),
-      authorId: isAuthenticated ? user.id : null,
-      createdAt: new Date().toISOString(),
-      isPending: true,
-      canDelete: false
-    };
-
-    queryClient.setQueryData(['comments', requestId], (prev = []) => [...prev, newCommentObj]);
-
     try {
+      // Optimistic update handled in useCreateComment via onMutate
       const result = await createMutation.mutateAsync({
         text,
         authorName: isAuthenticated ? user.displayName : t('comments.anonymous_author'),
@@ -197,13 +184,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
       try {
         safeStorage.setItem(storeKey, (userComments + 1).toString());
       } catch (e) { }
-
-      queryClient.setQueryData(['comments', requestId], (prev = []) => prev.map(c =>
-        c.id === tempId ? {
-          ...result.comment,
-          canDelete: result.comment.authorId === user?.id || user?.role === 'admin'
-        } : c
-      ));
 
       emitToRequest(requestId, 'new-comment', {
         id: result.comment.id,
@@ -216,7 +196,6 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
       return true;
     } catch (error) {
-      queryClient.setQueryData(['comments', requestId], (prev = []) => prev.filter(c => c.id !== tempId));
       addNotification(t('comments.error_send'));
       return false;
     }
