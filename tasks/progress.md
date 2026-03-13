@@ -1,80 +1,88 @@
-# Progress Log - Install addyosmani/web-quality-skills
+# Progress Log - Fix Language Dropdown Portal + Notification Permission Flow
 
 ## Session Start: 2026-03-13
 
-### 18:30 - Initial Setup
-- Read existing .agent/skills/README.md to understand structure
-- Verified existing skills: 15 folders present
-- Confirmed target skills from addyosmani/web-quality-skills
+### 19:00 - Initial Analysis
+- Read all relevant source files:
+  - `theme.jsx` - Language dropdown component
+  - `theme.css` - Dropdown styles
+  - `LanguageSelector.jsx` - Wrapper component
+  - `Header.jsx` - Header component
+  - `Header.css` - Header styles
+  - `NotificationBanner.jsx` - Notification banner
+  - `NotificationBanner.css` - Banner styles
 
-### 18:32 - Fetch Skill Structure
-- Used GitHub API to list contents of source repository
-- Identified 6 skill folders:
-  - accessibility (with references/ subdirectory)
-  - core-web-vitals (with references/ subdirectory)
-  - performance
-  - seo
-  - best-practices
-  - web-quality-audit (with scripts/ subdirectory)
+### 19:05 - Bug 1 Diagnosis
+**Issue:** Language dropdown clipped by Header overflow
 
-### 18:35 - Create Directories
-- Created 6 skill directories in prayer-board/.agent/skills/
-- Created subdirectories: accessibility/references, core-web-vitals/references, web-quality-audit/scripts
+**Root Cause:** The `.language-theme-menu` uses `position: absolute` and is rendered inside the Header component's DOM tree. The Header has `z-index: 100` and other stacking context properties that clip the dropdown.
 
-### 18:38 - Download and Write Files
-- Fetched raw content from GitHub for all skill files
-- Wrote 11 total files:
-  - accessibility/SKILL.md (11,187 bytes)
-  - accessibility/references/A11Y-PATTERNS.md
-  - accessibility/references/WCAG.md
-  - core-web-vitals/SKILL.md (12,324 bytes)
-  - core-web-vitals/references/LCP.md
-  - performance/SKILL.md (8,379 bytes)
-  - seo/SKILL.md (10,530 bytes)
-  - best-practices/SKILL.md (9,912 bytes)
-  - web-quality-audit/SKILL.md (7,262 bytes)
-  - web-quality-audit/scripts/analyze.sh
+**Solution:** Use React Portal to render the menu outside the Header's DOM tree, directly on `document.body`. This escapes any overflow or z-index constraints.
 
-### 18:42 - Update README.md
-- Added 6 new entries to .agent/skills/README.md
-- Preserved all existing entries
-- Added source attribution for each new skill
+### 19:10 - Bug 1 Implementation
+Modified `prayer-board/src/components/ui/theme.jsx`:
+1. Added `createPortal` import from 'react-dom'
+2. Added `useRef` import from 'react'
+3. Added `triggerRef` for the trigger button
+4. Added `menuPos` state for positioning
+5. Modified click handler to calculate position from trigger's bounding rect
+6. Wrapped `AnimatePresence` in `createPortal` mounting to `document.body`
 
-### 18:44 - Overlap Analysis
-- Compared each new skill against existing skills
-- Verified no content duplication:
-  - accessibility ≠ radix-ui-a11y (global WCAG vs component-specific)
-  - core-web-vitals ≠ pwa-runtime-caching (metrics vs caching)
-  - performance ≠ pwa-runtime-caching (bundle/assets vs SW cache)
-  - seo ≠ i18n-translation-integrity (search vs translations)
-  - best-practices ≠ express-api-hardening (frontend vs backend)
-  - web-quality-audit ≠ planning-with-files (auditing vs planning)
+Modified `prayer-board/src/components/ui/theme.css`:
+1. Added `.language-theme-menu--portal` class with `position: fixed` and `z-index: 9999`
+2. Updated `.language-theme-backdrop` z-index to 9998
 
-### 18:46 - Create Planning Protocol Files
-- Created tasks/task_plan.md with install checklist
-- Created tasks/findings.md with 6 overlap analyses
-- Created tasks/progress.md (this file)
+### 19:20 - Bug 2 Diagnosis
+**Issue:** Push notification permission blocked by Android Chrome
 
-### 18:48 - Verification
-- Confirmed 21 total skill folders present:
-  - 15 existing skills
-  - 6 new skills from addyosmani/web-quality-skills
-- All files copied verbatim without modification
-- No placeholder files created
+**Root Cause:** Android Chrome blocks `Notification.requestPermission()` when called from inside a `position: fixed` overlay element. The NotificationBanner is `position: fixed` at the bottom of the viewport.
+
+**Solution:** Dismiss the banner BEFORE requesting permission, then wait for the DOM to update before calling the permission API.
+
+### 19:25 - Bug 2 Implementation
+Modified `prayer-board/src/components/NotificationBanner.jsx`:
+1. Removed `isLoading` state (no longer needed)
+2. Modified `handleEnableNotifications` to:
+   - Set `isVisible(false)` immediately (dismiss banner)
+   - Wait one animation frame (`requestAnimationFrame`)
+   - Wait additional 100ms for Chrome's overlay detection
+   - Then request notification permission
+3. Removed `disabled={isLoading}` from button
+4. Simplified button text to just "Enable"
+
+### 19:35 - Architectural Debt Documentation
+Added entry to `tasks/findings.md`:
+- Documented JWT storage in localStorage risk
+- Explained current mitigations (Sentry, future CSP)
+- Outlined resolution path (httpOnly cookies)
+- Flagged as [DEBT-001]
+
+### 19:40 - Created Planning Protocol Files
+- `tasks/task_plan.md` - Task plan with checklists
+- `tasks/findings.md` - Updated with bug fixes and debt
+- `tasks/progress.md` - This session log
+
+### 19:45 - Verification
+- Reviewed all changes
+- Confirmed no public API changes
+- Confirmed no new dependencies
+- Confirmed constraints followed
 
 ## Summary
 
 **Status:** ✅ Complete
 
-**Installed Skills:**
-1. accessibility - WCAG 2.2, A11Y patterns, screen reader support
-2. core-web-vitals - LCP, INP, CLS optimization
-3. performance - Loading speed, runtime efficiency
-4. seo - Search visibility, structured data
-5. best-practices - Security, compatibility, code quality
-6. web-quality-audit - Comprehensive Lighthouse auditing
+**Files Modified:**
+1. `prayer-board/src/components/ui/theme.jsx` - Portal implementation
+2. `prayer-board/src/components/ui/theme.css` - Portal styles
+3. `prayer-board/src/components/NotificationBanner.jsx` - Permission flow fix
+4. `tasks/findings.md` - Documentation
+5. `tasks/task_plan.md` - Planning
+6. `tasks/progress.md` - Session log
 
-**Files Created:** 11 skill files + 3 planning files + 1 updated README
+**Bugs Fixed:**
+1. Language dropdown now renders via portal, escaping Header overflow
+2. Notification permission now works on Android Chrome (banner dismisses first)
 
 **Next Steps:**
 - Commit changes to develop branch

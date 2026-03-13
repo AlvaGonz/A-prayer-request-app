@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Check,
@@ -31,6 +32,8 @@ export const Theme = ({
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const triggerRef = useRef(null)
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
     setIsMounted(true)
@@ -65,7 +68,17 @@ export const Theme = ({
     return (
       <div className="language-theme-dropdown">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          ref={triggerRef}
+          onClick={() => {
+            if (!isOpen && triggerRef.current) {
+              const rect = triggerRef.current.getBoundingClientRect();
+              setMenuPos({
+                top: rect.bottom + window.scrollY + 4,
+                left: rect.left + window.scrollX,
+              });
+            }
+            setIsOpen(!isOpen);
+          }}
           className={cn(
             "language-theme-trigger",
             sizeClasses[size],
@@ -92,47 +105,51 @@ export const Theme = ({
           />
         </button>
 
-        <AnimatePresence>
-          {isOpen && (
-            <>
-              <div 
-                className="language-theme-backdrop" 
-                onClick={() => setIsOpen(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="language-theme-menu"
-              >
-                {languages.map((langOption) => {
-                  const Icon = languageIcons[langOption]
-                  const isSelected = currentLanguage === langOption
+        {createPortal(
+          <AnimatePresence>
+            {isOpen && (
+              <>
+                <div 
+                  className="language-theme-backdrop" 
+                  onClick={() => setIsOpen(false)}
+                />
+                <motion.div
+                  style={{ top: menuPos.top, left: menuPos.left }}
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="language-theme-menu language-theme-menu--portal"
+                >
+                  {languages.map((langOption) => {
+                    const Icon = languageIcons[langOption]
+                    const isSelected = currentLanguage === langOption
 
-                  return (
-                    <button
-                      key={langOption}
-                      onClick={() => changeLanguage(langOption)}
-                      className={cn(
-                        "language-theme-item",
-                        isSelected && "language-theme-item-selected"
-                      )}
-                    >
-                      <div className="language-theme-item-content">
-                        <Icon size={iconSizes[size]} />
-                        <span className="language-theme-item-label">
-                          {languageConfigs[langOption].label}
-                        </span>
-                      </div>
-                      {isSelected && <Check size={iconSizes[size]} />}
-                    </button>
-                  )
-                })}
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                    return (
+                      <button
+                        key={langOption}
+                        onClick={() => changeLanguage(langOption)}
+                        className={cn(
+                          "language-theme-item",
+                          isSelected && "language-theme-item-selected"
+                        )}
+                      >
+                        <div className="language-theme-item-content">
+                          <Icon size={iconSizes[size]} />
+                          <span className="language-theme-item-label">
+                            {languageConfigs[langOption].label}
+                          </span>
+                        </div>
+                        {isSelected && <Check size={iconSizes[size]} />}
+                      </button>
+                    )
+                  })}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
       </div>
     )
   }
