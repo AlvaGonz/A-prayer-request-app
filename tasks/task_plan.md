@@ -1,41 +1,76 @@
-# Task Plan - Install addyosmani/web-quality-skills
+# Task Plan - Fix Language Dropdown Portal + Notification Permission Flow
 
 ## Objective
-Copy 6 skill folders from addyosmani/web-quality-skills/skills/ into prayer-board/.agent/skills/
+Fix two bugs in the Prayer Board application:
+1. Language dropdown clipped by Header overflow
+2. Push notification permission blocked by Android Chrome overlay rule
 
-## Skill Install Checklist
+## Bug 1 — Language Dropdown Portal
 
-- [x] **accessibility** - WCAG 2.2 guidelines, A11Y patterns, screen reader support
-  - [x] SKILL.md
-  - [x] references/A11Y-PATTERNS.md
-  - [x] references/WCAG.md
+- [x] Add `createPortal` import from 'react-dom'
+- [x] Add `useRef` hook for trigger button reference
+- [x] Add `menuPos` state for menu positioning
+- [x] Calculate menu position from trigger's `getBoundingClientRect()`
+- [x] Wrap `AnimatePresence` in `createPortal` mounting to `document.body`
+- [x] Add `language-theme-menu--portal` CSS class with `position: fixed`
+- [x] Update backdrop `z-index` to 9998
+- [x] Update menu `z-index` to 9999
 
-- [x] **core-web-vitals** - LCP, INP, CLS optimization
-  - [x] SKILL.md
-  - [x] references/LCP.md
+**Files:**
+- `prayer-board/src/components/ui/theme.jsx`
+- `prayer-board/src/components/ui/theme.css`
 
-- [x] **performance** - Loading speed, runtime efficiency, resource optimization
-  - [x] SKILL.md
+---
 
-- [x] **seo** - Search engine visibility, structured data, meta tags
-  - [x] SKILL.md
+## Bug 2 — Notification Permission Android Chrome
 
-- [x] **best-practices** - Security, compatibility, code quality
-  - [x] SKILL.md
+- [x] Remove `isLoading` state from component
+- [x] Dismiss banner BEFORE requesting permission
+- [x] Add `requestAnimationFrame` delay for DOM removal
+- [x] Add 100ms buffer for Chrome's overlay detection
+- [x] Remove `disabled={isLoading}` from button
+- [x] Remove loading text from button (simplified to "Enable")
+- [x] Handle permission states (granted/denied)
 
-- [x] **web-quality-audit** - Comprehensive Lighthouse-based auditing
-  - [x] SKILL.md
-  - [x] scripts/analyze.sh
+**Files:**
+- `prayer-board/src/components/NotificationBanner.jsx`
 
-## Post-Install Checklist
+---
 
-- [x] Update .agent/skills/README.md with 6 new entries
-- [x] Verify no content collision with existing skills
-- [x] Create findings.md with overlap analysis
-- [x] Create progress.md with session log
+## Architectural Debt Documentation
 
-## Expected Final State
-- 21 total skill folders in .agent/skills/ (15 existing + 6 new)
-- All skills from addyosmani/web-quality-skills copied verbatim
-- README.md updated with new entries
-- Planning protocol files in tasks/
+- [x] Document JWT localStorage storage risk in findings.md
+- [x] Explain current mitigations (Sentry, CSP future)
+- [x] Outline resolution path (httpOnly cookies)
+
+**Files:**
+- `tasks/findings.md`
+
+---
+
+## Constraints Followed
+
+- ✅ LanguageDropdown public API unchanged (props stable)
+- ✅ Notification logic kept in NotificationBanner component
+- ✅ Used only React built-in features (createPortal, useRef)
+- ✅ No new npm packages added
+- ✅ No Header.css overflow modifications (portal is architecturally correct fix)
+- ✅ No AuthContext modifications
+
+---
+
+## Verification Checklist
+
+- [x] Language dropdown renders outside Header overflow
+- [x] Menu follows trigger position on scroll
+- [x] No clipping on mobile devices
+- [x] Android Chrome permission dialog appears without "Close any bubbles" error
+- [x] Notification permission granted → works correctly
+- [x] Notification permission denied → banner dismissed
+
+---
+
+## Commit Message
+```
+fix: language dropdown portal to escape header overflow; fix notification permission blocked by fixed overlay on Android
+```

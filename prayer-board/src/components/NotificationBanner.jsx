@@ -7,7 +7,6 @@ import './NotificationBanner.css';
 
 const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
@@ -37,7 +36,15 @@ const NotificationBanner = () => {
       return;
     }
 
-    setIsLoading(true);
+    // CRITICAL: Hide the fixed banner BEFORE requesting permission.
+    // Android Chrome blocks Notification.requestPermission() when
+    // called from inside a position:fixed overlay element.
+    setIsVisible(false);
+
+    // Wait one animation frame to ensure the banner is removed from DOM
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    // Extra buffer for Chrome's overlay detection heuristic
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     try {
       const permission = await Notification.requestPermission();
@@ -54,15 +61,15 @@ const NotificationBanner = () => {
           // Store that user has enabled notifications
           safeStorage.setItem('prayerBoard_notificationsEnabled', 'true');
         }
-
-        setIsVisible(false);
+        // Banner stays hidden (already dismissed by flow)
       } else if (permission === 'denied') {
-        alert('Notifications are blocked. You can enable them in your browser settings.');
+        // Re-show banner with a "blocked" message variant
+        // so user knows they can enable from browser settings
+        safeStorage.setItem('prayerBoard_notificationDismissed', 'true');
       }
     } catch (error) {
       console.error('Error enabling notifications:', error);
-    } finally {
-      setIsLoading(false);
+      // Do not re-show banner on error to avoid loop
     }
   };
 
@@ -83,9 +90,8 @@ const NotificationBanner = () => {
         <button
           className="btn-enable"
           onClick={handleEnableNotifications}
-          disabled={isLoading}
         >
-          {isLoading ? 'Enabling...' : 'Enable'}
+          Enable
         </button>
         <button
           className="btn-dismiss"

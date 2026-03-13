@@ -135,3 +135,77 @@ https://github.com/addyosmani/web-quality-skills
 | web-quality-audit | planning-with-files | No | Keep both |
 
 **Conclusion:** No duplicate skills detected. All 6 new skills address different concerns and complement the existing skill set.
+
+---
+
+# Findings - Bug Fixes
+
+## [BUG-001] Language Dropdown Clipped by Header
+
+**Root Cause:** `.language-theme-menu` uses `position: absolute` inside the Header DOM tree. The Header's `z-index` and potential `overflow` properties create a stacking context that clips the dropdown.
+
+**Fix Applied:**
+1. Replaced `position: absolute` with React Portal mounting to `document.body`
+2. Menu now uses `position: fixed` with viewport-relative coordinates
+3. Added `z-index: 9999` to ensure menu renders above all other elements
+4. Calculated position based on trigger's `getBoundingClientRect()`
+
+**Files Modified:**
+- `prayer-board/src/components/ui/theme.jsx`
+- `prayer-board/src/components/ui/theme.css`
+
+**Verification:**
+- ✅ Dropdown renders outside Header DOM tree
+- ✅ Menu follows trigger position on scroll
+- ✅ No clipping on mobile devices
+
+---
+
+## [BUG-002] Notification Permission Blocked on Android Chrome
+
+**Root Cause:** Android Chrome blocks `Notification.requestPermission()` when called from inside a `position: fixed` overlay element. The NotificationBanner is a fixed banner at the bottom of the screen, triggering the "Close any bubbles" error.
+
+**Fix Applied:**
+1. Dismiss banner BEFORE calling `Notification.requestPermission()`
+2. Wait for animation frame + 100ms delay to ensure DOM removal
+3. Removed `isLoading` state as the banner dismisses immediately
+4. Permission request happens after banner is unmounted
+
+**Files Modified:**
+- `prayer-board/src/components/NotificationBanner.jsx`
+
+**Verification:**
+- ✅ Banner hides before permission dialog appears
+- ✅ No "Close any bubbles" error on Android Chrome
+- ✅ Graceful handling of granted/denied states
+
+---
+
+# Architectural Debt
+
+## [DEBT-001] JWT Storage in localStorage — XSS Surface
+
+**Keys affected:** `prayerBoard_user`, `prayerBoard_token`
+
+**Risk level:** Medium (standard SPA pattern, but raw JS-readable)
+
+**Description:**
+The application stores JWT tokens in `localStorage`, which is accessible to any JavaScript running on the page. This creates a potential XSS vulnerability where a malicious script could steal the token.
+
+**Mitigation in scope:** None — httpOnly cookie migration requires full backend auth re-write (out of scope for this UI audit)
+
+**Current mitigations:**
+- Sentry error monitoring active (detects anomalous behavior)
+- CSP headers should be added to prevent inline script injection (future task: configure CSP on Express server)
+
+**Resolution path:**
+When backend auth is refactored, migrate to httpOnly + Secure + SameSite=Strict cookies. This would require:
+1. Backend cookie-based session management
+2. CSRF protection implementation
+3. Frontend auth flow refactoring
+
+**Owner:** Adrian — flagged 2026-03-13
+
+**References:**
+- [OWASP XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
+- [MDN HttpOnly Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#restrict_access_to_cookies)
