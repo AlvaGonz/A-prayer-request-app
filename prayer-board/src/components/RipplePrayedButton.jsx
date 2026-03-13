@@ -6,10 +6,14 @@ import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
 import Sparkles from './Sparkles';
-import { InteractiveHoverButton } from './ui/InteractiveHoverButton';
-import './PrayedButton.css';
+import { RippleButton } from './ui/RippleButton';
+import './RipplePrayedButton.css';
 
-const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
+/**
+ * RipplePrayedButton - A prayer button with ripple effect and heart animation
+ * Tracks prayer count and user interactions with localStorage persistence
+ */
+const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
   const [count, setCount] = useState(initialCount);
   const [isPrayed, setIsPrayed] = useState(() => {
     try {
@@ -25,7 +29,13 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   });
 
   const prayMutation = usePrayMutation(requestId);
+  const [showMessage, setShowMessage] = useState(false);
+  const [showSparkles, setShowSparkles] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  const messageTimeoutRef = useRef(null);
 
+  // Sync with localStorage on mount and when requestId changes
   useEffect(() => {
     try {
       const stored = safeStorage.getItem('prayedRequests');
@@ -42,12 +52,6 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     }
   }, [requestId]);
 
-  const [showMessage, setShowMessage] = useState(false);
-  const [showSparkles, setShowSparkles] = useState(false);
-  const { user, isAuthenticated } = useAuth();
-  const { t } = useTranslation();
-  const messageTimeoutRef = useRef(null);
-
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -57,7 +61,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     };
   }, []);
 
-  // Sync prop updates if they change externally (e.g. from cache invalidate)
+  // Sync prop updates if they change externally
   useEffect(() => {
     setCount(initialCount);
   }, [initialCount]);
@@ -75,10 +79,12 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
 
     try {
       if (prevPrayed) {
+        // Un-pray
         const result = await prayMutation.mutateAsync({ isPraying: true });
         setShowMessage(false);
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
 
+        // Remove from localStorage
         try {
           const stored = safeStorage.getItem('prayedRequests');
           let prayedRequests = stored ? JSON.parse(stored) : [];
@@ -92,11 +98,12 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
           onPrayed(requestId, result.prayedCount || newCount);
         }
       } else {
+        // Pray
         const result = await prayMutation.mutateAsync({ isPraying: false });
         setShowMessage(true);
         setShowSparkles(true);
 
-        // Save to local storage
+        // Save to localStorage
         try {
           const stored = safeStorage.getItem('prayedRequests');
           const prayedRequests = stored ? JSON.parse(stored) : [];
@@ -108,7 +115,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
           console.error('Error writing to local storage', e);
         }
 
-        // Hide message after 10 seconds (extended by 3s)
+        // Hide message after 10 seconds
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 10000);
 
@@ -129,26 +136,28 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
     }
   };
 
-  // Build button text with count
-  const buttonText = `${isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')} ${count}`;
-
   return (
-    <div className="prayed-button-container">
-      <div className="prayed-button-wrapper">
+    <div className="ripple-prayed-button-container">
+      <RippleButton
+        onClick={handlePray}
+        disabled={prayMutation.isPending}
+        className={`ripple-prayed-button ${isPrayed ? 'prayed' : ''} ${prayMutation.isPending ? 'loading' : ''}`}
+        aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
+        rippleColor="rgba(221, 179, 104, 0.4)"
+      >
         <HeartIcon
           size={22}
-          className={`prayed-button-heart-icon ${isPrayed ? 'animate' : ''}`}
+          className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
           isFilled={isPrayed}
         />
-        <InteractiveHoverButton
-          text={buttonText}
-          onClick={handlePray}
-          disabled={prayMutation.isPending}
-          aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
-          className={`prayed-btn-interactive ${isPrayed ? 'is-prayed' : ''}`}
-        />
+        <span className="prayed-count">{count}</span>
+        <div className="prayed-label-stack">
+          {t('prayerCard.iPrayed').split(' ').map((word, i) => (
+            <span key={i}>{word}</span>
+          ))}
+        </div>
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
-      </div>
+      </RippleButton>
 
       {showMessage && (
         <div className="prayed-message animate-in">
@@ -168,4 +177,4 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
   );
 };
 
-export default PrayedButton;
+export default RipplePrayedButton;

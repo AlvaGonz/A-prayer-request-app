@@ -17,3 +17,5 @@ prayer-board-plan
 *.txt
 .agent/skills/
 _tmp_skills/
+tasks/
+tasks
