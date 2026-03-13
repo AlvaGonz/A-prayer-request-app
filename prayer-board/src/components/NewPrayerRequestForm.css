@@ -36,8 +36,9 @@
 }
 
 .modal-header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 500;
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -49,7 +50,7 @@
   cursor: pointer;
   padding: 4px;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
 }
 
 .close-btn:hover {
@@ -84,6 +85,12 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-accent-gold);
+  box-shadow: 0 0 0 3px rgba(226, 185, 111, 0.2);
+}
+
+.form-group textarea:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
 }
 
 .form-group textarea::placeholder {
@@ -139,7 +146,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .checkbox-label input[type="checkbox"]:checked+.checkmark {
@@ -225,7 +232,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   border: none;
 }
 
@@ -255,6 +262,21 @@
   color: var(--color-text-primary);
 }
 
+/* InteractiveHoverButton submit button overrides */
+.submit-prayer-btn {
+  min-width: 140px;
+}
+
+.submit-prayer-btn .interactive-hover-btn__blob {
+  background-color: var(--color-accent-gold);
+}
+
+@media (max-width: 600px) {
+  .submit-prayer-btn {
+    width: 100%;
+    min-width: auto;
+  }
+}
 @media (max-width: 600px) {
   .modal-overlay {
     padding: 0;
