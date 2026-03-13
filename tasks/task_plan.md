@@ -1,20 +1,41 @@
-# Task Plan - Docker Test Environment & Mock Data Cleanup
+# Task Plan - Install addyosmani/web-quality-skills
 
-## Phase 1: Cleanup test artifacts
-- [x] Delete `prayer-board/server/test-comment.js`
-- [x] Delete `prayer-board/server/test-dns.js`
-- [x] Delete `prayer-board/clean_test_results.json`
-- [x] Delete `prayer-board/test_result.json`
+## Objective
+Copy 6 skill folders from addyosmani/web-quality-skills/skills/ into prayer-board/.agent/skills/
 
-## Phase 2: Update .gitignore
-- [x] Add test artifact patterns to `prayer-board/.gitignore`
+## Skill Install Checklist
 
-## Phase 3: Docker-Compose for Local DB
-- [x] Create `prayer-board/docker-compose.dev.yml` with MongoDB 7.0 configuration
+- [x] **accessibility** - WCAG 2.2 guidelines, A11Y patterns, screen reader support
+  - [x] SKILL.md
+  - [x] references/A11Y-PATTERNS.md
+  - [x] references/WCAG.md
 
-## Phase 4: Local Environment Configuration
-- [ ] Verify `prayer-board/server/.env` (manually or via instructions) to point to Docker DB: `mongodb://devuser:devpass@localhost:27017/prayerboard_dev?authSource=admin`
+- [x] **core-web-vitals** - LCP, INP, CLS optimization
+  - [x] SKILL.md
+  - [x] references/LCP.md
 
-## Phase 5: Verification
-- [ ] Check `git status` for clean state
-- [ ] Test `docker compose -f prayer-board/docker-compose.dev.yml up -d` (if docker available)
+- [x] **performance** - Loading speed, runtime efficiency, resource optimization
+  - [x] SKILL.md
+
+- [x] **seo** - Search engine visibility, structured data, meta tags
+  - [x] SKILL.md
+
+- [x] **best-practices** - Security, compatibility, code quality
+  - [x] SKILL.md
+
+- [x] **web-quality-audit** - Comprehensive Lighthouse-based auditing
+  - [x] SKILL.md
+  - [x] scripts/analyze.sh
+
+## Post-Install Checklist
+
+- [x] Update .agent/skills/README.md with 6 new entries
+- [x] Verify no content collision with existing skills
+- [x] Create findings.md with overlap analysis
+- [x] Create progress.md with session log
+
+## Expected Final State
+- 21 total skill folders in .agent/skills/ (15 existing + 6 new)
+- All skills from addyosmani/web-quality-skills copied verbatim
+- README.md updated with new entries
+- Planning protocol files in tasks/
