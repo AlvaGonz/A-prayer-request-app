@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { commentsAPI } from '../api';
+import { commentsAPI } from '../api/index.js';
 
 export const useComments = (requestId, isOpen) => {
     return useQuery({

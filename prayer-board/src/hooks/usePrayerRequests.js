@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { requestsAPI } from '../api';
+import { requestsAPI } from '../api/index.js';
 
 export const usePrayerRequests = (statusFilter = 'open') => {
     return useInfiniteQuery({

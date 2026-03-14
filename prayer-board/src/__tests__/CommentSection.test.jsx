@@ -1,50 +1,72 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CommentSection from '../components/CommentSection';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
+import { SocketProvider } from '../context/SocketContext';
 
-// Mocks
+// Create mock functions
+const mockUseComments = vi.fn();
+const mockUseCreateComment = vi.fn();
+const mockUseUpdateComment = vi.fn(() => ({ mutate: vi.fn() }));
+const mockUseDeleteComment = vi.fn(() => ({ mutate: vi.fn() }));
+
+// Mock the hooks module
+vi.mock('../hooks/useComments', () => ({
+  useComments: (...args) => mockUseComments(...args),
+  useCreateComment: (...args) => mockUseCreateComment(...args),
+  useUpdateComment: (...args) => mockUseUpdateComment(...args),
+  useDeleteComment: (...args) => mockUseDeleteComment(...args),
+}));
+
+// Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key) => key
   })
 }));
 
-vi.mock('../hooks/useComments', () => ({
-  useComments: vi.fn(),
-  useCreateComment: vi.fn(),
-  useUpdateComment: vi.fn(() => ({ mutate: vi.fn() })),
-  useDeleteComment: vi.fn(() => ({ mutate: vi.fn() }))
-}));
-
-const { useComments, useCreateComment } = require('../hooks/useComments');
+// Create a test query client
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 describe('CommentSection - Optimistic Updates', () => {
   const mockMutate = vi.fn();
+  let testQueryClient;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    testQueryClient = createTestQueryClient();
     
     // Default useComments returns valid list
-    useComments.mockReturnValue({
+    mockUseComments.mockReturnValue({
       data: [{ id: '1', body: 'Existing comment', authorName: 'Alice', createdAt: new Date().toISOString() }],
       isLoading: false
     });
 
-    useCreateComment.mockReturnValue({
+    mockUseCreateComment.mockReturnValue({
       mutate: mockMutate,
       isPending: false
     });
   });
 
   const renderComponent = () => render(
-    <AuthProvider>
-      <ThemeProvider>
-        <CommentSection requestId="req-123" onClose={vi.fn()} requestAuthorId="author-1" />
-      </ThemeProvider>
-    </AuthProvider>
+    <QueryClientProvider client={testQueryClient}>
+      <AuthProvider>
+        <ThemeProvider>
+          <SocketProvider>
+            <CommentSection requestId="req-123" onClose={() => {}} requestAuthorId="author-1" />
+          </SocketProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 
   it('renders existing comments and the form', () => {
@@ -85,7 +107,7 @@ describe('CommentSection - Optimistic Updates', () => {
 
   it('displays a pending indicator if comment is marked pending', () => {
     // Inject optimistic pending comment
-    useComments.mockReturnValue({
+    mockUseComments.mockReturnValue({
       data: [{ id: 'temp-1', body: 'Pending comment', authorName: 'User', createdAt: new Date().toISOString(), pending: true }],
       isLoading: false
     });
