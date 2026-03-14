@@ -183,28 +183,42 @@ https://github.com/addyosmani/web-quality-skills
 
 # Architectural Debt
 
-## [DEBT-001] JWT Storage in localStorage — XSS Surface
+## [DEBT-001] JWT Storage — localStorage → sessionStorage ✅ RESOLVED
 
 **Keys affected:** `prayerBoard_user`, `prayerBoard_token`
 
-**Risk level:** Medium (standard SPA pattern, but raw JS-readable)
+**Risk level:** Medium → Low (mitigated)
 
-**Description:**
-The application stores JWT tokens in `localStorage`, which is accessible to any JavaScript running on the page. This creates a potential XSS vulnerability where a malicious script could steal the token.
+**Fix applied (2026-03-13):**
+- New logins: token stored in sessionStorage (dies on tab close)
+- Old localStorage tokens: still read for backward compat (1 session)
+  then replaced with sessionStorage on next login
+- logout(): clears both storages explicitly
+- Fallback chain: sessionStorage → localStorage → null
 
-**Mitigation in scope:** None — httpOnly cookie migration requires full backend auth re-write (out of scope for this UI audit)
+**Remaining risk:** sessionStorage is still JS-readable (XSS surface exists)
+  but blast radius is reduced — no cross-tab access, no persistence.
 
-**Current mitigations:**
-- Sentry error monitoring active (detects anomalous behavior)
-- CSP headers should be added to prevent inline script injection (future task: configure CSP on Express server)
+**Final resolution path (future):**
+  When backend is refactored → migrate to httpOnly + Secure + SameSite=Strict
+  cookies with CSRF token. This requires:
+    - Express: cookie-parser, CORS credentials: true, Set-Cookie on login/register
+    - Frontend: remove all token reads from JS, rely on browser cookie jar
+    - CSRF: double-submit cookie pattern or synchronizer token
+  Estimated scope: 1 sprint (backend + frontend + CORS reconfiguration)
 
-**Resolution path:**
-When backend auth is refactored, migrate to httpOnly + Secure + SameSite=Strict cookies. This would require:
-1. Backend cookie-based session management
-2. CSRF protection implementation
-3. Frontend auth flow refactoring
+**Files Modified:**
+- `prayer-board/src/utils/storage.js` - Added `safeSessionStorage` export
+- `prayer-board/src/api/index.js` - Read from sessionStorage with localStorage fallback
+- `prayer-board/src/context/AuthContext.jsx` - Write to sessionStorage, clear localStorage
 
-**Owner:** Adrian — flagged 2026-03-13
+**Verification:**
+- ✅ Log in → sessionStorage shows token, localStorage does not
+- ✅ Refresh page (same tab) → user stays authenticated
+- ✅ Close tab → reopen → user is logged out
+- ✅ Logout → both storages cleared
+
+**Owner:** Adrian — flagged 2026-03-13, resolved 2026-03-13
 
 **References:**
 - [OWASP XSS Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
