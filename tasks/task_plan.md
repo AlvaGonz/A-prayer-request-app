@@ -1,76 +1,49 @@
-# Task Plan - Fix Language Dropdown Portal + Notification Permission Flow
+# Adversarial Security Audit — Task Plan
 
-## Objective
-Fix two bugs in the Prayer Board application:
-1. Language dropdown clipped by Header overflow
-2. Push notification permission blocked by Android Chrome overlay rule
-
-## Bug 1 — Language Dropdown Portal
-
-- [x] Add `createPortal` import from 'react-dom'
-- [x] Add `useRef` hook for trigger button reference
-- [x] Add `menuPos` state for menu positioning
-- [x] Calculate menu position from trigger's `getBoundingClientRect()`
-- [x] Wrap `AnimatePresence` in `createPortal` mounting to `document.body`
-- [x] Add `language-theme-menu--portal` CSS class with `position: fixed`
-- [x] Update backdrop `z-index` to 9998
-- [x] Update menu `z-index` to 9999
-
-**Files:**
-- `prayer-board/src/components/ui/theme.jsx`
-- `prayer-board/src/components/ui/theme.css`
+## Overview
+Apply 5 adversarial hardening fixes to reduce attack surface against motivated adversaries.
 
 ---
 
-## Bug 2 — Notification Permission Android Chrome
+## Checklist
 
-- [x] Remove `isLoading` state from component
-- [x] Dismiss banner BEFORE requesting permission
-- [x] Add `requestAnimationFrame` delay for DOM removal
-- [x] Add 100ms buffer for Chrome's overlay detection
-- [x] Remove `disabled={isLoading}` from button
-- [x] Remove loading text from button (simplified to "Enable")
-- [x] Handle permission states (granted/denied)
+### ADV-001: JWT Expiry Reduction + Algorithm Hardening
+- [ ] Change JWT expiry from `30d` to `1d` in authController.js
+- [ ] Add explicit `algorithm: 'HS256'` to jwt.sign
+- [ ] Add `algorithms: ['HS256']` to jwt.verify in middleware/auth.js protect()
+- [ ] Add `algorithms: ['HS256']` to jwt.verify in middleware/auth.js optionalAuth()
 
-**Files:**
-- `prayer-board/src/components/NotificationBanner.jsx`
+### ADV-002: CSP Enforcement (reportOnly → enforce)
+- [ ] Remove `reportOnly: true` from helmet CSP config
+- [ ] Add additional Helmet options (HSTS, referrerPolicy, xFrameOptions)
 
----
+### ADV-003: CSP Remove unsafe-inline
+- [ ] Remove `'unsafe-inline'` from script-src directive
+- [ ] Add additional CSP directives (frame-src, object-src, base-uri, form-action)
+- [ ] Update connect-src to include API domains explicitly
 
-## Architectural Debt Documentation
+### ADV-004: Body Size Limit Reduction
+- [ ] Change express.json limit from `10mb` to `50kb`
+- [ ] Change express.urlencoded limit from `10mb` to `50kb`
 
-- [x] Document JWT localStorage storage risk in findings.md
-- [x] Explain current mitigations (Sentry, CSP future)
-- [x] Outline resolution path (httpOnly cookies)
+### ADV-005: CORS No-Origin Request Restriction
+- [ ] Modify CORS origin callback to reject no-origin requests in production
+- [ ] Allow no-origin only in development mode (for Postman/curl testing)
 
-**Files:**
-- `tasks/findings.md`
+### ADV-006: Request ID Middleware for Audit Trail
+- [ ] Import `randomUUID` from crypto module
+- [ ] Add request ID middleware before health check route
+- [ ] Update error handler to include request ID in logs
+- [ ] Set X-Request-ID response header
 
----
-
-## Constraints Followed
-
-- ✅ LanguageDropdown public API unchanged (props stable)
-- ✅ Notification logic kept in NotificationBanner component
-- ✅ Used only React built-in features (createPortal, useRef)
-- ✅ No new npm packages added
-- ✅ No Header.css overflow modifications (portal is architecturally correct fix)
-- ✅ No AuthContext modifications
-
----
-
-## Verification Checklist
-
-- [x] Language dropdown renders outside Header overflow
-- [x] Menu follows trigger position on scroll
-- [x] No clipping on mobile devices
-- [x] Android Chrome permission dialog appears without "Close any bubbles" error
-- [x] Notification permission granted → works correctly
-- [x] Notification permission denied → banner dismissed
+### Documentation
+- [ ] Update findings.md with audit results
+- [ ] Update progress.md with session log
 
 ---
 
-## Commit Message
-```
-fix: language dropdown portal to escape header overflow; fix notification permission blocked by fixed overlay on Android
-```
+## Constraints
+- Do NOT change route signatures or response shapes
+- Do NOT add new npm packages (crypto is built-in)
+- Do NOT enable credentials: true on CORS
+- Do NOT touch frontend code

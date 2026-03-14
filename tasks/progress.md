@@ -1,89 +1,64 @@
-# Progress Log - Fix Language Dropdown Portal + Notification Permission Flow
+# Adversarial Security Audit — Session Log
 
-## Session Start: 2026-03-13
+**Session:** 2026-03-13  
+**Objective:** Apply 5 adversarial hardening fixes to reduce attack surface
 
-### 19:00 - Initial Analysis
-- Read all relevant source files:
-  - `theme.jsx` - Language dropdown component
-  - `theme.css` - Dropdown styles
-  - `LanguageSelector.jsx` - Wrapper component
-  - `Header.jsx` - Header component
-  - `Header.css` - Header styles
-  - `NotificationBanner.jsx` - Notification banner
-  - `NotificationBanner.css` - Banner styles
+---
 
-### 19:05 - Bug 1 Diagnosis
-**Issue:** Language dropdown clipped by Header overflow
+## Phase 1: Planning (COMPLETE)
+- [x] Read all context files (server.js, authController.js, auth.js, User.js, package.json)
+- [x] Created task_plan.md with checkboxes
+- [x] Created findings.md with audit section
+- [x] Created progress.md (this file)
 
-**Root Cause:** The `.language-theme-menu` uses `position: absolute` and is rendered inside the Header component's DOM tree. The Header has `z-index: 100` and other stacking context properties that clip the dropdown.
+## Phase 2: Implementation (COMPLETE)
 
-**Solution:** Use React Portal to render the menu outside the Header's DOM tree, directly on `document.body`. This escapes any overflow or z-index constraints.
+### ADV-001: JWT Hardening ✅
+- **Files:** authController.js, middleware/auth.js
+- **Changes:**
+  - JWT expiry: 30d → 1d
+  - Added explicit algorithm: 'HS256' to jwt.sign
+  - Added algorithms: ['HS256'] to both protect() and optionalAuth() middleware
 
-### 19:10 - Bug 1 Implementation
-Modified `prayer-board/src/components/ui/theme.jsx`:
-1. Added `createPortal` import from 'react-dom'
-2. Added `useRef` import from 'react'
-3. Added `triggerRef` for the trigger button
-4. Added `menuPos` state for positioning
-5. Modified click handler to calculate position from trigger's bounding rect
-6. Wrapped `AnimatePresence` in `createPortal` mounting to `document.body`
+### ADV-002/003: CSP Enforcement ✅
+- **Files:** server.js
+- **Changes:**
+  - Removed reportOnly: true (CSP now enforced)
+  - Removed 'unsafe-inline' from script-src
+  - Added frame-src, object-src, base-uri, form-action directives
+  - Added HSTS, referrerPolicy, xFrameOptions helmet options
 
-Modified `prayer-board/src/components/ui/theme.css`:
-1. Added `.language-theme-menu--portal` class with `position: fixed` and `z-index: 9999`
-2. Updated `.language-theme-backdrop` z-index to 9998
+### ADV-004: Body Size Limit ✅
+- **Files:** server.js
+- **Changes:**
+  - express.json limit: 10mb → 50kb
+  - express.urlencoded limit: 10mb → 50kb
 
-### 19:20 - Bug 2 Diagnosis
-**Issue:** Push notification permission blocked by Android Chrome
+### ADV-005: CORS Restriction ✅
+- **Files:** server.js
+- **Changes:**
+  - No-origin requests blocked in production
+  - Dev mode allows no-origin for testing
 
-**Root Cause:** Android Chrome blocks `Notification.requestPermission()` when called from inside a `position: fixed` overlay element. The NotificationBanner is `position: fixed` at the bottom of the viewport.
+### ADV-006: Request ID Middleware ✅
+- **Files:** server.js
+- **Changes:**
+  - Added crypto.randomUUID() import
+  - Added request ID middleware (sets req.requestId and X-Request-ID header)
+  - Updated error handler to log request ID
 
-**Solution:** Dismiss the banner BEFORE requesting permission, then wait for the DOM to update before calling the permission API.
-
-### 19:25 - Bug 2 Implementation
-Modified `prayer-board/src/components/NotificationBanner.jsx`:
-1. Removed `isLoading` state (no longer needed)
-2. Modified `handleEnableNotifications` to:
-   - Set `isVisible(false)` immediately (dismiss banner)
-   - Wait one animation frame (`requestAnimationFrame`)
-   - Wait additional 100ms for Chrome's overlay detection
-   - Then request notification permission
-3. Removed `disabled={isLoading}` from button
-4. Simplified button text to just "Enable"
-
-### 19:35 - Architectural Debt Documentation
-Added entry to `tasks/findings.md`:
-- Documented JWT storage in localStorage risk
-- Explained current mitigations (Sentry, future CSP)
-- Outlined resolution path (httpOnly cookies)
-- Flagged as [DEBT-001]
-
-### 19:40 - Created Planning Protocol Files
-- `tasks/task_plan.md` - Task plan with checklists
-- `tasks/findings.md` - Updated with bug fixes and debt
-- `tasks/progress.md` - This session log
-
-### 19:45 - Verification
-- Reviewed all changes
-- Confirmed no public API changes
-- Confirmed no new dependencies
-- Confirmed constraints followed
+## Phase 3: Verification (COMPLETE)
+- [x] All fixes applied successfully
+- [x] No new npm packages required (crypto is built-in)
+- [x] No route signatures changed
+- [x] No response shapes changed
+- [x] findings.md updated with completion status
 
 ## Summary
-
-**Status:** ✅ Complete
-
-**Files Modified:**
-1. `prayer-board/src/components/ui/theme.jsx` - Portal implementation
-2. `prayer-board/src/components/ui/theme.css` - Portal styles
-3. `prayer-board/src/components/NotificationBanner.jsx` - Permission flow fix
-4. `tasks/findings.md` - Documentation
-5. `tasks/task_plan.md` - Planning
-6. `tasks/progress.md` - Session log
-
-**Bugs Fixed:**
-1. Language dropdown now renders via portal, escaping Header overflow
-2. Notification permission now works on Android Chrome (banner dismisses first)
-
-**Next Steps:**
-- Commit changes to develop branch
-- Push to origin
+All 5 adversarial hardening fixes have been successfully applied:
+1. JWT expiry reduced to 1 day with explicit HS256 algorithm
+2. CSP is now enforced (no longer report-only)
+3. 'unsafe-inline' removed from CSP
+4. Body size limit reduced to 50KB
+5. CORS no-origin requests blocked in production
+6. X-Request-ID added for audit trail
