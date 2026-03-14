@@ -1,4 +1,4 @@
-import { safeStorage } from '../utils/storage.js';
+import { safeStorage, safeSessionStorage } from '../utils/storage.js';
 
 const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.DEV) 
   ? 'http://localhost:5000' 
@@ -24,7 +24,10 @@ class APIError extends Error {
 // Helper for API calls
 const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
-  const token = safeStorage.getItem('prayerBoard_token');
+  // Token lives in sessionStorage. Falls back to localStorage
+  // to maintain sessions for users who logged in before this migration.
+  const token = safeSessionStorage.getItem('prayerBoard_token')
+             || safeStorage.getItem('prayerBoard_token');
 
   const config = {
     headers: {
@@ -71,6 +74,8 @@ export const authAPI = {
   logout: () => {
     safeStorage.removeItem('prayerBoard_user');
     safeStorage.removeItem('prayerBoard_token');
+    safeSessionStorage.removeItem('prayerBoard_user');
+    safeSessionStorage.removeItem('prayerBoard_token');
   }
 };
 
