@@ -1,6 +1,8 @@
-import { safeStorage } from '../utils/storage';
+import { safeStorage } from '../utils/storage.js';
 
-const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000' : 'https://prayer-board-api.onrender.com';
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.DEV) 
+  ? 'http://localhost:5000' 
+  : 'https://prayer-board-api.onrender.com';
 // Clear old cache version marker
 if (typeof window !== 'undefined') {
   const cacheVersion = safeStorage.getItem('app_cache_version');

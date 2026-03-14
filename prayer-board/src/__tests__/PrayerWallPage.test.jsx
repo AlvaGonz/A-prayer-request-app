@@ -1,11 +1,28 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PrayerWallPage from '../pages/PrayerWallPage';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
 
-// Mocks
+// Create mock functions
+const mockUsePrayerRequests = vi.fn();
+const mockUseCreatePrayerRequest = vi.fn(() => ({ mutate: vi.fn(), isPending: false }));
+const mockUseUpdatePrayerStatus = vi.fn(() => ({ mutate: vi.fn() }));
+const mockUseDeletePrayerRequest = vi.fn(() => ({ mutate: vi.fn() }));
+const mockUseMarkAnswered = vi.fn(() => ({ mutate: vi.fn() }));
+
+// Mock the hooks module
+vi.mock('../hooks/usePrayerRequests', () => ({
+  usePrayerRequests: (...args) => mockUsePrayerRequests(...args),
+  useCreatePrayerRequest: (...args) => mockUseCreatePrayerRequest(...args),
+  useUpdatePrayerStatus: (...args) => mockUseUpdatePrayerStatus(...args),
+  useDeletePrayerRequest: (...args) => mockUseDeletePrayerRequest(...args),
+  useMarkAnswered: (...args) => mockUseMarkAnswered(...args),
+}));
+
+// Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key) => key,
@@ -13,23 +30,24 @@ vi.mock('react-i18next', () => ({
   })
 }));
 
-vi.mock('../hooks/usePrayerRequests', () => ({
-  usePrayerRequests: vi.fn(),
-  useCreatePrayerRequest: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
-  useUpdatePrayerStatus: vi.fn(() => ({ mutate: vi.fn() })),
-  useDeletePrayerRequest: vi.fn(() => ({ mutate: vi.fn() })),
-  useMarkAnswered: vi.fn(() => ({ mutate: vi.fn() }))
-}));
-
-// Mock API responses
-const { usePrayerRequests } = require('../hooks/usePrayerRequests');
+// Create a test query client
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 describe('PrayerWallPage - Answered Prayers Section', () => {
+  let testQueryClient;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    testQueryClient = createTestQueryClient();
     
     // Default open/pending state mocking
-    usePrayerRequests.mockImplementation((statusFilter) => {
+    mockUsePrayerRequests.mockImplementation((statusFilter) => {
       const isAnswered = statusFilter === 'answered';
       return {
         data: {
@@ -58,11 +76,13 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
 
   const renderComponent = () => {
     return render(
-      <AuthProvider>
-        <ThemeProvider>
-          <PrayerWallPage />
-        </ThemeProvider>
-      </AuthProvider>
+      <QueryClientProvider client={testQueryClient}>
+        <AuthProvider>
+          <ThemeProvider>
+            <PrayerWallPage />
+          </ThemeProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     );
   };
 
@@ -74,7 +94,7 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
 
   it('defaults to showing open (pending) requests', () => {
     renderComponent();
-    expect(usePrayerRequests).toHaveBeenCalledWith('open');
+    expect(mockUsePrayerRequests).toHaveBeenCalledWith('open');
     expect(screen.getByText('Open pray')).toBeInTheDocument();
     expect(screen.queryByText('Answered pray')).not.toBeInTheDocument();
   });
@@ -84,7 +104,7 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     fireEvent.click(screen.getByText('prayerWall.filterAnswered'));
     
     await waitFor(() => {
-      expect(usePrayerRequests).toHaveBeenCalledWith('answered');
+      expect(mockUsePrayerRequests).toHaveBeenCalledWith('answered');
     });
     
     // Check that we're passing the 'answered' filter internally.
@@ -107,7 +127,7 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
 
   it('display visual badge logic is present via mocked requests', async () => {
     // Force mount the Answered view so the card gets rendered with the 'answered' state
-    usePrayerRequests.mockImplementation(() => {
+    mockUsePrayerRequests.mockImplementation(() => {
       return {
         data: {
           pages: [
