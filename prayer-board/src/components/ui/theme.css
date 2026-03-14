@@ -84,35 +84,36 @@
   background: transparent;
 }
 
-/* Dropdown Menu */
+/* Dropdown Menu - Compacto */
 .language-theme-menu {
   position: absolute;
   top: calc(100% + 4px);
   right: 0;
   z-index: 50;
-  min-width: 140px;
+  min-width: 100px;
+  max-width: 160px;
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  padding: 4px;
+  padding: 2px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 
-/* Menu Item */
+/* Menu Item - Compacto */
 .language-theme-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 6px;
+  padding: 5px 8px;
   background: transparent;
   border: none;
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
