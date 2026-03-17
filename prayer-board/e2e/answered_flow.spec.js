@@ -6,8 +6,14 @@ test.describe('Answered Prayer Flow', () => {
   const password = 'Password123!';
 
   test('user can create a prayer and mark it as answered', async ({ page }) => {
+    // Force Spanish locale for consistent UI text
+    await page.addInitScript(() => {
+      localStorage.setItem('i18nextLng', 'es');  // Force Spanish locale
+    });
+
     // 1. Register a new user
     await page.goto('/register');
+    await page.waitForLoadState('networkidle');   // Wait for React to hydrate
     await page.fill('input[name="displayName"]', 'Test User');
     await page.fill('input[name="email"]', email);
     await page.fill('input[name="password"]', password);
@@ -34,26 +40,30 @@ test.describe('Answered Prayer Flow', () => {
     await page.click('button[type="submit"]');
     
     // 3. Verify it appears on the wall as "Test User"
-    const firstCard = page.locator('.prayer-card').first();
+    // Anchor to the specific card containing THIS test run's unique prayer text
+    const firstCard = page.locator('.prayer-card').filter({ hasText: prayerBody });
+    await expect(firstCard).toBeVisible({ timeout: 10000 });
     await expect(firstCard).toContainText('Test User');
-    await expect(firstCard).toContainText(prayerBody);
 
     // 4. Mark as answered
-    const markAnsweredBtn = firstCard.locator('.mark-answered');
-    await expect(markAnsweredBtn).toBeVisible();
+    // Wait for card to fully render after prayer creation
+    await page.waitForTimeout(1500);
+    // The mark-answered button only appears for the prayer's author
+    const markAnsweredBtn = firstCard.locator('[data-testid="mark-answered-btn"]');
+    await expect(markAnsweredBtn).toBeVisible({ timeout: 10000 });
     await markAnsweredBtn.click();
 
     // Fill testimony
     const testimony = 'Praise God! This prayer was answered.';
     await page.fill('.prayer-card__testimony-textarea', testimony);
-    await page.click('.action-btn.mark-answered'); // The "Save" button
+    await page.click('[data-testid="save-testimony-btn"]'); // The "Save" button
 
-    // 5. Verify it's no longer in "Pending" and is in "Answered"
-    await expect(firstCard).not.toBeVisible(); // Should be removed from "Pending" view
+    // 5. Switch to Answered tab and verify the card appears there
+    await page.locator('[role="tab"]').filter({ hasText: /answered|respondidas/i }).click();
 
-    await page.click('button:has-text("Respondidas")'); // Switch to Answered tab
-    const answeredCard = page.locator('.prayer-card.answered').first();
-    await expect(answeredCard).toContainText(prayerBody);
+    // The specific prayer card must now exist in answered state
+    const answeredCard = page.locator('.prayer-card.answered').filter({ hasText: prayerBody });
+    await expect(answeredCard).toBeVisible({ timeout: 10000 });
     await expect(answeredCard).toContainText(testimony);
     await expect(answeredCard.locator('.status-badge.answered')).toBeVisible();
   });

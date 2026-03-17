@@ -12,6 +12,7 @@ test.describe('Auth and Rate Limits', () => {
     await page.fill('#displayName', `Test User ${uid}`);
     await page.fill('#email', email);
     await page.fill('#password', password);
+    await page.fill('#confirmPassword', password);   // Confirm password field required
     
     // Submit
     await page.click('button[type="submit"]');

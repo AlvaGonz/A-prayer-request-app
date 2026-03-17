@@ -116,6 +116,8 @@
     "createPasswordPlaceholder": "Create a password",
     "displayNamePlaceholder": "How you want to be known",
     "passwordHint": "Must be at least 8 characters with 1 uppercase and 1 number",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Repeat your password",
     "creatingAccount": "Creating account...",
     "createAccountBtn": "Create Account",
     "errors": {
@@ -130,6 +132,7 @@
       "passwordUppercase": "Password must contain at least one uppercase letter",
       "passwordNumber": "Password must contain at least one number",
       "displayNameMin": "Display name must be at least 2 characters",
+      "passwordsDoNotMatch": "Passwords do not match",
       "createFailed": "Failed to create account"
     }
   },

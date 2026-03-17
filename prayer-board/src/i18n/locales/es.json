@@ -116,6 +116,8 @@
     "createPasswordPlaceholder": "Crea una contraseña",
     "displayNamePlaceholder": "Cómo quieres que te conozcan",
     "passwordHint": "Mínimo 8 caracteres con 1 mayúscula y 1 número",
+    "confirmPassword": "Confirmar Contraseña",
+    "confirmPasswordPlaceholder": "Repite tu contraseña",
     "creatingAccount": "Creando cuenta...",
     "createAccountBtn": "Crear Cuenta",
     "errors": {
@@ -130,6 +132,7 @@
       "passwordUppercase": "La contraseña debe contener al menos una letra mayúscula",
       "passwordNumber": "La contraseña debe contener al menos un número",
       "displayNameMin": "El nombre debe tener al menos 2 caracteres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "createFailed": "Error al crear la cuenta"
     }
   },

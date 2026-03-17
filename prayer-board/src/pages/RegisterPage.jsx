@@ -11,6 +11,7 @@ const RegisterPage = () => {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +29,11 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError(t('auth.errors.passwordsDoNotMatch') || 'Passwords do not match');
+      return;
+    }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
@@ -93,6 +99,7 @@ const RegisterPage = () => {
               <input
                 type="text"
                 id="displayName"
+                name="displayName"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={t('auth.displayNamePlaceholder')}
@@ -107,6 +114,7 @@ const RegisterPage = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('auth.emailPlaceholder')}
@@ -121,6 +129,7 @@ const RegisterPage = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t('auth.createPasswordPlaceholder')}
@@ -139,6 +148,22 @@ const RegisterPage = () => {
               <p className="field-hint">
                 {t('auth.passwordHint')}
               </p>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="confirmPassword">
+                {t('auth.confirmPassword') || 'Confirm Password'}
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder={t('auth.confirmPasswordPlaceholder') || 'Repeat your password'}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <button
