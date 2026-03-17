@@ -202,6 +202,7 @@ const PrayerRequestCard = ({
                 />
                 <div className="prayer-card__testimony-actions">
                   <button
+                    data-testid="save-testimony-btn"
                     className="action-btn mark-answered"
                     onClick={handleSaveTestimony}
                     disabled={markAnsweredMutation.isPending || !testimonyText.trim()}

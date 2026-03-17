@@ -16,6 +16,7 @@ const RippleMarkAnsweredButton = ({ onClick, disabled = false }) => {
 
   return (
     <RippleButton
+      data-testid="mark-answered-btn"
       onClick={onClick}
       disabled={disabled}
       className="ripple-mark-answered-button"
