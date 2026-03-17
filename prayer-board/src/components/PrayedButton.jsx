@@ -6,6 +6,7 @@ import { usePrayMutation } from '../hooks/usePrayMutation';
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
 import Sparkles from './Sparkles';
+import { InteractiveHoverButton } from './ui/InteractiveHoverButton';
 import './PrayedButton.css';
 
 const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
@@ -76,6 +77,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       if (prevPrayed) {
         const result = await prayMutation.mutateAsync({ isPraying: true });
         setShowMessage(false);
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
 
         try {
           const stored = safeStorage.getItem('prayedRequests');
@@ -106,8 +108,9 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
           console.error('Error writing to local storage', e);
         }
 
-        // Hide message after 7 seconds
-        messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 7000);
+        // Hide message after 10 seconds (extended by 3s)
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 10000);
 
         if (onPrayed) {
           onPrayed(requestId, result.prayedCount || newCount);
@@ -118,29 +121,34 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
       setCount(prevCount);
       setIsPrayed(prevPrayed);
       console.error('Error praying/unpraying:', error);
-      alert(error.message || t('errors.pray'));
+      if (error.statusCode === 429) {
+        alert(t('auth.errors.rateLimit'));
+      } else {
+        alert(error.message || t('errors.pray'));
+      }
     }
   };
 
+  // Build button text with count
+  const buttonText = `${isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')} ${count}`;
+
   return (
     <div className="prayed-button-container">
-      <button
-        className={`prayed-button ${isPrayed ? 'prayed' : ''} ${prayMutation.isPending ? 'loading' : ''}`}
-        onClick={handlePray}
-        disabled={prayMutation.isPending}
-        aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
-      >
+      <div className="prayed-button-wrapper">
         <HeartIcon
-          size={18}
-          className={`prayed-icon ${isPrayed ? 'animate' : ''}`}
+          size={22}
+          className={`prayed-button-heart-icon ${isPrayed ? 'animate' : ''}`}
           isFilled={isPrayed}
         />
-        <span className="prayed-count">{count}</span>
-        <span className="prayed-text">
-          {isPrayed ? t('prayerCard.prayed') : t('prayerCard.iPrayed')}
-        </span>
+        <InteractiveHoverButton
+          text={buttonText}
+          onClick={handlePray}
+          disabled={prayMutation.isPending}
+          aria-label={isPrayed ? t('prayerCard.youPrayedAria') : t('prayerCard.prayAria')}
+          className={`prayed-btn-interactive ${isPrayed ? 'is-prayed' : ''}`}
+        />
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
-      </button>
+      </div>
 
       {showMessage && (
         <div className="prayed-message animate-in">
@@ -152,7 +160,7 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
             onClick={() => setShowMessage(false)}
             aria-label={t('common.close')}
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </div>
       )}

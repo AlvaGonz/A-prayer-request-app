@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI, APIError } from '../api';
-import { safeStorage } from '../utils/storage';
+import { safeStorage, safeSessionStorage } from '../utils/storage';
 
 const AuthContext = createContext(null);
 
@@ -15,7 +15,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const storedToken = safeStorage.getItem('prayerBoard_token');
+        const storedToken = safeSessionStorage.getItem('prayerBoard_token')
+                         || safeStorage.getItem('prayerBoard_token');
         if (storedToken) {
           const { user } = await authAPI.me();
           setUser(user);
@@ -38,6 +39,14 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const { token, user } = await authAPI.login({ email, password });
+      
+      // Save to sessionStorage (dies when tab closes, reduces XSS surface)
+      safeSessionStorage.setItem('prayerBoard_token', token);
+      safeSessionStorage.setItem('prayerBoard_user', JSON.stringify(user));
+      // Explicitly clear any stale localStorage token from previous sessions
+      safeStorage.removeItem('prayerBoard_token');
+      safeStorage.removeItem('prayerBoard_user');
+      
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
@@ -60,7 +69,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 
@@ -68,6 +77,14 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
     try {
       const { token, user } = await authAPI.register(data);
+      
+      // Save to sessionStorage (dies when tab closes, reduces XSS surface)
+      safeSessionStorage.setItem('prayerBoard_token', token);
+      safeSessionStorage.setItem('prayerBoard_user', JSON.stringify(user));
+      // Explicitly clear any stale localStorage token from previous sessions
+      safeStorage.removeItem('prayerBoard_token');
+      safeStorage.removeItem('prayerBoard_user');
+      
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
@@ -92,7 +109,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setAuthError(errorMessage);
-      return { success: false, error: errorMessage };
+      throw error;
     }
   };
 

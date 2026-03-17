@@ -70,6 +70,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env.local
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -124,3 +125,10 @@ Thumbs.db
 PRD-v1.1.0.md
 
 .vercel
+
+# Test Artifacts
+test_result.json
+clean_test_results.json
+test-results/
+playwright-report/
+server.err

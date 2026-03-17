@@ -75,3 +75,62 @@ export const safeStorage = {
 };
 
 export default safeStorage;
+
+// ============================================================================
+// SESSION STORAGE - For auth tokens (dies when tab closes, reduces XSS surface)
+// ============================================================================
+
+const getSessionStorage = () => {
+  try {
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      return window.sessionStorage;
+    }
+  } catch (e) {
+    console.warn('sessionStorage is not accessible:', e);
+  }
+  return null;
+};
+
+// Separate in-memory fallback for session storage
+const sessionMemStore = {};
+
+export const safeSessionStorage = {
+  getItem: (key) => {
+    const storage = getSessionStorage();
+    if (storage) {
+      try { return storage.getItem(key); }
+      catch (e) { console.warn(`Error reading ${key} from sessionStorage`, e); }
+    }
+    return sessionMemStore[key] || null;
+  },
+
+  setItem: (key, value) => {
+    const storage = getSessionStorage();
+    if (storage) {
+      try { storage.setItem(key, value); return true; }
+      catch (e) { console.warn(`Error setting ${key} in sessionStorage`, e); }
+    }
+    sessionMemStore[key] = value;
+    return false;
+  },
+
+  removeItem: (key) => {
+    const storage = getSessionStorage();
+    if (storage) {
+      try { storage.removeItem(key); return true; }
+      catch (e) { console.warn(`Error removing ${key} from sessionStorage`, e); }
+    }
+    delete sessionMemStore[key];
+    return false;
+  },
+
+  clear: () => {
+    const storage = getSessionStorage();
+    if (storage) {
+      try { storage.clear(); return true; }
+      catch (e) { console.warn('Error clearing sessionStorage', e); }
+    }
+    Object.keys(sessionMemStore).forEach(k => delete sessionMemStore[k]);
+    return false;
+  }
+};

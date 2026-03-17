@@ -2,6 +2,7 @@ const sanitizeHtml = require('sanitize-html');
 const crypto = require('crypto');
 const PrayerRequest = require('../models/PrayerRequest');
 const Comment = require('../models/Comment');
+const { isValidObjectId } = require('../middleware/validateObjectId');
 
 // Sanitize input
 const sanitizeInput = (input) => {
@@ -45,6 +46,8 @@ const getRequests = async (req, res) => {
       prayedCount: req.prayedCount,
       commentCount: req.commentCount || 0,
       status: req.status,
+      testimony: req.testimony || null,
+      answeredAt: req.answeredAt || null,
       createdAt: req.createdAt,
       author: req.author ? req.author.toString() : null
     }));
@@ -69,13 +72,14 @@ const getRequests = async (req, res) => {
 // @access  Public (guests allowed)
 const createRequest = async (req, res) => {
   try {
-    let { body, isAnonymous = true } = req.body;
+    let { body, isAnonymous } = req.body;
+    if (isAnonymous === undefined) isAnonymous = true;
 
     // Sanitize input
     body = sanitizeInput(body);
 
     // Validation
-    if (!body || body.length < 10 || body.length > 1000) {
+    if (!body || !body.trim() || body.length < 10 || body.length > 1000) {
       return res.status(400).json({
         error: 'Request body must be between 10 and 1000 characters'
       });
@@ -112,6 +116,10 @@ const createRequest = async (req, res) => {
 // @access  Public
 const pray = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -139,6 +147,10 @@ const pray = async (req, res) => {
 // @access  Public
 const unpray = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -168,6 +180,11 @@ const unpray = async (req, res) => {
 const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
+
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -210,6 +227,10 @@ const updateStatus = async (req, res) => {
 // @access  Private (Admin only)
 const deleteRequest = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request) {
@@ -234,6 +255,10 @@ const deleteRequest = async (req, res) => {
 // @access  Private (author or admin)
 const generateShareLink = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {
@@ -413,6 +438,54 @@ const commentShared = async (req, res) => {
   }
 };
 
+// @desc    Mark prayer request as answered with optional testimony
+// @route   PATCH /api/requests/:id/answer
+// @access  Private (author only)
+const markAnswered = async (req, res) => {
+  try {
+    const request = await PrayerRequest.findById(req.params.id);
+
+    if (!request || request.isDeleted) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    // Only the author can mark as answered
+    if (!request.author || request.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'Only the author can mark a prayer as answered' });
+    }
+
+    // Sanitize optional testimony
+    let testimony = null;
+    if (req.body.testimony && typeof req.body.testimony === 'string') {
+      testimony = sanitizeInput(req.body.testimony);
+      if (testimony && testimony.length > 1000) {
+        return res.status(400).json({ error: 'Testimony must not exceed 1000 characters' });
+      }
+      if (testimony && !testimony.trim()) {
+        testimony = null;
+      }
+    }
+
+    request.status = 'answered';
+    request.testimony = testimony;
+    request.answeredAt = new Date();
+    request.answeredBy = req.user._id;
+    await request.save();
+
+    res.json({
+      request: {
+        id: request._id,
+        status: request.status,
+        testimony: request.testimony,
+        answeredAt: request.answeredAt
+      }
+    });
+  } catch (error) {
+    console.error('Mark answered error:', error.message);
+    res.status(500).json({ error: 'Failed to mark prayer as answered' });
+  }
+};
+
 module.exports = {
   getRequests,
   createRequest,
@@ -424,5 +497,6 @@ module.exports = {
   getSharedRequest,
   prayShared,
   unprayShared,
-  commentShared
+  commentShared,
+  markAnswered
 };

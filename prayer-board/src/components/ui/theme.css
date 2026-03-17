@@ -1,0 +1,193 @@
+/* Language Theme Dropdown Component Styles */
+
+.language-theme-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Trigger Button */
+.language-theme-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.language-theme-trigger:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+}
+
+.language-theme-trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.language-theme-trigger-with-label {
+  min-width: 100px;
+  justify-content: space-between;
+}
+
+.language-theme-label {
+  font-weight: 500;
+}
+
+.language-theme-code {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.language-theme-chevron {
+  transition: transform var(--transition-fast);
+}
+
+.language-theme-chevron-open {
+  transform: rotate(180deg);
+}
+
+/* Size variants */
+.language-selector-sm {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+}
+
+.language-selector-sm .language-theme-code {
+  font-size: 0.75rem;
+}
+
+.language-selector-md {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.language-selector-lg {
+  padding: 10px 16px;
+  font-size: 0.95rem;
+}
+
+/* Backdrop for closing dropdown */
+.language-theme-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: transparent;
+}
+
+/* Dropdown Menu - Compacto */
+.language-theme-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  min-width: 100px;
+  max-width: 160px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Menu Item - Compacto */
+.language-theme-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 5px 8px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.language-theme-item:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.language-theme-item-selected {
+  background-color: var(--gold-tint-light, rgba(221, 179, 104, 0.08));
+  color: var(--color-accent-gold);
+}
+
+.language-theme-item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.language-theme-item-label {
+  font-weight: 500;
+}
+
+/* Button Variant */
+.language-theme-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.language-theme-button:hover {
+  background-color: var(--color-bg-secondary);
+  border-color: var(--color-accent-gold);
+  color: var(--color-accent-gold);
+}
+
+/* Portalized menu - fixed position to escape overflow contexts */
+.language-theme-menu--portal {
+  position: fixed;
+  z-index: 9999;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .language-theme-trigger {
+    padding: 6px 10px;
+  }
+
+  .language-theme-trigger-with-label {
+    min-width: auto;
+  }
+
+  .language-theme-label {
+    display: none;
+  }
+
+  .language-theme-menu {
+    right: 0;
+    min-width: 120px;
+  }
+
+  .language-theme-item {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}

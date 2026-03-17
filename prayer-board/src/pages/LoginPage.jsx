@@ -26,7 +26,11 @@ const LoginPage = () => {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Invalid email or password');
+      if (err.statusCode === 429) {
+        setError(t('auth.errors.rateLimit'));
+      } else {
+        setError(err.message || t('auth.errors.invalidCredentials'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +75,7 @@ const LoginPage = () => {
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t('auth.emailPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -85,7 +89,7 @@ const LoginPage = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder')}
                   required
                   disabled={isLoading}
                 />
@@ -117,7 +121,7 @@ const LoginPage = () => {
           </form>
 
           <div className="auth-divider">
-            <span>or</span>
+            <span>{t('auth.or')}</span>
           </div>
 
           <Link to="/" className="guest-link">

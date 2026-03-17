@@ -3,6 +3,18 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css';
 
+// Silence SW registration errors from bots/crawlers (Sentry ADV-SW-001)
+// VitePWA uses autoRegister which can fail in restricted contexts
+window.addEventListener('unhandledrejection', (event) => {
+  if (
+    event.reason?.message === 'Rejected' ||
+    event.reason?.stack?.includes('serviceWorker')
+  ) {
+    event.preventDefault(); // Prevents Sentry from capturing it
+    console.warn('[SW] Registration failed (non-critical):', event.reason?.message);
+  }
+});
+
 // Silencing the i18next Locize sponsor message in console as requested
 const originalConsoleLog = console.log;
 console.log = (...args) => {

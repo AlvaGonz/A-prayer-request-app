@@ -11,6 +11,7 @@ const RegisterPage = () => {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,15 +20,20 @@ const RegisterPage = () => {
   const { t } = useTranslation();
 
   const validatePassword = (pass) => {
-    if (pass.length < 8) return 'Password must be at least 8 characters';
-    if (!/[A-Z]/.test(pass)) return 'Password must contain at least one uppercase letter';
-    if (!/[0-9]/.test(pass)) return 'Password must contain at least one number';
+    if (pass.length < 8) return t('auth.errors.passwordMinLength');
+    if (!/[A-Z]/.test(pass)) return t('auth.errors.passwordUppercase');
+    if (!/[0-9]/.test(pass)) return t('auth.errors.passwordNumber');
     return null;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError(t('auth.errors.passwordsDoNotMatch') || 'Passwords do not match');
+      return;
+    }
 
     const passwordError = validatePassword(password);
     if (passwordError) {
@@ -36,7 +42,7 @@ const RegisterPage = () => {
     }
 
     if (displayName.length < 2) {
-      setError('Display name must be at least 2 characters');
+      setError(t('auth.errors.displayNameMin'));
       return;
     }
 
@@ -46,7 +52,11 @@ const RegisterPage = () => {
       await register({ displayName, email, password });
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Failed to create account');
+      if (err.statusCode === 429) {
+        setError(t('auth.errors.rateLimit'));
+      } else {
+        setError(err.message || t('auth.errors.createFailed'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -89,9 +99,10 @@ const RegisterPage = () => {
               <input
                 type="text"
                 id="displayName"
+                name="displayName"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="How you want to be known"
+                placeholder={t('auth.displayNamePlaceholder')}
                 required
                 disabled={isLoading}
                 maxLength={50}
@@ -103,9 +114,10 @@ const RegisterPage = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t('auth.emailPlaceholder')}
                 required
                 disabled={isLoading}
               />
@@ -117,9 +129,10 @@ const RegisterPage = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
+                  name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Create a password"
+                  placeholder={t('auth.createPasswordPlaceholder')}
                   required
                   disabled={isLoading}
                 />
@@ -133,8 +146,24 @@ const RegisterPage = () => {
                 </button>
               </div>
               <p className="field-hint">
-                Must be at least 8 characters with 1 uppercase and 1 number
+                {t('auth.passwordHint')}
               </p>
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="confirmPassword">
+                {t('auth.confirmPassword') || 'Confirm Password'}
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder={t('auth.confirmPasswordPlaceholder') || 'Repeat your password'}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <button
@@ -145,16 +174,16 @@ const RegisterPage = () => {
               {isLoading ? (
                 <>
                   <Loader2 size={18} className="spinner" />
-                  Creating account...
+                  {t('auth.creatingAccount')}
                 </>
               ) : (
-                'Create Account'
+                t('auth.createAccountBtn')
               )}
             </button>
           </form>
 
           <div className="auth-divider">
-            <span>or</span>
+            <span>{t('auth.or')}</span>
           </div>
 
           <Link to="/" className="guest-link">
