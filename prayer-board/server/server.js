@@ -17,6 +17,12 @@ if (process.env.NODE_ENV !== 'test') {
 
 const app = express();
 
+// Trust Render's reverse proxy to correctly read client IPs from X-Forwarded-For.
+// Required for express-rate-limit to function correctly on Render/Heroku/Railway.
+// Value '1' = trust exactly 1 hop (Render's load balancer).
+// Without this, rate limiting is disabled and throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+app.set('trust proxy', 1);
+
 // Security: CORS Configuration - Whitelist specific origins
 const allowedOrigins = [
   'https://prayer-board-virid.vercel.app',
@@ -30,12 +36,10 @@ const corsOptions = {
     // Only allow requests from whitelisted origins.
     // No-origin requests (curl, server-to-server) are rejected at CORS level in production.
     if (!origin) {
-      // Allow in development and test (for Postman/curl/testing)
-      if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-        return callback(null, true);
-      }
-      // In production: reject unknown origins
-      return callback(new Error('Not allowed by CORS'));
+      // No-origin = server-to-server, health probes, curl, Render internal checks.
+      // Browsers ALWAYS send Origin on cross-origin requests (WHATWG Fetch spec).
+      // Allowing no-origin does NOT weaken browser CORS security.
+      return callback(null, true);
     }
 
     if (allowedOrigins.indexOf(origin) !== -1) {
