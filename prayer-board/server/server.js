@@ -30,11 +30,12 @@ const corsOptions = {
     // Only allow requests from whitelisted origins.
     // No-origin requests (curl, server-to-server) are rejected at CORS level in production.
     if (!origin) {
-      // No-origin requests = server-to-server, health probes, curl.
-      // Browsers ALWAYS send Origin — so allowing no-origin does NOT
-      // weaken browser CORS protection.
-      // This silences Render health check false-positive CORS errors.
-      return callback(null, true);
+      // Allow in development and test (for Postman/curl/testing)
+      if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+        return callback(null, true);
+      }
+      // In production: reject unknown origins
+      return callback(new Error('Not allowed by CORS'));
     }
 
     if (allowedOrigins.indexOf(origin) !== -1) {
