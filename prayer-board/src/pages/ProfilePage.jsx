@@ -210,50 +210,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <style>{`
-        .profile-avatar-large {
-          width: 80px;
-          height: 80px;
-          background-color: var(--color-accent-gold);
-          color: var(--color-bg-primary);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2rem;
-          font-weight: 700;
-          margin: 0 auto 16px;
-          box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.2));
-        }
-        
-        .role-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 12px;
-          background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
-          color: var(--color-accent-gold);
-          border-radius: var(--radius-full);
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-top: 4px;
-        }
-
-        .profile-success-msg {
-          background-color: var(--color-accent-green-light, rgba(34, 197, 94, 0.1));
-          border: 1px solid var(--color-accent-green, #22c55e);
-          color: var(--color-accent-green, #22c55e);
-          padding: 12px 16px;
-          border-radius: var(--radius-md);
-          margin-bottom: 20px;
-          font-size: 0.9rem;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-      `}</style>
     </m.div>
   );
 };

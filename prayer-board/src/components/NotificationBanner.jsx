@@ -3,11 +3,13 @@ import { Bell, X } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
+import { useToast } from '../context/ToastContext';
 import './NotificationBanner.css';
 
 const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
 
   useEffect(() => {
     // Check if notifications are already enabled or dismissed
@@ -32,7 +34,7 @@ const NotificationBanner = () => {
 
   const handleEnableNotifications = async () => {
     if (!('Notification' in window)) {
-      alert('This browser does not support notifications');
+      showToast('This browser does not support notifications', 'error');
       return;
     }
 
@@ -78,27 +80,28 @@ const NotificationBanner = () => {
   return (
     <div className="notification-banner">
       <div className="notification-content">
-        <Bell size={20} className="notification-icon" />
+        <div className="notification-icon-container">
+          <Bell size={20} />
+        </div>
         <div className="notification-text">
           <p className="notification-title">Stay Connected in Prayer</p>
           <p className="notification-desc">
-            Enable notifications to know when someone prays for your requests
+            Enable notifications to know when someone prays for your requests.
           </p>
         </div>
       </div>
       <div className="notification-actions">
         <button
+          className="btn-dismiss"
+          onClick={handleDismiss}
+        >
+          Not now
+        </button>
+        <button
           className="btn-enable"
           onClick={handleEnableNotifications}
         >
           Enable
-        </button>
-        <button
-          className="btn-dismiss"
-          onClick={handleDismiss}
-          aria-label="Dismiss"
-        >
-          <X size={18} />
         </button>
       </div>
     </div>

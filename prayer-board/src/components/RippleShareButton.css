@@ -1,3 +1,4 @@
+/* === RippleShareButton — Flat Design === */
 .ripple-share-button .share-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
   width: 18px;
@@ -11,11 +12,7 @@
 
 .ripple-share-button.copied {
   border-color: var(--color-accent-green);
-  background: linear-gradient(
-    135deg,
-    var(--color-accent-green-light, rgba(74, 222, 128, 0.1)) 0%,
-    transparent 100%
-  );
+  background-color: var(--color-accent-green-light);
 }
 
 .ripple-share-button.copied .share-icon {
@@ -27,7 +24,7 @@
 }
 
 .share-text {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   transition: color var(--transition-fast);
 }

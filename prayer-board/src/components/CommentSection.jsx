@@ -10,17 +10,17 @@ import { m, AnimatePresence } from 'framer-motion';
 import CommentItem from './CommentItem';
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '../hooks/useComments';
 import { safeStorage } from '../utils/storage';
+import { useToast } from '../context/ToastContext';
 import './CommentSection.css';
 
 const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCommentCountUpdate }) => {
-  const [notifications, setNotifications] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const { socket, joinRequest, leaveRequest, emitToRequest } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const commentsEndRef = useRef(null);
-  const notificationTimeoutsRef = useRef([]);
 
   const queryClient = useQueryClient();
   const { data: comments = [], isLoading: loading } = useComments(requestId, isOpen);
@@ -111,11 +111,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
 
     const handleNotification = (notification) => {
       if (notification.targetUserId === user?.id && notification.requestId === requestId) {
-        setNotifications(prev => [...prev, notification]);
-        const timeoutId = setTimeout(() => {
-          setNotifications(prev => prev.filter(n => n !== notification));
-        }, 5000);
-        notificationTimeoutsRef.current.push(timeoutId);
+        showToast(notification.message || t('notifications.newComment', { name: notification.authorName }), 'info');
       }
     };
 
@@ -127,10 +123,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
       socket.off('new-comment', handleNewComment);
       socket.off('comment-deleted', handleCommentDeleted);
       socket.off('notification', handleNotification);
-      notificationTimeoutsRef.current.forEach(id => clearTimeout(id));
-      notificationTimeoutsRef.current = [];
     };
-  }, [socket, requestId, user, queryClient]);
+  }, [socket, requestId, user, queryClient, showToast, t]);
 
   // Auto-scroll to bottom when new comments arrive
   useEffect(() => {
@@ -169,7 +163,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
     } catch { /* empty */ }
 
     if (userComments >= 3) {
-      addNotification(t('comments.rate_limit'));
+      showToast(t('comments.rate_limit'), 'warning');
       return false;
     }
 
@@ -198,21 +192,13 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
       return true;
     } catch (error) {
       if (error.statusCode === 429) {
-        addNotification(t('comments.rate_limit'));
+        showToast(t('comments.rate_limit'), 'warning');
       } else {
-        addNotification(t('comments.error_send'));
+        showToast(t('comments.error_send'), 'error');
       }
       return false;
     }
   };
-
-  const addNotification = (message) => {
-    setNotifications(prev => [...prev, { message }]);
-    const timeoutId = setTimeout(() => {
-      setNotifications(prev => prev.slice(1));
-    }, 5000);
-    notificationTimeoutsRef.current.push(timeoutId);
-  }
 
   const handleEdit = async (commentId, newText) => {
     try {
@@ -225,7 +211,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
         } : c
       ));
     } catch {
-      addNotification(t('comments.error_send'));
+      showToast(t('comments.error_send'), 'error');
     }
   };
 
@@ -235,24 +221,14 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCo
     try {
       await deleteMutation.mutateAsync(commentId);
       emitToRequest(requestId, 'comment-deleted', { commentId });
+      showToast(t('comments.deletedLabel', { defaultValue: 'Comment deleted' }), 'success');
     } catch {
-      alert(t('comments.deleteError'));
+      showToast(t('comments.deleteError'), 'error');
     }
   };
 
   return (
     <>
-      {/* Fixed notifications - always visible regardless of scroll */}
-      {notifications.length > 0 && (
-        <div className="notifications-container">
-          {notifications.map((notif, idx) => (
-            <div key={idx} className="notification-toast">
-              {notif.message}
-            </div>
-          ))}
-        </div>
-      )}
-
       <AnimatePresence>
         {isOpen && (
           <m.section

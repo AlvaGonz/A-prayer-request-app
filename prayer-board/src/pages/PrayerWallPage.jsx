@@ -10,6 +10,7 @@ import PrayerRequestSkeleton from '../components/PrayerRequestSkeleton';
 import NewPrayerRequestForm from '../components/NewPrayerRequestForm';
 import NotificationBanner from '../components/NotificationBanner';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { usePrayerRequests, useUpdatePrayerStatus, useDeletePrayerRequest } from '../hooks/usePrayerRequests';
 import { TextLoop } from '../components/ui/text-loop';
 import './PrayerWallPage.css';
@@ -32,6 +33,7 @@ const PrayerWallPage = () => {
   const [statusFilter, setStatusFilter] = useState('open');
   const { user } = useAuth();
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const queryClient = useQueryClient();
 
   const {
@@ -122,7 +124,7 @@ const PrayerWallPage = () => {
   const handleUpdateStatus = async (requestId, reqStatus) => {
     updateMutation.mutate({ requestId, data: { status: reqStatus }, user }, {
       onError: (err) => {
-        alert(err.message || 'Failed to update request');
+        showToast(err.message || 'Failed to update request', 'error');
       }
     });
   };
@@ -130,7 +132,7 @@ const PrayerWallPage = () => {
   const handleDelete = async (requestId) => {
     deleteMutation.mutate({ requestId, user }, {
       onError: (err) => {
-        alert(err.message || 'Failed to delete request');
+        showToast(err.message || 'Failed to delete request', 'error');
       }
     });
   };

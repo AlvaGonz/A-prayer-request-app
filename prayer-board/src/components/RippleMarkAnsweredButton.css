@@ -1,11 +1,8 @@
+/* === RippleMarkAnsweredButton — Flat Design === */
 .ripple-mark-answered-button {
   border-color: var(--color-accent-green);
   color: var(--color-accent-green);
-  background: linear-gradient(
-    135deg,
-    var(--color-accent-green-light, rgba(74, 222, 128, 0.05)) 0%,
-    transparent 100%
-  );
+  background-color: var(--color-accent-green-light);
 }
 
 .ripple-mark-answered-button .mark-answered-icon {
@@ -18,12 +15,9 @@
 }
 
 .ripple-mark-answered-button:hover:not(:disabled) {
-  background: linear-gradient(
-    135deg,
-    var(--color-accent-green-light, rgba(74, 222, 128, 0.15)) 0%,
-    transparent 100%
-  );
+  background-color: var(--color-accent-green-light);
   border-color: var(--color-accent-green);
+  opacity: 0.9;
 }
 
 .ripple-mark-answered-button:disabled {
@@ -32,6 +26,6 @@
 }
 
 .mark-answered-text {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 500;
 }

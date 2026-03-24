@@ -1,17 +1,11 @@
+/* === AnimatedCandle — Flat Design (no drop-shadow) === */
 .animated-candle-container {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .animated-candle-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.4));
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .animated-candle-svg {
-        filter: none;
-    }
+  width: 100%;
+  height: 100%;
 }

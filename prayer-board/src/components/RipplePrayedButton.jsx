@@ -5,6 +5,7 @@ import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
 import { safeStorage } from '../utils/storage';
+import { useToast } from '../context/ToastContext';
 import Sparkles from './Sparkles';
 import { RippleButton } from './ui/RippleButton';
 import './RipplePrayedButton.css';
@@ -29,11 +30,9 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
   });
 
   const prayMutation = usePrayMutation(requestId);
-  const [showMessage, setShowMessage] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
   const [showSparkles, setShowSparkles] = useState(false);
   const { t } = useTranslation();
-  const messageTimeoutRef = useRef(null);
+  const { showToast } = useToast();
 
   // Sync with localStorage on mount and when requestId changes
   useEffect(() => {
@@ -51,15 +50,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       console.error('Error reading from local storage', e);
     }
   }, [requestId]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (messageTimeoutRef.current) {
-        clearTimeout(messageTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Sync prop updates if they change externally
   useEffect(() => {
@@ -81,8 +71,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       if (prevPrayed) {
         // Un-pray
         const result = await prayMutation.mutateAsync({ isPraying: true });
-        setShowMessage(false);
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
 
         // Remove from localStorage
         try {
@@ -100,8 +88,7 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       } else {
         // Pray
         const result = await prayMutation.mutateAsync({ isPraying: false });
-        setToastMessage(result.message || t('notifications.prayed'));
-        setShowMessage(true);
+        showToast(result.message || t('notifications.prayed'), 'success');
         setShowSparkles(true);
 
         // Save to localStorage
@@ -116,10 +103,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
           console.error('Error writing to local storage', e);
         }
 
-        // Hide message after 10 seconds
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
-        messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 10000);
-
         if (onPrayed) {
           onPrayed(requestId, result.prayedCount || newCount);
         }
@@ -130,9 +113,9 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       setIsPrayed(prevPrayed);
       console.error('Error praying/unpraying:', error);
       if (error.statusCode === 429) {
-        alert(t('auth.errors.rateLimit'));
+        showToast(t('auth.errors.rateLimit'), 'warning');
       } else {
-        alert(error.message || t('errors.pray'));
+        showToast(error.message || t('errors.pray'), 'error');
       }
     }
   };
@@ -154,25 +137,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
         <span className="prayed-count">{count}</span>
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
       </RippleButton>
-
-      {showMessage && typeof document !== 'undefined' && createPortal(
-        <div className="prayed-message animate-in">
-          <span className="prayed-message-text">
-            {toastMessage}
-          </span>
-          <button
-            className="prayed-message-close"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowMessage(false);
-            }}
-            aria-label={t('common.close')}
-          >
-            <X size={16} />
-          </button>
-        </div>,
-        document.body
-      )}
     </div>
   );
 };

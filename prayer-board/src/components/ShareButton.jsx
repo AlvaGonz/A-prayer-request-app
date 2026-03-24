@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Share2, Check, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { shareAPI } from '../api';
+import { useToast } from '../context/ToastContext';
 import './ShareButton.css';
 
 const ShareButton = ({ requestId }) => {
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const { t } = useTranslation();
+    const { showToast } = useToast();
 
     const handleShare = async () => {
         setLoading(true);
@@ -25,13 +27,14 @@ const ShareButton = ({ requestId }) => {
             } else {
                 await navigator.clipboard.writeText(fullUrl);
                 setCopied(true);
+                showToast(t('share.copied'), 'success');
                 setTimeout(() => setCopied(false), 2500);
             }
         } catch (error) {
             // User cancelled share or clipboard failed
             if (error.name !== 'AbortError') {
                 console.error('Share failed:', error);
-                alert(t('share.error'));
+                showToast(t('share.error'), 'error');
             }
         } finally {
             setLoading(false);

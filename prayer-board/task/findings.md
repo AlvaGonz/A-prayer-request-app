@@ -1,4 +1,4 @@
-# Findings
-
-- **CSS Transformations Limit Positioning:** Any Element styled with Framer Motion `translate`, `scale`, or manually using CSS `transform` creates a "new block formatting context". When this happens, children with `position: fixed` become anchored to that transformed element, bypassing the browser viewport! The only way to achieve true global positioning for a fixed overlay element is to portal it away into the DOM root (`createPortal`).
-- **Server Notifications Structure:** The API method `pray` inside `server/controllers/requestController.js` reliably returns `{ prayedCount, message }`. The `usePrayMutation` parses this exact payload, allowing the client interface to display dynamic backend messages.
+# UI UX Findings
+- NotificationBanner was using `top: 24px` which overlapped the `64px` fixed header natively.
+- `CommentSection` Toast notifications (like the Rate Limit text) were using `top: 8px` on desktop and stretching wide on mobile via `right: 24px, left: 24px` which caused overlapping/cropping layout shifts.
+- To follow ui-ux-pro-max guidelines, transient feedback toasts should float from bottom-center so they don't occlude critical interactive headers or content mid-screen.

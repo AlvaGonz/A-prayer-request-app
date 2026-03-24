@@ -8,12 +8,14 @@ import { HeartIcon, SendIcon } from '../components/ui/animated-state-icons';
 import { shareAPI } from '../api';
 import { safeStorage } from '../utils/storage';
 import { m } from 'framer-motion';
+import { useToast } from '../context/ToastContext';
 import Header from '../components/Header';
 import './SharedPrayerPage.css';
 
 const SharedPrayerPage = () => {
     const { token } = useParams();
     const { t, i18n } = useTranslation();
+    const { showToast } = useToast();
     const [request, setRequest] = useState(null);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -119,7 +121,7 @@ const SharedPrayerPage = () => {
                 commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
         } catch (err) {
-            alert(err.message || 'Failed to add comment');
+            showToast(err.message || 'Failed to add comment', 'error');
         } finally {
             setIsSubmitting(false);
         }

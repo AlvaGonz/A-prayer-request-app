@@ -14,6 +14,7 @@ import PrayerDetailModal from './PrayerDetailModal';
 import Celebration from './ui/Celebration';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { useMarkAnswered } from '../hooks/usePrayerRequests';
 import './PrayerRequestCard.css';
 
@@ -47,6 +48,7 @@ const PrayerRequestCard = ({
 }) => {
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
   const locale = i18n.language.startsWith('es') ? es : enUS;
   const markAnsweredMutation = useMarkAnswered();
 
@@ -106,7 +108,7 @@ const PrayerRequestCard = ({
           }, 2500);
         },
         onError: (err) => {
-          alert(err.message || 'Failed to mark as answered');
+          showToast(err.message || 'Failed to mark as answered', 'error');
         }
       }
     );

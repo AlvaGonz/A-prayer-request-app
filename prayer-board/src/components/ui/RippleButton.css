@@ -1,25 +1,25 @@
+/* === RippleButton — Flat Design Base === */
 .ripple-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 6px 14px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: var(--border-base);
   border-radius: var(--radius-full);
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   overflow: hidden;
   min-height: 38px;
-  transition: 
+  transition:
     background-color var(--transition-fast),
     border-color var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast);
+    color var(--transition-fast);
 }
 
 .ripple-button:hover:not(:disabled) {
@@ -28,7 +28,7 @@
 }
 
 .ripple-button:active:not(:disabled) {
-  box-shadow: inset 0 2px 4px var(--color-shadow);
+  opacity: 0.9;
 }
 
 .ripple-button:focus-visible {
@@ -47,7 +47,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -66,15 +66,4 @@
   transform: scale(0);
   animation: rippling 600ms ease-out forwards;
   pointer-events: none;
-}
-
-@keyframes rippling {
-  0% {
-    opacity: 0.5;
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
 }

@@ -1,3 +1,4 @@
+/* === RippleCommentButton — Flat Design === */
 .ripple-comment-button .comment-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
 }
@@ -9,19 +10,15 @@
 
 .ripple-comment-button.is-open {
   border-color: var(--color-accent-gold);
-  background: linear-gradient(
-    135deg,
-    var(--gold-tint-light, rgba(221, 179, 104, 0.08)) 0%,
-    transparent 100%
-  );
+  background-color: var(--gold-tint-light);
 }
 
 .ripple-comment-button.is-open .comment-icon {
   color: var(--color-accent-gold);
-  fill: var(--gold-tint-medium, rgba(221, 179, 104, 0.2));
+  fill: var(--gold-tint-medium);
 }
 
 .comment-text {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 600;
 }
