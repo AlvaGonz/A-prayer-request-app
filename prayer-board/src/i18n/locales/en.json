@@ -164,8 +164,10 @@
     "testimonyPlaceholder": "Share how God answered this prayer (optional)...",
     "timeAgo": "{{time}} ago",
     "youPrayedAria": "You have prayed for this request",
-    "readMore": "Read more",
-    "readLess": "Show less"
+    "readMore": "Read more...",
+    "readLess": "Show less",
+    "tapToRead": "Tap to read full prayer",
+    "fullPrayer": "Full Prayer"
   },
   "prayerWall": {
     "empty": "No prayer requests yet. Be the first to share!",

@@ -7,7 +7,7 @@ export const usePrayerRequests = (statusFilter = 'open') => {
         queryFn: async ({ pageParam = 1 }) => {
             return await requestsAPI.getAll({
                 page: pageParam,
-                limit: pageParam === 1 ? 10 : 20,
+                limit: 20,
                 status: statusFilter
             });
         },

@@ -30,7 +30,8 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     let id;
     try {
       id = localStorage.getItem('prayer_guest_comment_id');
-    } catch (e) { }
+    } catch { /* empty */ }
+    // eslint-disable-next-line react-hooks/purity
     return id || Date.now().toString(36);
   }, []);
 
@@ -165,7 +166,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     try {
       const stored = safeStorage.getItem(storeKey);
       if (stored) userComments = parseInt(stored, 10);
-    } catch (e) { }
+    } catch { /* empty */ }
 
     if (userComments >= 3) {
       addNotification(t('comments.rate_limit'));
@@ -183,7 +184,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
 
       try {
         safeStorage.setItem(storeKey, (userComments + 1).toString());
-      } catch (e) { }
+      } catch { /* empty */ }
 
       emitToRequest(requestId, 'new-comment', {
         id: result.comment.id,
@@ -223,7 +224,7 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
           isEdited: true
         } : c
       ));
-    } catch (error) {
+    } catch {
       addNotification(t('comments.error_send'));
     }
   };
@@ -234,12 +235,10 @@ const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, init
     try {
       await deleteMutation.mutateAsync(commentId);
       emitToRequest(requestId, 'comment-deleted', { commentId });
-    } catch (error) {
+    } catch {
       alert(t('comments.deleteError'));
     }
   };
-
-  const displayCount = (comments.length > 0 || isOpen) ? comments.length : initialCommentCount;
 
   return (
     <>

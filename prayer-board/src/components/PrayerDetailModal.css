@@ -1,0 +1,201 @@
+/* PrayerDetailModal Styles */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  border: 1px solid var(--color-border);
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(to bottom, var(--gold-tint-light), transparent);
+}
+
+.modal-author-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent-purple), var(--color-accent-gold));
+  color: var(--color-bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  box-shadow: 0 0 0 2px var(--color-bg-card), 0 0 0 4px var(--color-accent-gold);
+}
+
+.modal-avatar.anonymous {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 2px solid var(--color-border);
+  box-shadow: none;
+}
+
+.modal-author-name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.modal-time-ago {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.modal-close-btn {
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-accent-gold);
+  border-color: var(--color-accent-gold);
+  transform: rotate(90deg);
+}
+
+.modal-scroll-area {
+  padding: 32px;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 60vh;
+}
+
+.modal-prayer-text {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+}
+
+.modal-testimony-area {
+  margin-top: 32px;
+  padding: 24px;
+  background-color: var(--gold-tint-light);
+  border-left: 4px solid var(--color-accent-gold);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.modal-testimony-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-accent-gold);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.modal-testimony-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.modal-footer {
+  padding: 24px 32px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+}
+
+/* Ensure children (RippleButtons) fill space properly */
+.modal-actions > * {
+  flex: 1;
+}
+
+/* Mobile styles - Bottom Sheet */
+@media (max-width: 640px) {
+  .modal-content {
+    max-width: 100%;
+    max-height: 94vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    margin-bottom: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    animation: slide-up-mobile 0.4s cubic-bezier(0, 0.55, 0.45, 1);
+  }
+
+  @keyframes slide-up-mobile {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+  }
+
+  .modal-scroll-area {
+    padding: 24px;
+  }
+
+  .modal-footer {
+    padding: 20px 24px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .modal-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}

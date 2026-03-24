@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PrayerWallPage from '../pages/PrayerWallPage';
+import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
 
@@ -46,6 +47,15 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     vi.clearAllMocks();
     testQueryClient = createTestQueryClient();
     
+    // Mock IntersectionObserver for jsdom
+    window.IntersectionObserver = vi.fn().mockImplementation(function() {
+      return {
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      }
+    });
+    
     // Default open/pending state mocking
     mockUsePrayerRequests.mockImplementation((statusFilter) => {
       const isAnswered = statusFilter === 'answered';
@@ -79,7 +89,9 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
       <QueryClientProvider client={testQueryClient}>
         <AuthProvider>
           <ThemeProvider>
-            <PrayerWallPage />
+            <MemoryRouter>
+              <PrayerWallPage />
+            </MemoryRouter>
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>

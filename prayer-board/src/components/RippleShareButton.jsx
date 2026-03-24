@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Share2, Check, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { shareAPI } from '../api';
+import { RippleButton } from './ui/RippleButton';
 import './RippleShareButton.css';
 
 /**
@@ -15,7 +16,8 @@ const RippleShareButton = ({ requestId }) => {
     const [copied, setCopied] = useState(false);
     const { t } = useTranslation();
 
-    const handleShare = async () => {
+    const handleShare = async (e) => {
+        if (e) e.stopPropagation();
         setLoading(true);
         try {
             // Generate share link via API to get proper shareToken
@@ -46,21 +48,24 @@ const RippleShareButton = ({ requestId }) => {
     };
 
     return (
-        <button
-            className={`action-btn share-btn ${copied ? 'copied' : ''}`}
+        <RippleButton
+            className={`ripple-share-button ${copied ? 'copied' : ''}`}
             onClick={handleShare}
             disabled={loading}
             aria-label={copied ? t('share.blinkCopied') || t('share.copied') : t('share.ariaLabel')}
+            rippleColor="rgba(221, 179, 104, 0.3)"
         >
-            {loading ? (
-                <Loader2 size={16} className="spinner" aria-hidden="true" />
-            ) : copied ? (
-                <Check size={16} aria-hidden="true" />
-            ) : (
-                <Share2 size={16} aria-hidden="true" />
-            )}
-            <span>{copied ? t('share.copied') : t('share.button')}</span>
-        </button>
+            <div className="share-icon">
+                {loading ? (
+                    <Loader2 size={16} className="spinner" aria-hidden="true" />
+                ) : copied ? (
+                    <Check size={16} aria-hidden="true" />
+                ) : (
+                    <Share2 size={16} aria-hidden="true" />
+                )}
+            </div>
+            <span className="share-text">{copied ? t('share.copied') : t('share.button')}</span>
+        </RippleButton>
     );
 };
 

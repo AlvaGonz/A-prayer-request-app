@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,7 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
 
   const prayMutation = usePrayMutation(requestId);
   const [showMessage, setShowMessage] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const [showSparkles, setShowSparkles] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
@@ -100,6 +102,7 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       } else {
         // Pray
         const result = await prayMutation.mutateAsync({ isPraying: false });
+        setToastMessage(result.message || t('notifications.prayed'));
         setShowMessage(true);
         setShowSparkles(true);
 
@@ -151,27 +154,26 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
           isFilled={isPrayed}
         />
         <span className="prayed-count">{count}</span>
-        <div className="prayed-label-stack">
-          {t('prayerCard.iPrayed').split(' ').map((word, i) => (
-            <span key={i}>{word}</span>
-          ))}
-        </div>
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
       </RippleButton>
 
-      {showMessage && (
+      {showMessage && typeof document !== 'undefined' && createPortal(
         <div className="prayed-message animate-in">
           <span className="prayed-message-text">
-            {t('notifications.prayed')}
+            {toastMessage}
           </span>
           <button
             className="prayed-message-close"
-            onClick={() => setShowMessage(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMessage(false);
+            }}
             aria-label={t('common.close')}
           >
             <X size={16} />
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
