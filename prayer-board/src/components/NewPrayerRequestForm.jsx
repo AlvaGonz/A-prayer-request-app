@@ -69,12 +69,13 @@ const stepVariants = {
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' ? window.innerWidth < 600 : false
+    typeof window !== 'undefined' ? window.innerWidth <= 640 : false
   );
   React.useEffect(() => {
-    const handler = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
+    const mql = window.matchMedia('(max-width: 640px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
   }, []);
   return isMobile;
 };
