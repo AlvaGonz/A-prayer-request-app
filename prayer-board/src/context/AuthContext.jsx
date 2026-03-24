@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI, APIError } from '../api';
 import { safeStorage, safeSessionStorage } from '../utils/storage';
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
           setToken(storedToken);
           setIsAuthenticated(true);
         }
-      } catch (error) {
+      } catch {
         console.log('Session expired or invalid');
         // Token exists but is invalid - clear it
         logout();

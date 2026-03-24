@@ -113,11 +113,11 @@ a:hover {
 
   0%,
   100% {
-    box-shadow: 0 0 5px rgba(226, 185, 111, 0.3);
+    box-shadow: 0 0 5px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
   }
 
   50% {
-    box-shadow: 0 0 20px rgba(226, 185, 111, 0.6);
+    box-shadow: 0 0 20px var(--gold-glow-max, rgba(226, 185, 111, 0.6));
   }
 }
 

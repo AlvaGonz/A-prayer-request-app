@@ -23,14 +23,22 @@ const Sparkle = ({ size, color, delay, x, y }) => (
 );
 
 const Celebration = ({ isVisible }) => {
-  const sparkles = Array.from({ length: 12 }).map((_, i) => ({
-    id: i,
-    size: Math.random() * 20 + 10,
-    color: i % 2 === 0 ? '#CA8A04' : '#7C3AED', // Gold and Purple
-    delay: Math.random() * 0.5,
-    x: (Math.random() - 0.5) * 200,
-    y: (Math.random() - 0.5) * 50
-  }));
+  const [sparkles, setSparkles] = React.useState([]);
+
+  React.useEffect(() => {
+    if (isVisible) {
+      setSparkles(Array.from({ length: 12 }).map((_, i) => ({
+        id: i,
+        size: Math.random() * 20 + 10,
+        color: i % 2 === 0 ? '#CA8A04' : '#7C3AED', // Gold and Purple
+        delay: Math.random() * 0.5,
+        x: (Math.random() - 0.5) * 200,
+        y: (Math.random() - 0.5) * 50
+      })));
+    } else {
+      setSparkles([]);
+    }
+  }, [isVisible]);
 
   return (
     <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', zIndex: 50 }}>

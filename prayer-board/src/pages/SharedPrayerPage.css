@@ -39,9 +39,9 @@
     text-align: center;
     padding: 16px;
     margin-bottom: 24px;
-    background: linear-gradient(135deg, rgba(226, 185, 111, 0.1), rgba(226, 185, 111, 0.05));
+    background: linear-gradient(135deg, var(--gold-tint-light, rgba(226, 185, 111, 0.1)), var(--gold-tint-light-hover, rgba(226, 185, 111, 0.05)));
     border-radius: var(--radius-md);
-    border: 1px solid rgba(226, 185, 111, 0.2);
+    border: 1px solid var(--gold-tint-medium, rgba(226, 185, 111, 0.2));
 }
 
 .shared-banner p {
@@ -131,17 +131,17 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(226, 185, 111, 0.25);
+    box-shadow: 0 4px 12px var(--gold-glow, rgba(226, 185, 111, 0.25));
 }
 
 .shared-pray-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(226, 185, 111, 0.35);
+    box-shadow: 0 6px 20px var(--gold-glow-strong, rgba(226, 185, 111, 0.35));
 }
 
 .shared-pray-btn.prayed {
     background: linear-gradient(135deg, #22c55e, #16a34a);
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+    box-shadow: 0 4px 12px var(--color-accent-green-light, rgba(34, 197, 94, 0.25));
 }
 
 .shared-pray-btn:disabled {
@@ -149,7 +149,7 @@
 }
 
 .pray-count {
-    background: rgba(0, 0, 0, 0.15);
+    background: var(--color-hover-tint, rgba(0, 0, 0, 0.15));
     padding: 2px 10px;
     border-radius: 12px;
     font-size: 0.85rem;
@@ -309,12 +309,12 @@
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(226, 185, 111, 0.2);
+    box-shadow: 0 4px 12px var(--gold-glow, rgba(226, 185, 111, 0.2));
 }
 
 .shared-cta-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(226, 185, 111, 0.3);
+    box-shadow: 0 6px 20px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
     color: var(--color-bg-primary);
 }
 

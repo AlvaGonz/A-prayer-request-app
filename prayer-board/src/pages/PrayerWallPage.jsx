@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -46,7 +46,10 @@ const PrayerWallPage = () => {
   const updateMutation = useUpdatePrayerStatus();
   const deleteMutation = useDeletePrayerRequest();
 
-  const requests = data ? data.pages.flatMap((page) => page.requests) : [];
+  const requests = useMemo(() => {
+    return data ? data.pages.flatMap((page) => page.requests) : [];
+  }, [data]);
+
   const loading = status === 'pending';
 
   // --- Virtualization Layout Logic ---
@@ -284,7 +287,6 @@ const PrayerWallPage = () => {
                         ))
                       ) : (
                         rowItems && rowItems.map((request, itemIndex) => {
-                          const globalIndex = virtualRow.index * columnCount + itemIndex;
                           return (
                             <PrayerRequestCard
                               key={request.id}

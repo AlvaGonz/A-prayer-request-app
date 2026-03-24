@@ -49,7 +49,7 @@
   cursor: pointer;
   transition: all var(--transition-normal);
   white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -58,11 +58,11 @@
 
 .new-request-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(226, 185, 111, 0.4);
+  box-shadow: 0 6px 20px var(--gold-glow-strong, rgba(226, 185, 111, 0.4));
 }
 
 .error-banner {
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: var(--color-error-tint);
   border: 1px solid var(--color-accent-red);
   color: var(--color-accent-red);
   padding: 16px 20px;
@@ -118,7 +118,7 @@
   background-color: var(--color-accent-gold);
   color: white;
   border-color: var(--color-accent-gold);
-  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.25);
+  box-shadow: 0 4px 12px var(--gold-glow, rgba(202, 138, 4, 0.25));
 }
 
 .requests-container {
@@ -282,5 +282,12 @@
   40% {
     opacity: 1;
     transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-more-dots span {
+    animation: none;
+    opacity: 0.6;
   }
 }

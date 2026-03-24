@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, describe, beforeEach, it, expect } from 'vitest';
 import PrayedButton from '../components/PrayedButton';
 
 // Mock react-i18next with proper interpolation

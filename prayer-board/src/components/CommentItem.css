@@ -82,12 +82,12 @@
 
 .comment-delete-btn:hover {
   color: var(--color-accent-red);
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: var(--color-error-tint);
 }
 
 .comment-edit-btn:hover {
   color: var(--color-accent-gold);
-  background-color: rgba(226, 185, 111, 0.1);
+  background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
 }
 
 .comment-edited-mark {
@@ -140,7 +140,7 @@
 }
 
 .comment-save-btn:hover {
-  background-color: rgba(34, 197, 94, 0.1);
+  background-color: var(--color-accent-green-light, rgba(34, 197, 94, 0.1));
 }
 
 .comment-cancel-btn {
@@ -177,4 +177,10 @@
 .comment-item.pending {
   opacity: 0.6;
   border-left-color: var(--color-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-item {
+    animation: none;
+  }
 }

@@ -60,7 +60,7 @@ const SharedPrayerPage = () => {
             }
         };
         fetchShared();
-    }, [token]);
+    }, [token, t]);
 
     const handlePray = async () => {
         if (isPraying) return;

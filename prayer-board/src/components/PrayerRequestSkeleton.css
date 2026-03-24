@@ -11,9 +11,16 @@
 }
 
 .skeleton-pulse {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-skeleton);
     animation: skeletonPulse 1.5s ease-in-out infinite alternate;
     border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-pulse {
+        animation: none;
+        opacity: 0.7;
+    }
 }
 
 .skeleton-header {

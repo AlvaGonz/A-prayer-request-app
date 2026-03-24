@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: var(--color-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,7 +55,7 @@
 
 .close-btn:hover {
   color: var(--color-text-primary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-hover-tint);
 }
 
 .prayer-form {
@@ -85,7 +85,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-accent-gold);
-  box-shadow: 0 0 0 3px rgba(226, 185, 111, 0.2);
+  box-shadow: 0 0 0 3px var(--gold-tint-medium, rgba(226, 185, 111, 0.2));
 }
 
 .form-group textarea:focus-visible {
@@ -205,7 +205,7 @@
 }
 
 .error-message {
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: var(--color-error-tint);
   border: 1px solid var(--color-accent-red);
   color: var(--color-accent-red);
   padding: 12px;
@@ -243,7 +243,7 @@
 
 .form-actions .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(226, 185, 111, 0.3);
+  box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
 }
 
 .form-actions .btn-primary:disabled {
@@ -258,7 +258,7 @@
 }
 
 .form-actions .btn-secondary:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-hover-tint);
   color: var(--color-text-primary);
 }
 
@@ -367,7 +367,7 @@
 
 .wizard-step.active .step-number {
   border-color: var(--color-accent-gold);
-  background-color: rgba(226, 185, 111, 0.1);
+  background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
 }
 
 .wizard-step.completed {
@@ -437,13 +437,13 @@
 }
 
 .identity-card:hover:not(:disabled) {
-  border-color: rgba(226, 185, 111, 0.4);
-  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--gold-tint-medium, rgba(226, 185, 111, 0.4));
+  background-color: var(--color-hover-tint);
 }
 
 .identity-card.active {
   border-color: var(--color-accent-gold);
-  background-color: rgba(226, 185, 111, 0.05);
+  background-color: var(--gold-tint-light-hover, rgba(226, 185, 111, 0.05));
   box-shadow: 0 0 0 1px var(--color-accent-gold);
 }
 
@@ -581,7 +581,7 @@
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-hover-tint);
   color: var(--color-text-primary);
 }
 

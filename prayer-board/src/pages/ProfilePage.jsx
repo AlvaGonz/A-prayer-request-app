@@ -223,7 +223,7 @@ const ProfilePage = () => {
           font-size: 2rem;
           font-weight: 700;
           margin: 0 auto 16px;
-          box-shadow: 0 4px 12px rgba(226, 185, 111, 0.2);
+          box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.2));
         }
         
         .role-badge {
@@ -231,7 +231,7 @@ const ProfilePage = () => {
           align-items: center;
           gap: 6px;
           padding: 4px 12px;
-          background-color: rgba(226, 185, 111, 0.1);
+          background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
           color: var(--color-accent-gold);
           border-radius: var(--radius-full);
           font-size: 0.75rem;
@@ -242,9 +242,9 @@ const ProfilePage = () => {
         }
 
         .profile-success-msg {
-          background-color: rgba(34, 197, 94, 0.1);
-          border: 1px solid #22c55e;
-          color: #22c55e;
+          background-color: var(--color-accent-green-light, rgba(34, 197, 94, 0.1));
+          border: 1px solid var(--color-accent-green, #22c55e);
+          color: var(--color-accent-green, #22c55e);
           padding: 12px 16px;
           border-radius: var(--radius-md);
           margin-bottom: 20px;

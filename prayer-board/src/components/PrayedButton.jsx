@@ -3,7 +3,6 @@ import { X } from 'lucide-react';
 import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
-import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
 import Sparkles from './Sparkles';
 import { InteractiveHoverButton } from './ui/InteractiveHoverButton';
@@ -44,7 +43,6 @@ const PrayedButton = ({ requestId, initialCount, onPrayed }) => {
 
   const [showMessage, setShowMessage] = useState(false);
   const [showSparkles, setShowSparkles] = useState(false);
-  const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const messageTimeoutRef = useRef(null);
 

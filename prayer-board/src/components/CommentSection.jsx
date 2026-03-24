@@ -12,7 +12,7 @@ import { useComments, useCreateComment, useUpdateComment, useDeleteComment } fro
 import { safeStorage } from '../utils/storage';
 import './CommentSection.css';
 
-const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, initialCommentCount, onCommentCountUpdate }) => {
+const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCommentCountUpdate }) => {
   const [notifications, setNotifications] = useState([]);
   const [hasLoaded, setHasLoaded] = useState(false);
 

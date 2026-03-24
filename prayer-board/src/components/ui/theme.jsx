@@ -36,6 +36,7 @@ export const Theme = ({
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 })
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true)
   }, [])
 

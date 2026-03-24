@@ -11,8 +11,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
   max-width: 480px;
   width: calc(100% - 48px);
   animation: slideUpBanner 4s ease;
@@ -71,7 +71,7 @@
 
 .btn-enable:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(226, 185, 111, 0.3);
+  box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
 }
 
 .btn-enable:disabled {
@@ -94,7 +94,7 @@
 
 .btn-dismiss:hover {
   color: var(--color-text-secondary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-hover-tint);
 }
 
 @keyframes slideUpBanner {
@@ -126,5 +126,11 @@
 
   .notification-desc {
     font-size: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-banner {
+    animation: none;
   }
 }

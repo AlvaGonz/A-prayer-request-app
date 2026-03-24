@@ -31,7 +31,7 @@
 
 .close-comments:hover {
   color: var(--color-text-primary);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-hover-tint);
 }
 
 .comments-list {
@@ -53,7 +53,7 @@
   font-size: 0.9rem;
   padding: 24px 20px;
   font-style: italic;
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--color-hover-tint);
   border-radius: var(--radius-md);
 }
 
@@ -84,7 +84,7 @@
 }
 
 .quick-option-btn:hover:not(:disabled) {
-  background-color: rgba(226, 185, 111, 0.1);
+  background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
   border-color: var(--color-accent-gold);
   color: var(--color-accent-gold);
 }
@@ -168,7 +168,7 @@
 
 .submit-comment-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(226, 185, 111, 0.3);
+  box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
 }
 
 .submit-comment-btn:disabled {
@@ -255,7 +255,7 @@
 .comments-toggle-btn:hover {
   border-color: var(--color-accent-gold);
   color: var(--color-accent-gold);
-  background-color: rgba(226, 185, 111, 0.1);
+  background-color: var(--gold-tint-light, rgba(226, 185, 111, 0.1));
 }
 
 @media (max-width: 600px) {
@@ -302,7 +302,7 @@
 .comment-section__chip {
   min-height: 44px;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--color-text-muted);
   background: transparent;
   color: var(--color-text-secondary);

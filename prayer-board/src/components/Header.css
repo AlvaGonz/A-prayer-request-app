@@ -86,7 +86,7 @@
   border-radius: var(--radius-md);
   padding: 8px;
   min-width: 150px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   animation: slideDownAndFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1000;
 }
@@ -131,7 +131,7 @@
 }
 
 .admin-badge {
-  background-color: rgba(226, 185, 111, 0.2);
+  background-color: var(--gold-tint-strong, rgba(226, 185, 111, 0.2));
   color: var(--color-accent-gold);
   padding: 2px 8px;
   border-radius: 4px;
@@ -158,7 +158,7 @@
 .logout-btn:hover {
   border-color: var(--color-accent-red);
   color: var(--color-accent-red);
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: var(--color-error-tint);
 }
 
 .auth-buttons {
@@ -186,7 +186,7 @@
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(226, 185, 111, 0.3);
+  box-shadow: 0 4px 12px var(--gold-glow-strong, rgba(226, 185, 111, 0.3));
   color: var(--color-bg-primary);
 }
 
@@ -323,7 +323,7 @@
     align-items: stretch;
     padding: 20px;
     gap: 16px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
     z-index: 1000;
     overflow-x: visible;
     max-width: none;
@@ -349,7 +349,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--color-overlay);
     z-index: 900;
   }
 

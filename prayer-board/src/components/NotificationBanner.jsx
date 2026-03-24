@@ -7,7 +7,7 @@ import './NotificationBanner.css';
 
 const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Check if notifications are already enabled or dismissed
@@ -52,7 +52,7 @@ const NotificationBanner = () => {
       if (permission === 'granted') {
         // Get push subscription (in real implementation with backend)
         if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.ready;
+          await navigator.serviceWorker.ready;
 
           // This would normally use the backend's VAPID public key
           // For high-level wiring, we'll just log it

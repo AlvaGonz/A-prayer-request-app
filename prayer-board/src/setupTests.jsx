@@ -32,12 +32,26 @@ beforeEach(() => {
   });
 });
 
+vi.mock('./context/SocketContext', () => ({
+  SocketProvider: ({ children }) => children,
+  useSocket: () => ({
+    socket: null,
+    joinRequest: vi.fn(),
+    leaveRequest: vi.fn(),
+    emitToRequest: vi.fn()
+  })
+}));
+
 // Mock framer-motion to avoid 'undefined' opacity errors in jsdom
 vi.mock('framer-motion', async () => {
   const React = await import('react');
   const dummy = new Proxy({}, {
     get: (target, prop) => {
-      return React.forwardRef(({ children, transition, initial, animate, exit, ...props }, ref) => 
+      return React.forwardRef(({ 
+        children, _transition, _initial, _animate, _exit, 
+        _whileHover, _whileTap, _whileInView, _variants, _viewport, _layout, _layoutId,
+        ...props 
+      }, ref) => 
         React.createElement(prop, { ...props, ref }, children)
       );
     }
@@ -48,6 +62,7 @@ vi.mock('framer-motion', async () => {
     domAnimation: {},
     m: dummy,
     motion: dummy,
+    useReducedMotion: () => false,
   };
 });
 

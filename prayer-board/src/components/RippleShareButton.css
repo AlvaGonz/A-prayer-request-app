@@ -13,7 +13,7 @@
   border-color: var(--color-accent-green);
   background: linear-gradient(
     135deg,
-    rgba(74, 222, 128, 0.1) 0%,
+    var(--color-accent-green-light, rgba(74, 222, 128, 0.1)) 0%,
     transparent 100%
   );
 }

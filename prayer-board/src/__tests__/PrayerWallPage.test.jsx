@@ -23,6 +23,17 @@ vi.mock('../hooks/usePrayerRequests', () => ({
   useMarkAnswered: (...args) => mockUseMarkAnswered(...args),
 }));
 
+// Mock SocketContext
+vi.mock('../context/SocketContext', () => ({
+  SocketProvider: ({ children }) => children,
+  useSocket: () => ({
+    socket: null,
+    joinRequest: vi.fn(),
+    leaveRequest: vi.fn(),
+    emitToRequest: vi.fn()
+  })
+}));
+
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -123,7 +134,7 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     // the mock handles returning 'Answered pray' specifically when filtered.
   });
 
-  it('updates aria-selected for tabs', () => {
+  it('updates aria-selected for tabs', async () => {
     renderComponent();
     const pendingTab = screen.getByRole('tab', { name: 'prayerWall.filterPending' });
     const answeredTab = screen.getByRole('tab', { name: 'prayerWall.filterAnswered' });
@@ -133,8 +144,10 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     
     fireEvent.click(answeredTab);
     
-    expect(pendingTab).toHaveAttribute('aria-selected', 'false');
-    expect(answeredTab).toHaveAttribute('aria-selected', 'true');
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'prayerWall.filterPending' })).toHaveAttribute('aria-selected', 'false');
+      expect(screen.getByRole('tab', { name: 'prayerWall.filterAnswered' })).toHaveAttribute('aria-selected', 'true');
+    });
   });
 
   it('display visual badge logic is present via mocked requests', async () => {

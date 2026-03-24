@@ -1,6 +1,6 @@
 /* PrayerDetailModal Styles */
 .modal-overlay {
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--color-overlay);
   backdrop-filter: blur(12px);
   position: fixed;
   inset: 0;
@@ -13,7 +13,7 @@
 .modal-content {
   background: var(--color-bg-card);
   border-radius: var(--radius-xl);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
@@ -22,6 +22,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
   border: 1px solid var(--color-border);
   z-index: 1001;
   overflow: hidden;
@@ -170,8 +171,10 @@
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     margin-bottom: 0;
     position: fixed;
+    top: auto;
     bottom: 0;
     left: 0;
+    transform: none;
     animation: slide-up-mobile 0.4s cubic-bezier(0, 0.55, 0.45, 1);
   }
 

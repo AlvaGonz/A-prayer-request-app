@@ -9,3 +9,9 @@
     height: 100%;
     filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.4));
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .animated-candle-svg {
+        filter: none;
+    }
+}
