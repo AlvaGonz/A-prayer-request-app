@@ -155,39 +155,7 @@ export const Theme = ({
     )
   }
 
-  // BUTTON VARIANT (cycles through languages)
-  if (variant === "button") {
-    const safeLanguage = languages.includes(currentLanguage) ? currentLanguage : "en"
-    const Icon = languageIcons[safeLanguage]
-    const nextLanguage = languages[(languages.indexOf(safeLanguage) + 1) % languages.length]
 
-    return (
-      <motion.button
-        onClick={() => changeLanguage(nextLanguage)}
-        className={cn(
-          "language-theme-button",
-          sizeClasses[size],
-          className
-        )}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <motion.div
-          key={safeLanguage}
-          initial={{ rotate: -180, opacity: 0 }}
-          animate={{ rotate: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Icon size={iconSizes[size]} />
-        </motion.div>
-        {showLabel && (
-          <span className="language-theme-label">
-            {languageConfigs[safeLanguage].label}
-          </span>
-        )}
-      </motion.button>
-    )
-  }
 
   return null
 }

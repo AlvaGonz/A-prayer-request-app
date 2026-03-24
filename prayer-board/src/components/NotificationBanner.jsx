@@ -58,7 +58,6 @@ const NotificationBanner = () => {
 
           // This would normally use the backend's VAPID public key
           // For high-level wiring, we'll just log it
-          console.log('Push notifications enabled');
 
           // Store that user has enabled notifications
           safeStorage.setItem('prayerBoard_notificationsEnabled', 'true');
@@ -78,13 +77,17 @@ const NotificationBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="notification-banner">
+    <section 
+      className="notification-banner"
+      role="status"
+      aria-label={t('notifications.bannerTitle') || "Stay Connected"}
+    >
       <div className="notification-content">
-        <div className="notification-icon-container">
+        <div className="notification-icon-container" aria-hidden="true">
           <Bell size={20} />
         </div>
         <div className="notification-text">
-          <p className="notification-title">Stay Connected in Prayer</p>
+          <h2 className="notification-title">Stay Connected in Prayer</h2>
           <p className="notification-desc">
             Enable notifications to know when someone prays for your requests.
           </p>
@@ -94,17 +97,19 @@ const NotificationBanner = () => {
         <button
           className="btn-dismiss"
           onClick={handleDismiss}
+          aria-label={t('notifications.dismissAria') || "Dismiss notification prompt"}
         >
           Not now
         </button>
         <button
           className="btn-enable"
           onClick={handleEnableNotifications}
+          aria-label={t('notifications.enableAria') || "Enable browser notifications"}
         >
           Enable
         </button>
       </div>
-    </div>
+    </section>
   );
 };
 

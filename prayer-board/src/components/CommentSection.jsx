@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { MessageCircle, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { SendIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';

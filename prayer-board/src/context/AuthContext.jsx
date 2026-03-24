@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }) => {
           setIsAuthenticated(true);
         }
       } catch {
-        console.log('Session expired or invalid');
         // Token exists but is invalid - clear it
         logout();
       } finally {

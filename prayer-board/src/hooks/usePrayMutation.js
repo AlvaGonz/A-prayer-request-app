@@ -11,9 +11,6 @@ export const usePrayMutation = (requestId) => {
             }
         },
         onSuccess: (_data) => {
-            // Opt-in to invalidate queries if we want absolute fresh data, 
-            // though typically we'll use optimistic updates in the component itself.
-            // queryClient.invalidateQueries({ queryKey: ['prayerRequests'] });
         }
     });
 };

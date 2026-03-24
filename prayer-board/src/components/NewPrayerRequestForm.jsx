@@ -197,82 +197,85 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   exit="exit"
                   style={{ overflow: 'hidden' }} // Keep transitions inside
                 >
-                  <div className="modal-header">
-                    <Dialog.Title asChild>
-                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <AnimatedCandle size={26} />
-                        {t('newRequest.title')}
-                      </h3>
-                    </Dialog.Title>
-                    <Dialog.Close asChild>
-                      <button
-                        ref={closeButtonRef}
-                        type="button"
-                        className="close-btn"
-                        aria-label={t('newRequest.close')}
-                        disabled={isSubmitting}
-                      >
-                        <X size={20} />
-                      </button>
-                    </Dialog.Close>
-                  </div>
-
-                  {/* Progress Indicator */}
-                  <div className="wizard-progress">
-                    <div className="wizard-steps">
-                      {[1, 2, 3].map((num) => (
-                        <div 
-                          key={num} 
-                          className={`wizard-step ${step === num ? 'active' : ''} ${step > num ? 'completed' : ''}`}
+                    <div className="modal-header">
+                      <Dialog.Title asChild>
+                        <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <AnimatedCandle size={26} />
+                          {t('newRequest.title')}
+                        </h2>
+                      </Dialog.Title>
+                      <Dialog.Close asChild>
+                        <button
+                          ref={closeButtonRef}
+                          type="button"
+                          className="close-btn"
+                          aria-label={t('newRequest.close')}
+                          disabled={isSubmitting}
                         >
-                          <div className="step-number">{step > num ? '✓' : num}</div>
-                          <span className="step-label">{t(`newRequest.wizard.step${num}`)}</span>
-                        </div>
-                      ))}
+                          <X size={20} />
+                        </button>
+                      </Dialog.Close>
                     </div>
-                    <div className="wizard-status-text">
-                      {t('newRequest.wizard.status', { current: step, total: totalSteps })}
-                    </div>
-                  </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="wizard-step-container">
-                    <AnimatePresence mode="wait" custom={direction}>
-                      <m.div
-                        key={step}
-                        custom={direction}
-                        variants={stepVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        className="wizard-step-content"
-                      >
-                        {step === 1 && (
-                          <div className="form-group">
-                            <label htmlFor="prayer-body" className="sr-only">
-                              {t('newRequest.prayerBodyLabel')}
-                            </label>
-                            <textarea
-                              id="prayer-body"
-                              {...register('body', {
-                                required: t('newRequest.minCharsError'),
-                                minLength: { value: 10, message: t('newRequest.minCharsError') },
-                                maxLength: maxLength
-                              })}
-                              placeholder={t('newRequest.placeholder')}
-                              rows={8}
-                              disabled={isSubmitting}
-                              autoFocus
-                            />
-                            <div className="char-count">
-                              {t('newRequest.charCount', { count: bodyContent?.length || 0, max: maxLength })}
-                            </div>
-                            {errors.body && (
-                              <div className="error-message error-message-field" role="alert">
-                                {errors.body.message}
-                              </div>
-                            )}
+                    {/* Progress Indicator */}
+                    <div className="wizard-progress" role="navigation" aria-label="Creation steps">
+                      <div className="wizard-steps">
+                        {[1, 2, 3].map((num) => (
+                          <div 
+                            key={num} 
+                            className={`wizard-step ${step === num ? 'active' : ''} ${step > num ? 'completed' : ''}`}
+                            aria-current={step === num ? 'step' : undefined}
+                          >
+                            <div className="step-number" aria-hidden="true">{step > num ? '✓' : num}</div>
+                            <span className="step-label">{t(`newRequest.wizard.step${num}`)}</span>
                           </div>
-                        )}
+                        ))}
+                      </div>
+                      <div className="wizard-status-text">
+                        {t('newRequest.wizard.status', { current: step, total: totalSteps })}
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="wizard-step-container">
+                      <AnimatePresence mode="wait" custom={direction}>
+                        <m.div
+                          key={step}
+                          custom={direction}
+                          variants={stepVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          className="wizard-step-content"
+                        >
+                          {step === 1 && (
+                            <div className="form-group">
+                              <label htmlFor="prayer-body" className="sr-only">
+                                {t('newRequest.prayerBodyLabel')}
+                              </label>
+                              <textarea
+                                id="prayer-body"
+                                {...register('body', {
+                                  required: t('newRequest.minCharsError'),
+                                  minLength: { value: 10, message: t('newRequest.minCharsError') },
+                                  maxLength: maxLength
+                                })}
+                                placeholder={t('newRequest.placeholder')}
+                                rows={8}
+                                disabled={isSubmitting}
+                                autoFocus
+                                aria-invalid={errors.body ? "true" : "false"}
+                                aria-describedby={errors.body ? "prayer-body-error" : undefined}
+                              />
+                              <div className="char-count" aria-live="polite">
+                                {t('newRequest.charCount', { count: bodyContent?.length || 0, max: maxLength })}
+                              </div>
+                              {errors.body && (
+                                <div id="prayer-body-error" className="error-message error-message-field" role="alert">
+                                  {errors.body.message}
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                         {step === 2 && (
                           <div className="identity-selection">

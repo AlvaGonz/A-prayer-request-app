@@ -443,6 +443,10 @@ const commentShared = async (req, res) => {
 // @access  Private (author only)
 const markAnswered = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {

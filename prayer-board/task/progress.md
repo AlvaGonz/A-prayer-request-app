@@ -1,5 +1,0 @@
-- **[2026-03-24]** Session started for Notification Redesign phase.
-- **Action**: Ran `ui-ux-pro-max` UX pattern search on Toast positioning. (Results: Transient feedback requires non-blocking UI position).
-- **Edit**: Repositioned `NotificationBanner.css` top offset to `calc(64px + 16px)` to avoid the site header navigation on mobile/desktop.
-- **Edit**: Rewrote `CommentSection.css` `.notifications-container` styles so all rate limiting and new comment toasts sit beautifully centered at the bottom of the active device window.
-- **Verification**: Verified mobile `space-20` (80px) bottom padding to clear the 64px `new-request-btn` FAB element.
