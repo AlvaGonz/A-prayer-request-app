@@ -84,7 +84,7 @@ const NotificationBanner = () => {
     >
       <div className="notification-content">
         <div className="notification-icon-container" aria-hidden="true">
-          <Bell size={20} />
+          <Bell size={24} />
         </div>
         <div className="notification-text">
           <h2 className="notification-title">Stay Connected in Prayer</h2>

@@ -212,7 +212,7 @@ const PrayerWallPage = () => {
             className="new-request-btn"
             onClick={() => setIsModalOpen(true)}
           >
-            <Plus size={20} />
+            <Plus size={24} />
             {t('prayerWall.newRequest')}
           </button>
         </div>
