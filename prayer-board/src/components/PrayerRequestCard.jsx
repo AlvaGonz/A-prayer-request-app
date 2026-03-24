@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { User, CheckCircle2, Trash2, Archive } from 'lucide-react';
+import { User, CheckCircle2, Trash2, Archive, ChevronDown } from 'lucide-react';
 import { EyeToggleIcon } from './ui/animated-state-icons';
 import { m, AnimatePresence } from 'framer-motion';
 import RipplePrayedButton from './RipplePrayedButton';
@@ -55,6 +55,9 @@ const PrayerRequestCard = ({
   const [testimonyText, setTestimonyText] = useState('');
   const [celebrate, setCelebrate] = useState(false);
   const [isSuccessState, setIsSuccessState] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const TEXT_CLAMP_THRESHOLD = 200;
 
   React.useEffect(() => {
     setLocalCommentCount(request.commentCount || 0);
@@ -157,7 +160,22 @@ const PrayerRequestCard = ({
       </header>
 
       <div className="prayer-card-body">
-        <p className="prayer-text">{request.body}</p>
+        <p className={`prayer-text ${!isExpanded && request.body.length > TEXT_CLAMP_THRESHOLD ? 'clamped' : ''}`}>
+          {request.body}
+        </p>
+        {request.body.length > TEXT_CLAMP_THRESHOLD && (
+          <button
+            className="read-more-btn"
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+          >
+            <span>{isExpanded ? t('prayerCard.readLess') : t('prayerCard.readMore')}</span>
+            <ChevronDown
+              size={14}
+              className={`read-more-icon ${isExpanded ? 'rotated' : ''}`}
+            />
+          </button>
+        )}
       </div>
 
       {/* Testimony display for answered prayers */}

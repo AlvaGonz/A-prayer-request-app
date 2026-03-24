@@ -18,8 +18,8 @@ export const usePrayerRequests = (statusFilter = 'open') => {
         refetchOnWindowFocus: true,
         getNextPageParam: (lastPage) => {
             if (!lastPage || !lastPage.pagination) return undefined;
-            const { currentPage, totalPages } = lastPage.pagination;
-            return currentPage < totalPages ? currentPage + 1 : undefined;
+            const { page, totalPages } = lastPage.pagination;
+            return page < totalPages ? page + 1 : undefined;
         }
     });
 };

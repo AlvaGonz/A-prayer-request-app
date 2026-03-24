@@ -28,6 +28,13 @@
   box-shadow: var(--shadow-md);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .prayer-card:hover {
+    transform: scale(1.008);
+    box-shadow: var(--shadow-md);
+  }
+}
+
 .prayer-card.answered {
   border-color: var(--color-accent-gold);
   background: linear-gradient(135deg,
@@ -54,16 +61,18 @@
 }
 
 .author-avatar {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent-gold), var(--color-accent-gold-hover));
+  background: linear-gradient(135deg, var(--color-accent-purple), var(--color-accent-gold));
   color: var(--color-bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px var(--color-bg-card), 0 0 0 3px var(--color-accent-gold);
 }
 
 .author-avatar.anonymous {
@@ -120,6 +129,41 @@
   line-height: 1.7;
   color: var(--color-text-primary);
   white-space: pre-wrap;
+}
+
+.prayer-text.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.read-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-accent-gold);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.read-more-btn:hover {
+  color: var(--color-accent-gold-hover);
+}
+
+.read-more-icon {
+  transition: transform var(--transition-fast);
+}
+
+.read-more-icon.rotated {
+  transform: rotate(180deg);
 }
 
 .prayer-card-footer {

@@ -8,6 +8,7 @@ import PrayerWallPage from './pages/PrayerWallPage';
 import SharedPrayerPage from './pages/SharedPrayerPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
 import './styles/themes.css';
 
 function AnimatedRoutes() {
@@ -20,6 +21,7 @@ function AnimatedRoutes() {
         <Route path="/shared/:token" element={<SharedPrayerPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </AnimatePresence>
   );

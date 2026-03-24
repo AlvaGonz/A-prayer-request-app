@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { X, Globe, AlertCircle } from 'lucide-react';
+import { X, Globe, AlertCircle, ChevronRight, ChevronLeft, User, UserCheck } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import * as Dialog from '@radix-ui/react-dialog';
@@ -34,7 +34,6 @@ const contentVariants = {
   },
 };
 
-// Mobile: bottom sheet behavior
 const mobileContentVariants = {
   hidden: { opacity: 0, x: 0, y: '100%' },
   visible: {
@@ -51,8 +50,25 @@ const mobileContentVariants = {
   },
 };
 
+const stepVariants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 20 : -20,
+    opacity: 0
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    transition: { duration: 0.3, ease: 'easeOut' }
+  },
+  exit: (direction) => ({
+    x: direction < 0 ? 20 : -20,
+    opacity: 0,
+    transition: { duration: 0.2, ease: 'easeIn' }
+  })
+};
+
 const useIsMobile = () => {
-  const [isMobile, setIsMobile] = React.useState(
+  const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth < 600 : false
   );
   React.useEffect(() => {
@@ -68,6 +84,11 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
   const { t } = useTranslation();
   const closeButtonRef = useRef(null);
   const isMobile = useIsMobile();
+  
+  // Wizard State
+  const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(0); // 1 for forward, -1 for back
+  const totalSteps = 3;
 
   const {
     register,
@@ -75,8 +96,10 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     control,
     reset,
     setError,
+    setValue,
     formState: { errors, isValid, isSubmitting },
     clearErrors,
+    trigger,
   } = useForm({
     defaultValues: { body: '', isAnonymous: true },
     mode: 'onChange',
@@ -95,7 +118,7 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
         isAuthenticated ? user : null
       );
 
-      reset();
+      handleReset();
       onSuccess(result.request);
       onClose();
     } catch (err) {
@@ -107,11 +130,36 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
+  const handleReset = () => {
+    reset();
+    setStep(1);
+    setDirection(0);
+    clearErrors();
+  };
+
   const handleClose = () => {
     if (!isSubmitting) {
-      reset();
-      clearErrors();
+      handleReset();
       onClose();
+    }
+  };
+
+  const nextStep = async () => {
+    if (step === 1) {
+      const isStep1Valid = await trigger('body');
+      if (!isStep1Valid) return;
+    }
+    
+    if (step < totalSteps) {
+      setDirection(1);
+      setStep(prev => prev + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (step > 1) {
+      setDirection(-1);
+      setStep(prev => prev - 1);
     }
   };
 
@@ -146,6 +194,7 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
+                  style={{ overflow: 'hidden' }} // Keep transitions inside
                 >
                   <div className="modal-header">
                     <Dialog.Title asChild>
@@ -167,89 +216,193 @@ const NewPrayerRequestForm = ({ isOpen, onClose, onSuccess }) => {
                     </Dialog.Close>
                   </div>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="prayer-form">
-                    <div className="form-group">
-                      <label htmlFor="prayer-body" className="sr-only">
-                        {t('newRequest.prayerBodyLabel')}
-                      </label>
-                      <textarea
-                        id="prayer-body"
-                        {...register('body', {
-                          required: t('newRequest.minCharsError'),
-                          minLength: { value: 10, message: t('newRequest.minCharsError') },
-                          maxLength: maxLength
-                        })}
-                        placeholder={t('newRequest.placeholder')}
-                        rows={6}
-                        disabled={isSubmitting}
-                      />
-                      <div className="char-count">
-                        {t('newRequest.charCount', { count: bodyContent?.length || 0, max: maxLength })}
-                      </div>
-                      {errors.body && (
-                        <div className="error-message error-message-field" role="alert">
-                          {errors.body.message}
+                  {/* Progress Indicator */}
+                  <div className="wizard-progress">
+                    <div className="wizard-steps">
+                      {[1, 2, 3].map((num) => (
+                        <div 
+                          key={num} 
+                          className={`wizard-step ${step === num ? 'active' : ''} ${step > num ? 'completed' : ''}`}
+                        >
+                          <div className="step-number">{step > num ? '✓' : num}</div>
+                          <span className="step-label">{t(`newRequest.wizard.step${num}`)}</span>
                         </div>
-                      )}
+                      ))}
                     </div>
+                    <div className="wizard-status-text">
+                      {t('newRequest.wizard.status', { current: step, total: totalSteps })}
+                    </div>
+                  </div>
 
-                    {isAuthenticated && (
-                      <div className="form-group checkbox-group">
-                        <label className="checkbox-label">
-                          <input
-                            type="checkbox"
-                            {...register('isAnonymous')}
-                            disabled={!isAuthenticated || isSubmitting}
-                          />
-                          <span className="checkmark"></span>
-                          <span className="checkbox-text">
-                            {t('newRequest.anonymous')}
-                          </span>
-                        </label>
-                        <p id="anonymous-hint" className="checkbox-hint">
-                          {isAnonymousValue ? t('newRequest.anonymousHint') : t('newRequest.privacyNotice')}
-                        </p>
-                      </div>
-                    )}
+                  <form onSubmit={handleSubmit(onSubmit)} className="wizard-step-container">
+                    <AnimatePresence mode="wait" custom={direction}>
+                      <m.div
+                        key={step}
+                        custom={direction}
+                        variants={stepVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        className="wizard-step-content"
+                      >
+                        {step === 1 && (
+                          <div className="form-group">
+                            <label htmlFor="prayer-body" className="sr-only">
+                              {t('newRequest.prayerBodyLabel')}
+                            </label>
+                            <textarea
+                              id="prayer-body"
+                              {...register('body', {
+                                required: t('newRequest.minCharsError'),
+                                minLength: { value: 10, message: t('newRequest.minCharsError') },
+                                maxLength: maxLength
+                              })}
+                              placeholder={t('newRequest.placeholder')}
+                              rows={8}
+                              disabled={isSubmitting}
+                              autoFocus
+                            />
+                            <div className="char-count">
+                              {t('newRequest.charCount', { count: bodyContent?.length || 0, max: maxLength })}
+                            </div>
+                            {errors.body && (
+                              <div className="error-message error-message-field" role="alert">
+                                {errors.body.message}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
-                    {!isAuthenticated && (
-                      <p className="guest-notice" role="note">
-                        <Trans i18nKey="newRequest.guestNoticeWithLink">
-                          You are posting as a guest. Your request will appear as &quot;Anonymous.&quot;
-                          <Link to="/register">Create an account</Link> to post with your name.
-                        </Trans>
-                      </p>
-                    )}
+                        {step === 2 && (
+                          <div className="identity-selection">
+                            <h4 className="step-title">{t('newRequest.wizard.visibilityTitle')}</h4>
+                            <p className="step-description">{t('newRequest.anonymousHint')}</p>
+                            
+                            <div className="identity-options">
+                              {isAuthenticated ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className={`identity-card ${!isAnonymousValue ? 'active' : ''}`}
+                                    onClick={() => setValue('isAnonymous', false)}
+                                  >
+                                    <div className="identity-radio"></div>
+                                    <div className="identity-info">
+                                      <span className="identity-name">{t('newRequest.wizard.namedLabel', { name: user.displayName })}</span>
+                                      <span className="identity-desc">{t('newRequest.wizard.namedDesc', { name: user.displayName })}</span>
+                                    </div>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    className={`identity-card ${isAnonymousValue ? 'active' : ''}`}
+                                    onClick={() => setValue('isAnonymous', true)}
+                                  >
+                                    <div className="identity-radio"></div>
+                                    <div className="identity-info">
+                                      <span className="identity-name">{t('newRequest.wizard.anonymousLabel')}</span>
+                                      <span className="identity-desc">{t('newRequest.wizard.anonymousDesc')}</span>
+                                    </div>
+                                  </button>
+                                </>
+                              ) : (
+                                <div className="identity-card active disabled">
+                                  <div className="identity-radio"></div>
+                                  <div className="identity-info">
+                                    <span className="identity-name">{t('newRequest.wizard.guestLabel')}</span>
+                                    <span className="identity-desc">{t('newRequest.wizard.guestDesc')}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {!isAuthenticated && (
+                              <p className="guest-notice" style={{ marginTop: '24px' }}>
+                                <Trans i18nKey="newRequest.guestNoticeWithLink">
+                                  You are posting as a guest. <Link to="/register">Create an account</Link> to post with your name.
+                                </Trans>
+                              </p>
+                            )}
+                          </div>
+                        )}
 
-                    <p className="privacy-notice" role="note">
-                      <Globe size={16} className="icon-inline" aria-hidden="true" />
-                      {t('newRequest.privacyNotice')}
-                    </p>
+                        {step === 3 && (
+                          <div className="review-step">
+                            <h4 className="step-title">{t('newRequest.wizard.reviewTitle')}</h4>
+                            <p className="step-description">{t('newRequest.wizard.reviewDesc')}</p>
+                            
+                            <div className="review-summary">
+                              <div className="review-item">
+                                <span className="review-label">{t('newRequest.wizard.summary')}</span>
+                                <div className="review-text">{bodyContent}</div>
+                              </div>
+                              
+                              <div className="review-item">
+                                <span className="review-label">{t('newRequest.wizard.identity')}</span>
+                                <div className="review-identity">
+                                  {isAnonymousValue ? (
+                                    <>
+                                      <div className="identity-avatar anonymous"><User size={16} /></div>
+                                      <span className="identity-name">{t('prayerCard.anonymous')}</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="identity-avatar"><UserCheck size={16} /></div>
+                                      <span className="identity-name">{user.displayName}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
 
-                    {errors.root && (
-                      <div className="error-message" role="alert" aria-live="assertive">
-                        <AlertCircle size={16} className="icon-inline" aria-hidden="true" />
-                        {errors.root.message}
-                      </div>
-                    )}
+                            <p className="privacy-notice" style={{ marginTop: '20px' }}>
+                              <Globe size={16} className="icon-inline" aria-hidden="true" />
+                              {t('newRequest.privacyNotice')}
+                            </p>
 
-                    <div className="form-actions">
-                      <Dialog.Close asChild>
+                            {errors.root && (
+                              <div className="error-message" role="alert" style={{ marginTop: '16px' }}>
+                                <AlertCircle size={16} className="icon-inline" aria-hidden="true" />
+                                {errors.root.message}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </m.div>
+                    </AnimatePresence>
+
+                    <div className="wizard-footer">
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        onClick={step === 1 ? handleClose : prevStep}
+                        disabled={isSubmitting}
+                      >
+                        {step === 1 ? (
+                          t('newRequest.cancel')
+                        ) : (
+                          <><ChevronLeft size={18} /> {t('newRequest.wizard.back')}</>
+                        )}
+                      </button>
+
+                      {step < totalSteps ? (
                         <button
                           type="button"
-                          className="btn btn-secondary"
-                          disabled={isSubmitting}
+                          className="btn btn-primary"
+                          onClick={nextStep}
+                          disabled={!bodyContent?.trim() || !!errors.body}
                         >
-                          {t('newRequest.cancel')}
+                          {t('newRequest.wizard.next')} <ChevronRight size={18} />
                         </button>
-                      </Dialog.Close>
-                      <InteractiveHoverButton
-                        text={isSubmitting ? t('newRequest.submitting') : t('newRequest.submit')}
-                        type="submit"
-                        disabled={!bodyContent?.trim() || !isValid || isSubmitting}
-                        aria-busy={isSubmitting}
-                        className="submit-prayer-btn"
-                      />
+                      ) : (
+                        <InteractiveHoverButton
+                          text={isSubmitting ? t('newRequest.submitting') : t('newRequest.submit')}
+                          type="submit"
+                          disabled={!isValid || isSubmitting}
+                          aria-busy={isSubmitting}
+                          className="submit-prayer-btn"
+                        />
+                      )}
                     </div>
                   </form>
                 </m.div>

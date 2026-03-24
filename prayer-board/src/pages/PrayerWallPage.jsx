@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -76,16 +76,25 @@ const PrayerWallPage = () => {
     overscan: 3,
   });
 
-  // Auto Infinite Scroll Trigger
-  useEffect(() => {
-    const virtualItems = rowVirtualizer.getVirtualItems();
-    if (!virtualItems.length) return;
+  // --- Robust Infinite Scroll via IntersectionObserver ---
+  const sentinelRef = useRef(null);
 
-    const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= rows.length && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, fetchNextPage, rows.length, isFetchingNextPage, rowVirtualizer.getVirtualItems()]);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '400px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // --- Custom Mutation Handlers ---
   const handlePrayed = (requestId, newCount) => {
@@ -147,7 +156,47 @@ const PrayerWallPage = () => {
                 <span>{t('prayerWall.loopItems.change')}</span>
                 <span>{t('prayerWall.loopItems.stray')}</span>
                 <span>{t('prayerWall.loopItems.stranger')}</span>
+                <span>{t('prayerWall.loopItems.forgiveness')}</span>
                 <span>{t('prayerWall.loopItems.yourself')}</span>
+                <span>{t('prayerWall.loopItems.healing')}</span>
+                <span>{t('prayerWall.loopItems.guidance')}</span>
+                <span>{t('prayerWall.loopItems.provision')}</span>
+                <span>{t('prayerWall.loopItems.protection')}</span>
+                <span>{t('prayerWall.loopItems.strength')}</span>
+                <span>{t('prayerWall.loopItems.baptism')}</span>
+                <span>{t('prayerWall.loopItems.wisdom')}</span>
+                <span>{t('prayerWall.loopItems.todie')}</span>
+                <span>{t('prayerWall.loopItems.obidience')}</span>
+                <span>{t('prayerWall.loopItems.will')}</span>
+                <span>{t('prayerWall.loopItems.desire')}</span>
+                <span>{t('prayerWall.loopItems.leaders')}</span>
+                <span>{t('prayerWall.loopItems.widows')}</span>
+                <span>{t('prayerWall.loopItems.lost')}</span>
+                <span>{t('prayerWall.loopItems.sick')}</span>
+                <span>{t('prayerWall.loopItems.persecuted')}</span>
+                <span>{t('prayerWall.loopItems.workers')}</span>
+                <span>{t('prayerWall.loopItems.neighbors')}</span>
+                <span>{t('prayerWall.loopItems.church')}</span>
+                <span>{t('prayerWall.loopItems.israel')}</span>
+                <span>{t('prayerWall.loopItems.thanksgiving')}</span>
+                <span>{t('prayerWall.loopItems.praise')}</span>
+                <span>{t('prayerWall.loopItems.confession')}</span>
+                <span>{t('prayerWall.loopItems.revival')}</span>
+                <span>{t('prayerWall.loopItems.salvation')}</span>
+                <span>{t('prayerWall.loopItems.deliverance')}</span>
+                <span>{t('prayerWall.loopItems.unity')}</span>
+                <span>{t('prayerWall.loopItems.fasting')}</span>
+                <span>{t('prayerWall.loopItems.nation')}</span>
+                <span>{t('prayerWall.loopItems.warfare')}</span>
+                <span>{t('prayerWall.loopItems.sanctification')}</span>
+                <span>{t('prayerWall.loopItems.renewal')}</span>
+                <span>{t('prayerWall.loopItems.humility')}</span>
+                <span>{t('prayerWall.loopItems.faith')}</span>
+                <span>{t('prayerWall.loopItems.love')}</span>
+                <span>{t('prayerWall.loopItems.kingdom')}</span>
+                <span>{t('prayerWall.loopItems.peace')}</span>
+                <span>{t('prayerWall.loopItems.repentance')}</span>
+                <span>{t('prayerWall.loopItems.mission')}</span>
                 <span>{t('prayerWall.loopItems.all')}</span>
               </TextLoop>
             </h1>
@@ -252,6 +301,32 @@ const PrayerWallPage = () => {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Sentinel for IntersectionObserver-based infinite scroll */}
+          <div
+            ref={sentinelRef}
+            aria-hidden="true"
+            style={{ height: 1, width: '100%' }}
+          />
+
+          {/* Loading indicator while fetching next page */}
+          {isFetchingNextPage && (
+            <div className="loading-more">
+              <div className="loading-more-dots">
+                <span /><span /><span />
+              </div>
+              <p>{t('prayerWall.loading')}</p>
+            </div>
+          )}
+
+          {/* Feed end message */}
+          {!hasNextPage && requests.length > 0 && !loading && (
+            <div className="feed-end-message">
+              <span className="feed-end-divider" />
+              <p>{t('feed.allPrayersLoaded')}</p>
+              <span className="feed-end-divider" />
             </div>
           )}
         </div>

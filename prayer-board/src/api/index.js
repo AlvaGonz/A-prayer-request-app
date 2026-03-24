@@ -70,6 +70,10 @@ export const authAPI = {
   }),
 
   me: async () => apiCall('/api/auth/me'),
+  updateProfile: async (data) => apiCall('/api/auth/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
 
   logout: () => {
     safeStorage.removeItem('prayerBoard_user');

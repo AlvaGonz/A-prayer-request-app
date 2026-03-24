@@ -229,3 +229,74 @@
     align-self: flex-end;
   }
 }
+
+/* --- Feed end message --- */
+.feed-end-message {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0 16px;
+}
+
+.feed-end-message p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.feed-end-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent-gold) 50%,
+    transparent
+  );
+  opacity: 0.3;
+}
+
+/* --- Loading more indicator --- */
+.loading-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.loading-more-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.loading-more-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-accent-gold);
+  animation: loadingDot 1.2s ease-in-out infinite;
+}
+
+.loading-more-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loading-more-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes loadingDot {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
