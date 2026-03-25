@@ -1,80 +1,130 @@
 :root {
-  /* User Palette - Light Mode */
+  /* === COLOR TOKENS — Original Palette (Light Mode) === */
   --color-bg-primary: #eaeaea;
   --color-bg-secondary: #f5f5f5;
   --color-bg-tertiary: #dcdcdc;
   --color-bg-card: #ffffff;
-  
+
   --color-text-primary: #1a1a2e;
   --color-text-secondary: #16213e;
-  --color-text-muted: #6b6b7b;
-  
-  /* Primary Accent - Gold */
+  --color-text-muted: #555565;
+
+  /* Primary Accent — Gold */
   --color-accent-gold: #ddb368;
   --color-accent-gold-hover: #c9a159;
-  
-  /* Purple-Green Overhaul Theme */
+
+  /* Purple-Green Theme */
   --color-accent-purple: #7c3aed;
   --color-accent-purple-hover: #6d28d9;
   --color-accent-purple-light: rgba(124, 58, 237, 0.1);
   --color-accent-purple-glow: rgba(124, 58, 237, 0.3);
-  
+
   --color-accent-green: #10b981;
   --color-accent-green-hover: #059669;
   --color-accent-green-light: rgba(16, 185, 129, 0.1);
   --color-accent-green-glow: rgba(16, 185, 129, 0.3);
-  
+
   --color-accent-blue: #16213e;
   --color-accent-red: #dc2626;
-  
+
   --color-border: #bbbbbb;
-  --color-shadow: rgba(0, 0, 0, 0.05);
-  
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+
+  /* Overlay & tints */
+  --color-overlay: rgba(0, 0, 0, 0.7);
+  --color-error-tint: rgba(248, 113, 113, 0.1);
+  --color-skeleton: rgba(0, 0, 0, 0.05);
+  --color-hover-tint: rgba(0, 0, 0, 0.04);
+
+  /* Gold tints */
+  --gold-tint-light: rgba(226, 185, 111, 0.05);
+  --gold-tint-medium: rgba(226, 185, 111, 0.15);
+  --gold-tint-strong: rgba(226, 185, 111, 0.2);
+  --gold-glow: rgba(221, 179, 104, 0.1);
+  --gold-glow-strong: rgba(221, 179, 104, 0.3);
+
+  /* === SPACING (4px base grid) === */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* === BORDERS & RADII === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-xl: 24px;
-  
-  --shadow-sm: 0 2px 4px var(--color-shadow);
-  --shadow-md: 0 4px 12px var(--color-shadow);
-  --shadow-lg: 0 8px 24px var(--color-shadow);
-  
+  --radius-full: 9999px;
+  --border-base: 1px solid var(--color-border);
+
+  /* === TRANSITIONS === */
   --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
   --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
+  --transition-slow: 300ms ease;
+
+  /* === LAYOUT & LAYERING === */
+  --max-width-content: 1200px;
+  --max-width-narrow: 680px;
+  --max-width-form: 480px;
+
+  /* Z-Index Scale */
+  --z-index-fab: 50;
+  --z-index-banner: 1000;
+  --z-index-overlay: 2000;
+  --z-index-modal: 2001;
 }
 
 [data-theme="dark"] {
-  /* User Palette - Dark Mode */
+  /* === COLOR TOKENS — Original Palette (Dark Mode) === */
   --color-bg-primary: #1a1a2e;
   --color-bg-secondary: #16213e;
   --color-bg-tertiary: #252544;
   --color-bg-card: #16213e;
-  
+
   --color-text-primary: #eaeaea;
   --color-text-secondary: #ddb368;
-  --color-text-muted: #8b8b8b;
-  
-  /* Primary Accent - Gold */
+  --color-text-muted: #9ca3af;
+
+  /* Primary Accent — Gold */
   --color-accent-gold: #ddb368;
   --color-accent-gold-hover: #c9a159;
-  
-  /* Purple-Green Overhaul Theme */
+
+  /* Purple-Green Theme */
   --color-accent-purple: #8b5cf6;
   --color-accent-purple-hover: #a78bfa;
   --color-accent-purple-light: rgba(139, 92, 246, 0.15);
   --color-accent-purple-glow: rgba(139, 92, 246, 0.4);
-  
+
   --color-accent-green: #34d399;
   --color-accent-green-hover: #6ee7b7;
   --color-accent-green-light: rgba(52, 211, 153, 0.15);
   --color-accent-green-glow: rgba(52, 211, 153, 0.4);
-  
+
   --color-accent-blue: #16213e;
   --color-accent-red: #f87171;
-  
+
   --color-border: #1a1a2e;
-  --color-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Dark mode overrides for tints */
+  --color-overlay: rgba(0, 0, 0, 0.8);
+  --color-error-tint: rgba(248, 113, 113, 0.15);
+  --color-skeleton: rgba(255, 255, 255, 0.05);
+  --color-hover-tint: rgba(255, 255, 255, 0.05);
+
+  /* Gold tints */
+  --gold-tint-light: rgba(221, 179, 104, 0.08);
+  --gold-tint-medium: rgba(221, 179, 104, 0.2);
+  --gold-tint-strong: rgba(221, 179, 104, 0.25);
+  --gold-glow: rgba(221, 179, 104, 0.15);
+  --gold-glow-strong: rgba(221, 179, 104, 0.4);
 }
 
 /* Apply transitions when theme changes — scoped to key UI elements */
@@ -94,6 +144,8 @@
   *,
   *::before,
   *::after {
-    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

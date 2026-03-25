@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { EyeToggleIcon } from '../components/ui/animated-state-icons';
 import { useAuth } from '../context/AuthContext';
-import { m } from 'framer-motion';
+import { motion as m } from 'framer-motion';
 import './AuthPages.css';
 
 const RegisterPage = () => {

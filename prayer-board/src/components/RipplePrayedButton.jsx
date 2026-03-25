@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
-import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
+import { useToast } from '../hooks/useToast';
 import Sparkles from './Sparkles';
 import { RippleButton } from './ui/RippleButton';
 import './RipplePrayedButton.css';
@@ -29,11 +28,9 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
   });
 
   const prayMutation = usePrayMutation(requestId);
-  const [showMessage, setShowMessage] = useState(false);
   const [showSparkles, setShowSparkles] = useState(false);
-  const { user, isAuthenticated } = useAuth();
   const { t } = useTranslation();
-  const messageTimeoutRef = useRef(null);
+  const { showToast } = useToast();
 
   // Sync with localStorage on mount and when requestId changes
   useEffect(() => {
@@ -51,15 +48,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       console.error('Error reading from local storage', e);
     }
   }, [requestId]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (messageTimeoutRef.current) {
-        clearTimeout(messageTimeoutRef.current);
-      }
-    };
-  }, []);
 
   // Sync prop updates if they change externally
   useEffect(() => {
@@ -81,8 +69,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       if (prevPrayed) {
         // Un-pray
         const result = await prayMutation.mutateAsync({ isPraying: true });
-        setShowMessage(false);
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
 
         // Remove from localStorage
         try {
@@ -100,7 +86,7 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       } else {
         // Pray
         const result = await prayMutation.mutateAsync({ isPraying: false });
-        setShowMessage(true);
+        showToast(result.message || t('notifications.prayed'), 'success');
         setShowSparkles(true);
 
         // Save to localStorage
@@ -115,10 +101,6 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
           console.error('Error writing to local storage', e);
         }
 
-        // Hide message after 10 seconds
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
-        messageTimeoutRef.current = setTimeout(() => setShowMessage(false), 10000);
-
         if (onPrayed) {
           onPrayed(requestId, result.prayedCount || newCount);
         }
@@ -129,9 +111,9 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
       setIsPrayed(prevPrayed);
       console.error('Error praying/unpraying:', error);
       if (error.statusCode === 429) {
-        alert(t('auth.errors.rateLimit'));
+        showToast(t('auth.errors.rateLimit'), 'warning');
       } else {
-        alert(error.message || t('errors.pray'));
+        showToast(error.message || t('errors.pray'), 'error');
       }
     }
   };
@@ -151,28 +133,8 @@ const RipplePrayedButton = ({ requestId, initialCount, onPrayed }) => {
           isFilled={isPrayed}
         />
         <span className="prayed-count">{count}</span>
-        <div className="prayed-label-stack">
-          {t('prayerCard.iPrayed').split(' ').map((word, i) => (
-            <span key={i}>{word}</span>
-          ))}
-        </div>
         <Sparkles isTriggered={showSparkles} onComplete={() => setShowSparkles(false)} />
       </RippleButton>
-
-      {showMessage && (
-        <div className="prayed-message animate-in">
-          <span className="prayed-message-text">
-            {t('notifications.prayed')}
-          </span>
-          <button
-            className="prayed-message-close"
-            onClick={() => setShowMessage(false)}
-            aria-label={t('common.close')}
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
     </div>
   );
 };

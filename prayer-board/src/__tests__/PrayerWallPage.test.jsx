@@ -3,8 +3,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PrayerWallPage from '../pages/PrayerWallPage';
+import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
+import { ToastProvider } from '../context/ToastProvider';
 
 // Create mock functions
 const mockUsePrayerRequests = vi.fn();
@@ -20,6 +22,17 @@ vi.mock('../hooks/usePrayerRequests', () => ({
   useUpdatePrayerStatus: (...args) => mockUseUpdatePrayerStatus(...args),
   useDeletePrayerRequest: (...args) => mockUseDeletePrayerRequest(...args),
   useMarkAnswered: (...args) => mockUseMarkAnswered(...args),
+}));
+
+// Mock SocketContext
+vi.mock('../context/SocketContext', () => ({
+  SocketProvider: ({ children }) => children,
+  useSocket: () => ({
+    socket: null,
+    joinRequest: vi.fn(),
+    leaveRequest: vi.fn(),
+    emitToRequest: vi.fn()
+  })
 }));
 
 // Mock react-i18next
@@ -45,6 +58,15 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     testQueryClient = createTestQueryClient();
+    
+    // Mock IntersectionObserver for jsdom
+    window.IntersectionObserver = vi.fn().mockImplementation(function() {
+      return {
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      }
+    });
     
     // Default open/pending state mocking
     mockUsePrayerRequests.mockImplementation((statusFilter) => {
@@ -79,7 +101,11 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
       <QueryClientProvider client={testQueryClient}>
         <AuthProvider>
           <ThemeProvider>
-            <PrayerWallPage />
+            <MemoryRouter>
+              <ToastProvider>
+                <PrayerWallPage />
+              </ToastProvider>
+            </MemoryRouter>
           </ThemeProvider>
         </AuthProvider>
       </QueryClientProvider>
@@ -111,7 +137,7 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     // the mock handles returning 'Answered pray' specifically when filtered.
   });
 
-  it('updates aria-selected for tabs', () => {
+  it('updates aria-selected for tabs', async () => {
     renderComponent();
     const pendingTab = screen.getByRole('tab', { name: 'prayerWall.filterPending' });
     const answeredTab = screen.getByRole('tab', { name: 'prayerWall.filterAnswered' });
@@ -121,8 +147,10 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
     
     fireEvent.click(answeredTab);
     
-    expect(pendingTab).toHaveAttribute('aria-selected', 'false');
-    expect(answeredTab).toHaveAttribute('aria-selected', 'true');
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: 'prayerWall.filterPending' })).toHaveAttribute('aria-selected', 'false');
+      expect(screen.getByRole('tab', { name: 'prayerWall.filterAnswered' })).toHaveAttribute('aria-selected', 'true');
+    });
   });
 
   it('display visual badge logic is present via mocked requests', async () => {

@@ -95,7 +95,6 @@
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
   padding: 2px;
   display: flex;
   flex-direction: column;

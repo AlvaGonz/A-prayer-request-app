@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import './ThemeToggle.css';
 
 const ThemeToggle = ({ className = '' }) => {
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { toggleTheme, isDark } = useTheme();
   const { t } = useTranslation();
 
   return (

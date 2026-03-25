@@ -132,3 +132,5 @@ clean_test_results.json
 test-results/
 playwright-report/
 server.err
+
+tasks/*

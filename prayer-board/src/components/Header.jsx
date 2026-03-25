@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LogOut } from 'lucide-react';
+import { LogOut, User as UserIcon } from 'lucide-react';
 import { MenuCloseIcon } from './ui/animated-state-icons';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
-import { m } from 'framer-motion';
+import { motion as m } from 'framer-motion';
 import './Header.css';
 
 const Header = () => {
@@ -90,6 +90,17 @@ const Header = () => {
 
               <DropdownMenu.Portal>
                 <DropdownMenu.Content className="dropdown-menu-content" sideOffset={8} align="end">
+                  <DropdownMenu.Item asChild>
+                    <Link
+                      to="/profile"
+                      className="dropdown-item"
+                      onClick={closeMenu}
+                    >
+                      <UserIcon size={18} />
+                      <span>{t('auth.profileTitle')}</span>
+                    </Link>
+                  </DropdownMenu.Item>
+
                   <DropdownMenu.Item asChild>
                     <button
                       className="logout-btn dropdown-item"

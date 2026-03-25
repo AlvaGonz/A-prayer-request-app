@@ -1,45 +1,23 @@
-/* RippleMarkAnsweredButton Styles */
-
+/* === RippleMarkAnsweredButton — Flat Design === */
 .ripple-mark-answered-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 8px;
-  min-height: 52px;
-  font-weight: 500;
-  border-color: var(--color-accent-green, #4ade80);
-  color: var(--color-accent-green, #4ade80);
-  background: linear-gradient(
-    135deg,
-    rgba(74, 222, 128, 0.05) 0%,
-    transparent 100%
-  );
-  width: 100%;
-  min-width: 0;
+  border-color: var(--color-accent-green);
+  color: var(--color-accent-green);
+  background-color: var(--color-accent-green-light);
 }
 
 .ripple-mark-answered-button .mark-answered-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ripple-mark-answered-button:hover:not(:disabled) .mark-answered-icon {
   transform: scale(1.1);
-  color: var(--color-accent-green, #4ade80);
+  color: var(--color-accent-green);
 }
 
 .ripple-mark-answered-button:hover:not(:disabled) {
-  background: linear-gradient(
-    135deg,
-    rgba(74, 222, 128, 0.15) 0%,
-    transparent 100%
-  );
-  border-color: var(--color-accent-green, #4ade80);
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15);
+  background-color: var(--color-accent-green-light);
+  border-color: var(--color-accent-green);
+  opacity: 0.9;
 }
 
 .ripple-mark-answered-button:disabled {
@@ -48,35 +26,6 @@
 }
 
 .mark-answered-text {
-  font-size: 0.8rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  flex-shrink: 1;
-  min-width: 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .ripple-mark-answered-button {
-    padding: 8px 6px;
-    min-height: 48px;
-  }
-  
-  .mark-answered-text {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .ripple-mark-answered-button {
-    padding: 6px 4px;
-    min-height: 44px;
-    gap: 4px;
-  }
-  
-  .mark-answered-text {
-    font-size: 0.7rem;
-  }
+  font-size: var(--text-sm);
+  font-weight: 500;
 }

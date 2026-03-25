@@ -2,17 +2,19 @@ import React, { useState, memo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { User, CheckCircle2, Trash2, Archive } from 'lucide-react';
+import { Flame, CheckCircle2, Trash2, Archive, ChevronsDown, User } from 'lucide-react';
 import { EyeToggleIcon } from './ui/animated-state-icons';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion as m, AnimatePresence } from 'framer-motion';
 import RipplePrayedButton from './RipplePrayedButton';
 import RippleShareButton from './RippleShareButton';
 import RippleCommentButton from './RippleCommentButton';
 import RippleMarkAnsweredButton from './RippleMarkAnsweredButton';
 import CommentSection from './CommentSection';
+import PrayerDetailModal from './PrayerDetailModal';
 import Celebration from './ui/Celebration';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../hooks/useToast';
 import { useMarkAnswered } from '../hooks/usePrayerRequests';
 import './PrayerRequestCard.css';
 
@@ -46,6 +48,7 @@ const PrayerRequestCard = ({
 }) => {
   const { user, isAuthenticated } = useAuth();
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
   const locale = i18n.language.startsWith('es') ? es : enUS;
   const markAnsweredMutation = useMarkAnswered();
 
@@ -55,6 +58,9 @@ const PrayerRequestCard = ({
   const [testimonyText, setTestimonyText] = useState('');
   const [celebrate, setCelebrate] = useState(false);
   const [isSuccessState, setIsSuccessState] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const TEXT_CLAMP_THRESHOLD = 200;
 
   React.useEffect(() => {
     setLocalCommentCount(request.commentCount || 0);
@@ -102,7 +108,7 @@ const PrayerRequestCard = ({
           }, 2500);
         },
         onError: (err) => {
-          alert(err.message || 'Failed to mark as answered');
+          showToast(err.message || 'Failed to mark as answered', 'error');
         }
       }
     );
@@ -129,7 +135,7 @@ const PrayerRequestCard = ({
           {request.isAnonymous ? (
             <>
               <div className="author-avatar anonymous" aria-hidden="true">
-                <User size={16} />
+                <User size={18} strokeWidth={2.5} className="user-icon" />
               </div>
               <span id={`prayer-author-${request.id}`} className="author-name">{t('prayerCard.anonymous')}</span>
             </>
@@ -156,17 +162,75 @@ const PrayerRequestCard = ({
         </div>
       </header>
 
-      <div className="prayer-card-body">
-        <p className="prayer-text">{request.body}</p>
+      <div 
+        className="prayer-card-body"
+        onClick={() => {
+          if (request.body.length > TEXT_CLAMP_THRESHOLD) {
+            setIsModalOpen(true);
+          }
+        }}
+        style={{ cursor: request.body.length > TEXT_CLAMP_THRESHOLD ? 'pointer' : 'default' }}
+      >
+        <p className={`prayer-text ${request.body.length > TEXT_CLAMP_THRESHOLD ? 'clamped' : ''}`}>
+          {request.body}
+        </p>
+        {request.body.length > TEXT_CLAMP_THRESHOLD && (
+          <button
+            className="read-more-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsModalOpen(true);
+            }}
+          >
+            <span>{t('prayerCard.tapToRead')}</span>
+            <ChevronsDown
+              size={16}
+              strokeWidth={2.5}
+              className="read-more-icon"
+            />
+          </button>
+        )}
       </div>
 
       {/* Testimony display for answered prayers */}
-      {isAnswered && request.testimony && (
-        <div className="prayer-card__testimony-text">
-          <strong>{t('prayerCard.testimony')}:</strong>
-          <p>{request.testimony}</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {isAnswered && request.testimony && (
+          <m.div 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            className={`prayer-card__testimony-text ${request.testimony.length > TEXT_CLAMP_THRESHOLD ? 'clamped-container' : ''}`}
+            onClick={(e) => {
+              if (request.testimony.length > TEXT_CLAMP_THRESHOLD) {
+                e.stopPropagation();
+                setIsModalOpen(true);
+              }
+            }}
+            style={{ cursor: request.testimony.length > TEXT_CLAMP_THRESHOLD ? 'pointer' : 'default' }}
+          >
+            <strong><Flame size={16} strokeWidth={2.5} /> {t('prayerCard.testimony')}</strong>
+            <p className={`prayer-text ${request.testimony.length > TEXT_CLAMP_THRESHOLD ? 'clamped' : ''}`}>
+              {request.testimony}
+            </p>
+            {request.testimony.length > TEXT_CLAMP_THRESHOLD && (
+              <button
+                className="read-more-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsModalOpen(true);
+                }}
+              >
+                <span>{t('prayerCard.tapToRead')}</span>
+                <ChevronsDown
+                  size={16}
+                  strokeWidth={2.5}
+                  className="read-more-icon"
+                />
+              </button>
+            )}
+          </m.div>
+        )}
+      </AnimatePresence>
 
       {/* Inline testimony form */}
       <AnimatePresence>
@@ -278,30 +342,39 @@ const PrayerRequestCard = ({
                 </button>
               </AlertDialog.Trigger>
               <AlertDialog.Portal>
-                <AlertDialog.Overlay className="alert-dialog-overlay" />
-                <AlertDialog.Content className="alert-dialog-content">
-                  <AlertDialog.Title className="alert-dialog-title">
-                    {t('prayerCard.deleteConfirm')}
-                  </AlertDialog.Title>
-                  <AlertDialog.Description className="alert-dialog-description">
-                    {t('prayerCard.deleteWarning') || "This action cannot be undone."}
-                  </AlertDialog.Description>
-                  <div className="alert-dialog-actions">
-                    <AlertDialog.Cancel asChild>
-                      <button className="action-btn" style={{ height: 'auto', padding: '10px 16px', width: 'auto' }}>
-                        {t('prayerCard.cancel')}
-                      </button>
-                    </AlertDialog.Cancel>
-                    <AlertDialog.Action asChild>
-                      <button 
-                        className="action-btn delete" 
-                        style={{ height: 'auto', padding: '10px 16px', width: 'auto', borderColor: 'var(--color-accent-red)', color: 'var(--color-accent-red)' }} 
-                        onClick={handleDelete}
-                      >
-                        {t('prayerCard.delete')}
-                      </button>
-                    </AlertDialog.Action>
-                  </div>
+                <AlertDialog.Overlay className="alert-dialog-overlay" asChild>
+                  <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+                </AlertDialog.Overlay>
+                <AlertDialog.Content asChild>
+                  <m.div
+                    initial={{ scale: 0.95, opacity: 0, y: '-50%', x: '-50%' }}
+                    animate={{ scale: 1, opacity: 1, y: '-50%', x: '-50%' }}
+                    exit={{ scale: 0.95, opacity: 0, y: '-50%', x: '-50%' }}
+                    className="alert-dialog-content"
+                  >
+                    <AlertDialog.Title className="alert-dialog-title">
+                      {t('prayerCard.deleteConfirm')}
+                    </AlertDialog.Title>
+                    <AlertDialog.Description className="alert-dialog-description">
+                      {t('prayerCard.deleteWarning') || "This action cannot be undone."}
+                    </AlertDialog.Description>
+                    <div className="alert-dialog-actions">
+                      <AlertDialog.Cancel asChild>
+                        <button className="action-btn" style={{ height: 'auto', padding: '10px 16px', width: 'auto' }}>
+                          {t('prayerCard.cancel')}
+                        </button>
+                      </AlertDialog.Cancel>
+                      <AlertDialog.Action asChild>
+                        <button 
+                          className="action-btn delete" 
+                          style={{ height: 'auto', padding: '10px 16px', width: 'auto' }} 
+                          onClick={handleDelete}
+                        >
+                          {t('prayerCard.delete')}
+                        </button>
+                      </AlertDialog.Action>
+                    </div>
+                  </m.div>
                 </AlertDialog.Content>
               </AlertDialog.Portal>
             </AlertDialog.Root>
@@ -318,6 +391,29 @@ const PrayerRequestCard = ({
         onCommentCountUpdate={setLocalCommentCount}
         id={`comments-${request.id}`}
       />
+
+      <PrayerDetailModal
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        request={request}
+        timeAgo={timeAgo}
+        isAnswered={isAnswered}
+      >
+        <RipplePrayedButton
+          requestId={request.id}
+          initialCount={request.prayedCount}
+          onPrayed={onPrayed}
+        />
+        <RippleCommentButton
+          commentCount={localCommentCount}
+          isOpen={showComments}
+          onClick={() => {
+            setIsModalOpen(false);
+            setShowComments(true);
+          }}
+        />
+        <RippleShareButton requestId={request.id} />
+      </PrayerDetailModal>
     </m.article>
   );
 };
