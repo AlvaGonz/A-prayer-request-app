@@ -6,6 +6,7 @@ import CommentSection from '../components/CommentSection';
 import { AuthProvider } from '../context/AuthContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { SocketProvider } from '../context/SocketContext';
+import { ToastProvider } from '../context/ToastProvider';
 
 // Force immediate resolution
 const mockMutate = vi.fn();
@@ -62,13 +63,15 @@ describe('CommentSection - UI Logic', () => {
           <AuthProvider>
             <ThemeProvider>
               <SocketProvider>
-                <CommentSection 
-                    requestId="req-123" 
-                    isOpen={true} 
-                    onToggle={() => {}} 
-                    requestAuthorId="author-1" 
-                    {...props}
-                />
+                <ToastProvider>
+                  <CommentSection 
+                      requestId="req-123" 
+                      isOpen={true} 
+                      onToggle={() => {}} 
+                      requestAuthorId="author-1" 
+                      {...props}
+                  />
+                </ToastProvider>
               </SocketProvider>
             </ThemeProvider>
           </AuthProvider>

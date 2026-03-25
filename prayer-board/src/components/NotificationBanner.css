@@ -71,13 +71,13 @@
 }
 
 .btn-enable {
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-4) var(--space-8);
   background-color: var(--color-accent-gold);
   color: var(--color-bg-primary);
   border: none;
   border-radius: var(--radius-md);
-  font-size: var(--text-base);
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: 700;
   cursor: pointer;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
   white-space: nowrap;
@@ -100,7 +100,7 @@
   font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-4) var(--space-8);
   transition: all var(--transition-fast);
   border-radius: var(--radius-md);
 }

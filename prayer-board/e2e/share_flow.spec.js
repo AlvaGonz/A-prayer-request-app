@@ -10,6 +10,12 @@ test.describe('Shared Prayer Flow', () => {
   const prayerText = `E2E Test Prayer for Sharing - ${Date.now()}`;
 
   test.beforeEach(async ({ page }) => {
+    // Setup consistent environment: English locale and no notification banner
+    await page.addInitScript(() => {
+      localStorage.setItem('prayerBoard_language', 'en');
+      localStorage.setItem('prayerBoard_notificationDismissed', 'true');
+    });
+
     // Register a new user
     await page.goto('/register');
     
@@ -28,7 +34,7 @@ test.describe('Shared Prayer Flow', () => {
 
   test('should generate and load a shared prayer link via wizard', async ({ page, context }) => {
     // 1. Open Wizard
-    await page.click('button:has-text("New Request")');
+    await page.click('.new-request-btn', { force: true });
     
     // Step 1: Write Prayer
     await expect(page.locator('.wizard-step.active')).toContainText('Write');
@@ -47,7 +53,7 @@ test.describe('Shared Prayer Flow', () => {
     await expect(page.locator('.review-identity')).toContainText('Share Tester');
     
     // Submit
-    await page.click('button:has-text("Share Request")');
+    await page.click('.submit-prayer-btn', { force: true });
     
     // 2. Wait for the prayer to appear in the wall
     const prayerCard = page.locator(`article:has-text("${prayerText}")`);

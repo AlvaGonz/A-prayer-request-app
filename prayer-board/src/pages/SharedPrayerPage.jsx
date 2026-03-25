@@ -7,8 +7,8 @@ import { User, Loader2, AlertCircle } from 'lucide-react';
 import { HeartIcon, SendIcon } from '../components/ui/animated-state-icons';
 import { shareAPI } from '../api';
 import { safeStorage } from '../utils/storage';
-import { m } from 'framer-motion';
-import { useToast } from '../context/ToastContext';
+import { motion as m } from 'framer-motion';
+import { useToast } from '../hooks/useToast';
 import Header from '../components/Header';
 import './SharedPrayerPage.css';
 
@@ -153,121 +153,140 @@ const SharedPrayerPage = () => {
         );
     }
 
-    const timeAgo = formatDistanceToNow(new Date(request.createdAt), { addSuffix: true });
+    const timeAgo = formatDistanceToNow(new Date(request.createdAt), { 
+        addSuffix: true,
+        locale: i18n.language.startsWith('es') ? es : enUS
+    });
 
     return (
-        <m.div className="shared-page" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+        <m.div className="shared-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <Header />
 
             <main className="shared-content">
-                <div className="shared-banner">
+                <m.div 
+                    className="shared-banner"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
                     <p>{t('share.title')}</p>
-                </div>
+                </m.div>
 
-                <div className="shared-layout">
-                    <div className="shared-main-col">
-                        <article className="shared-card">
-                            <header className="shared-card-header">
-                                <div className="shared-author">
-                                    {request.isAnonymous ? (
-                                        <>
-                                            <div className="author-avatar anonymous" aria-hidden="true">
-                                                <User size={16} />
-                                            </div>
-                                            <span className="author-name">{t('prayerCard.anonymous')}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="author-avatar" aria-hidden="true">
-                                                {request.authorName.charAt(0).toUpperCase()}
-                                            </div>
-                                            <span className="author-name">{request.authorName}</span>
-                                        </>
-                                    )}
-                                </div>
-                                <time className="time-ago" dateTime={request.createdAt}>{timeAgo}</time>
-                            </header>
-
-                            <div className="shared-card-body">
-                                <p>{request.body}</p>
-                            </div>
-
-                            <footer className="shared-card-footer">
-                                <button
-                                    className={`shared-pray-btn ${hasPrayed ? 'prayed' : ''}`}
-                                    onClick={handlePray}
-                                    disabled={isPraying}
-                                >
-                                    <HeartIcon size={20} isFilled={hasPrayed} />
-                                    <span>{hasPrayed ? t('share.prayed') : t('share.prayButton')}</span>
-                                    <span className="pray-count">{prayedCount}</span>
-                                </button>
-                            </footer>
-                        </article>
-
-                        {/* CTA */}
-                        <div className="shared-cta">
-                            <p>{t('share.joinCta')}</p>
-                            <Link to="/register" className="shared-cta-btn">{t('share.createAccount')}</Link>
+                <m.article 
+                    className="shared-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <header className="shared-card-header">
+                        <div className="shared-author">
+                            {request.isAnonymous ? (
+                                <>
+                                    <div className="author-avatar anonymous" aria-hidden="true">
+                                        <User size={20} />
+                                    </div>
+                                    <span className="author-name">{t('prayerCard.anonymous')}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="author-avatar" aria-hidden="true">
+                                        {request.authorName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="author-name">{request.authorName}</span>
+                                </>
+                            )}
                         </div>
+                        <time className="time-ago" dateTime={request.createdAt}>{timeAgo}</time>
+                    </header>
+
+                    <div className="shared-card-body">
+                        <p>{request.body}</p>
                     </div>
 
-                    <div className="shared-side-col">
-                        {/* Comments */}
-                        <section className="shared-comments" aria-label="Comments and encouragement">
-                            <h3>{t('share.encouragement')} ({comments.length})</h3>
+                    <footer className="shared-card-footer">
+                        <button
+                            className={`shared-pray-btn ${hasPrayed ? 'prayed' : ''}`}
+                            onClick={handlePray}
+                            disabled={isPraying}
+                            aria-label={hasPrayed ? t('share.prayed') : t('share.prayButton')}
+                        >
+                            <HeartIcon size={24} isFilled={hasPrayed} />
+                            <span>{hasPrayed ? t('share.prayed') : t('share.prayButton')}</span>
+                            <span className="pray-count">{prayedCount}</span>
+                        </button>
+                    </footer>
+                </m.article>
 
-                            <div className="shared-comments-list">
-                                {comments.length === 0 ? (
-                                    <p className="empty-comments">{t('share.emptyComments')}</p>
-                                ) : (
-                                    comments.map(comment => (
-                                        <div key={comment.id} className="shared-comment">
-                                            <div className="shared-comment-author">
-                                                <strong>{comment.authorName}</strong>
-                                                <time>{formatDistanceToNow(new Date(comment.createdAt), {
-                                                    addSuffix: true,
-                                                    locale: i18n.language.startsWith('es') ? es : enUS
-                                                })}</time>
-                                            </div>
-                                            <p>{comment.body}</p>
-                                        </div>
-                                    ))
-                                )}
-                                <div ref={commentsEndRef} />
-                            </div>
+                {/* CTA */}
+                <m.section 
+                    className="shared-cta"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    <p>{t('share.joinCta')}</p>
+                    <Link to="/register" className="shared-cta-btn">{t('share.createAccount')}</Link>
+                </m.section>
 
-                            <form className="shared-comment-form" onSubmit={handleComment}>
-                                <input
-                                    type="text"
-                                    value={guestName}
-                                    onChange={(e) => setGuestName(e.target.value)}
-                                    placeholder={t('share.namePlaceholder')}
-                                    maxLength={50}
-                                    className="guest-name-input"
-                                />
-                                <div className="comment-input-row">
-                                    <textarea
-                                        value={commentBody}
-                                        onChange={(e) => setCommentBody(e.target.value)}
-                                        placeholder={t('share.commentPlaceholder')}
-                                        maxLength={500}
-                                        rows={2}
-                                        disabled={isSubmitting}
-                                    />
-                                    <button
-                                        type="submit"
-                                        disabled={!commentBody.trim() || isSubmitting}
-                                        className="send-comment-btn"
-                                        aria-label="Send comment"
-                                    >
-                                        <SendIcon size={16} isSent={false} />
-                                    </button>
+                {/* Comments */}
+                <m.section 
+                    className="shared-comments" 
+                    aria-label="Comments and encouragement"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <h3>{t('share.encouragement')} ({comments.length})</h3>
+
+                    <div className="shared-comments-list">
+                        {comments.length === 0 ? (
+                            <p className="empty-comments">{t('share.emptyComments')}</p>
+                        ) : (
+                            comments.map(comment => (
+                                <div key={comment.id} className="shared-comment">
+                                    <div className="shared-comment-author">
+                                        <strong>{comment.authorName}</strong>
+                                        <time>{formatDistanceToNow(new Date(comment.createdAt), {
+                                            addSuffix: true,
+                                            locale: i18n.language.startsWith('es') ? es : enUS
+                                        })}</time>
+                                    </div>
+                                    <p>{comment.body}</p>
                                 </div>
-                            </form>
-                        </section>
+                            ))
+                        )}
+                        <div ref={commentsEndRef} />
                     </div>
-                </div>
+
+                    <form className="shared-comment-form" onSubmit={handleComment}>
+                        <input
+                            type="text"
+                            value={guestName}
+                            onChange={(e) => setGuestName(e.target.value)}
+                            placeholder={t('share.namePlaceholder')}
+                            maxLength={50}
+                            className="guest-name-input"
+                        />
+                        <div className="comment-input-row">
+                            <textarea
+                                value={commentBody}
+                                onChange={(e) => setCommentBody(e.target.value)}
+                                placeholder={t('share.commentPlaceholder')}
+                                maxLength={500}
+                                rows={2}
+                                disabled={isSubmitting}
+                            />
+                            <button
+                                type="submit"
+                                disabled={!commentBody.trim() || isSubmitting}
+                                className="send-comment-btn"
+                                aria-label="Send comment"
+                            >
+                                <SendIcon size={20} isSent={false} />
+                            </button>
+                        </div>
+                    </form>
+                </m.section>
             </main>
         </m.div>
     );

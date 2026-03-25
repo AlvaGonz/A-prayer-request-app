@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 import './NotificationBanner.css';
 
 const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if notifications are already enabled or dismissed

@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { HeartIcon } from './ui/animated-state-icons';
 import { useTranslation } from 'react-i18next';
 import { usePrayMutation } from '../hooks/usePrayMutation';
 import { safeStorage } from '../utils/storage';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 import Sparkles from './Sparkles';
 import { RippleButton } from './ui/RippleButton';
 import './RipplePrayedButton.css';

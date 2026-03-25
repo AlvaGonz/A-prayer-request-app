@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion as m, AnimatePresence } from 'framer-motion';
 import CommentItem from './CommentItem';
 import { useComments, useCreateComment, useUpdateComment, useDeleteComment } from '../hooks/useComments';
 import { safeStorage } from '../utils/storage';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 import './CommentSection.css';
 
 const CommentSection = ({ requestId, isOpen, onToggle, requestAuthorId, id, onCommentCountUpdate }) => {

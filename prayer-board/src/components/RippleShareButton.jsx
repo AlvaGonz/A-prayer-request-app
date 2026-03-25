@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Share2, Check, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { shareAPI } from '../api';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 import { RippleButton } from './ui/RippleButton';
 import './RippleShareButton.css';
 

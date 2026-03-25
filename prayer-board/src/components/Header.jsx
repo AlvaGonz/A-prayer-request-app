@@ -7,7 +7,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useAuth } from '../context/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageSelector from './LanguageSelector';
-import { m } from 'framer-motion';
+import { motion as m } from 'framer-motion';
 import './Header.css';
 
 const Header = () => {

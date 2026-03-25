@@ -6,6 +6,7 @@ import PrayerWallPage from '../pages/PrayerWallPage';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
+import { ToastProvider } from '../context/ToastProvider';
 
 // Create mock functions
 const mockUsePrayerRequests = vi.fn();
@@ -101,7 +102,9 @@ describe('PrayerWallPage - Answered Prayers Section', () => {
         <AuthProvider>
           <ThemeProvider>
             <MemoryRouter>
-              <PrayerWallPage />
+              <ToastProvider>
+                <PrayerWallPage />
+              </ToastProvider>
             </MemoryRouter>
           </ThemeProvider>
         </AuthProvider>

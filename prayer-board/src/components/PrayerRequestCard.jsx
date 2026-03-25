@@ -4,7 +4,7 @@ import { enUS, es } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import { Flame, CheckCircle2, Trash2, Archive, ChevronsDown, User } from 'lucide-react';
 import { EyeToggleIcon } from './ui/animated-state-icons';
-import { m, AnimatePresence } from 'framer-motion';
+import { motion as m, AnimatePresence } from 'framer-motion';
 import RipplePrayedButton from './RipplePrayedButton';
 import RippleShareButton from './RippleShareButton';
 import RippleCommentButton from './RippleCommentButton';
@@ -14,7 +14,7 @@ import PrayerDetailModal from './PrayerDetailModal';
 import Celebration from './ui/Celebration';
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../hooks/useToast';
 import { useMarkAnswered } from '../hooks/usePrayerRequests';
 import './PrayerRequestCard.css';
 

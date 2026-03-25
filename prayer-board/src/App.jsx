@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
+import { ToastProvider } from './context/ToastProvider';
 import ErrorBoundary from './components/ErrorBoundary';
 import PrayerWallPage from './pages/PrayerWallPage';
 import './styles/themes.css';
