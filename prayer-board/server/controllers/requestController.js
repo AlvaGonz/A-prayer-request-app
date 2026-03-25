@@ -301,7 +301,7 @@ const getSharedRequest = async (req, res) => {
       return res.status(404).json({ error: 'Shared prayer request not found' });
     }
 
-    const comments = await Comment.find({ request: request._id })
+    const comments = await Comment.find({ prayerRequest: request._id })
       .sort({ createdAt: 1 })
       .lean();
 
@@ -418,7 +418,7 @@ const commentShared = async (req, res) => {
       body,
       authorName: guestName,
       author: null,
-      request: request._id
+      prayerRequest: request._id
     });
 
     request.commentCount = (request.commentCount || 0) + 1;
@@ -443,6 +443,10 @@ const commentShared = async (req, res) => {
 // @access  Private (author only)
 const markAnswered = async (req, res) => {
   try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid request ID' });
+    }
+
     const request = await PrayerRequest.findById(req.params.id);
 
     if (!request || request.isDeleted) {

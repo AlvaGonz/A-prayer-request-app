@@ -178,8 +178,69 @@ const getMe = async (req, res) => {
   }
 };
 
+// @desc    Update user profile
+// @route   PATCH /api/auth/profile
+// @access  Private
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    let { displayName, email, password } = req.body;
+
+    if (displayName) {
+      displayName = sanitizeInput(displayName);
+      if (displayName.length < 2 || displayName.length > 50) {
+        return res.status(400).json({ error: 'Display name must be between 2 and 50 characters' });
+      }
+      user.displayName = displayName;
+    }
+
+    if (email) {
+      email = sanitizeInput(email)?.toLowerCase();
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Please provide a valid email address' });
+      }
+      
+      // Check if email is already taken by another user
+      const emailExists = await User.findOne({ email });
+      if (emailExists && emailExists._id.toString() !== user._id.toString()) {
+        return res.status(409).json({ error: 'Email already in use' });
+      }
+      user.email = email;
+    }
+
+    if (password) {
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ 
+          error: 'Password must contain at least one uppercase letter, one lowercase letter, and one number' 
+        });
+      }
+      user.password = password;
+    }
+
+    await user.save();
+
+    res.json({
+      user: {
+        id: user._id,
+        displayName: user.displayName,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('UpdateProfile error:', error.message);
+    res.status(500).json({ error: 'Server error during profile update' });
+  }
+};
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  updateProfile
 };

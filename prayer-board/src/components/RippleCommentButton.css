@@ -1,23 +1,6 @@
-/* RippleCommentButton Styles */
-
-.ripple-comment-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 8px;
-  min-height: 52px;
-  font-weight: 500;
-  width: 100%;
-  min-width: 0;
-}
-
+/* === RippleCommentButton — Flat Design === */
 .ripple-comment-button .comment-icon {
   transition: transform var(--transition-fast), color var(--transition-fast);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ripple-comment-button:hover .comment-icon {
@@ -27,48 +10,15 @@
 
 .ripple-comment-button.is-open {
   border-color: var(--color-accent-gold);
-  background: linear-gradient(
-    135deg,
-    var(--gold-tint-light, rgba(221, 179, 104, 0.08)) 0%,
-    transparent 100%
-  );
+  background-color: var(--gold-tint-light);
 }
 
 .ripple-comment-button.is-open .comment-icon {
   color: var(--color-accent-gold);
-  fill: var(--gold-tint-medium, rgba(221, 179, 104, 0.2));
+  fill: var(--gold-tint-medium);
 }
 
 .comment-text {
-  font-size: 0.8rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  flex-shrink: 1;
-  min-width: 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .ripple-comment-button {
-    padding: 8px 6px;
-    min-height: 48px;
-  }
-  
-  .comment-text {
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .ripple-comment-button {
-    padding: 6px 4px;
-    min-height: 44px;
-    gap: 4px;
-  }
-  
-  .comment-text {
-    font-size: 0.7rem;
-  }
+  font-size: var(--text-sm);
+  font-weight: 600;
 }

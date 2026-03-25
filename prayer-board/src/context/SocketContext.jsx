@@ -1,5 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
 const SocketContext = createContext(null);
@@ -73,7 +73,7 @@ export const SocketProvider = ({ children }) => {
     return () => {
       mockSocket.disconnect();
     };
-  }, []);
+  }, [user]);
 
   // Authenticate socket when user logs in
   useEffect(() => {

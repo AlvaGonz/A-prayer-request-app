@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useAuth } from '../context/AuthContext';
 import { safeStorage } from '../utils/storage';
+import { useToast } from '../hooks/useToast';
 import './NotificationBanner.css';
 
 const NotificationBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Check if notifications are already enabled or dismissed
@@ -32,7 +36,7 @@ const NotificationBanner = () => {
 
   const handleEnableNotifications = async () => {
     if (!('Notification' in window)) {
-      alert('This browser does not support notifications');
+      showToast('This browser does not support notifications', 'error');
       return;
     }
 
@@ -52,11 +56,10 @@ const NotificationBanner = () => {
       if (permission === 'granted') {
         // Get push subscription (in real implementation with backend)
         if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.ready;
+          await navigator.serviceWorker.ready;
 
           // This would normally use the backend's VAPID public key
           // For high-level wiring, we'll just log it
-          console.log('Push notifications enabled');
 
           // Store that user has enabled notifications
           safeStorage.setItem('prayerBoard_notificationsEnabled', 'true');
@@ -76,32 +79,39 @@ const NotificationBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="notification-banner">
+    <section 
+      className="notification-banner"
+      role="status"
+      aria-label={t('notifications.bannerTitle') || "Stay Connected"}
+    >
       <div className="notification-content">
-        <Bell size={20} className="notification-icon" />
+        <div className="notification-icon-container" aria-hidden="true">
+          <Bell size={24} />
+        </div>
         <div className="notification-text">
-          <p className="notification-title">Stay Connected in Prayer</p>
+          <h2 className="notification-title">Stay Connected in Prayer</h2>
           <p className="notification-desc">
-            Enable notifications to know when someone prays for your requests
+            Enable notifications to know when someone prays for your requests.
           </p>
         </div>
       </div>
       <div className="notification-actions">
         <button
+          className="btn-dismiss"
+          onClick={handleDismiss}
+          aria-label={t('notifications.dismissAria') || "Dismiss notification prompt"}
+        >
+          Not now
+        </button>
+        <button
           className="btn-enable"
           onClick={handleEnableNotifications}
+          aria-label={t('notifications.enableAria') || "Enable browser notifications"}
         >
           Enable
         </button>
-        <button
-          className="btn-dismiss"
-          onClick={handleDismiss}
-          aria-label="Dismiss"
-        >
-          <X size={18} />
-        </button>
       </div>
-    </div>
+    </section>
   );
 };
 

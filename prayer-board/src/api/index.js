@@ -7,7 +7,6 @@ const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.DEV
 if (typeof window !== 'undefined') {
   const cacheVersion = safeStorage.getItem('app_cache_version');
   if (cacheVersion !== '2.0') {
-    console.log('Clearing old cache (v2.0)...');
     safeStorage.setItem('app_cache_version', '2.0');
   }
 }
@@ -70,6 +69,10 @@ export const authAPI = {
   }),
 
   me: async () => apiCall('/api/auth/me'),
+  updateProfile: async (data) => apiCall('/api/auth/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  }),
 
   logout: () => {
     safeStorage.removeItem('prayerBoard_user');

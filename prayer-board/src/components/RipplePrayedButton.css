@@ -1,5 +1,4 @@
-/* RipplePrayedButton Styles */
-
+/* === RipplePrayedButton — Flat Design === */
 .ripple-prayed-button-container {
   position: relative;
   display: flex;
@@ -8,24 +7,11 @@
 }
 
 .ripple-prayed-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 10px 8px;
-  min-height: 52px;
-  min-width: 0;
   font-weight: 600;
-  letter-spacing: 0.3px;
-  flex-shrink: 1;
 }
 
 .ripple-prayed-button .prayed-icon {
   transition: transform var(--transition-fast);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .ripple-prayed-button:hover .prayed-icon {
@@ -34,11 +20,7 @@
 
 .ripple-prayed-button.prayed {
   border-color: var(--color-accent-gold);
-  background: linear-gradient(
-    135deg,
-    var(--gold-tint-light, rgba(221, 179, 104, 0.08)) 0%,
-    transparent 100%
-  );
+  background-color: var(--gold-tint-light);
 }
 
 .ripple-prayed-button.prayed .prayed-icon {
@@ -47,7 +29,6 @@
 
 .ripple-prayed-button.prayed .prayed-count {
   color: var(--color-accent-gold);
-  font-weight: 700;
 }
 
 .ripple-prayed-button.loading {
@@ -56,53 +37,39 @@
 }
 
 .prayed-count {
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   font-weight: 600;
   color: var(--color-text-primary);
-  min-width: 16px;
   text-align: center;
-  flex-shrink: 0;
 }
 
-.prayed-label-stack {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  flex-shrink: 1;
-  min-width: 0;
-}
-
-.prayed-label-stack span {
-  display: block;
-}
-
-/* Prayer notification message */
+/* Prayer notification message (Global Toast) */
 .prayed-message {
-  position: absolute;
-  bottom: calc(100% + 8px);
+  position: fixed;
+  bottom: var(--space-8);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
   background-color: var(--color-bg-card);
   border: 1px solid var(--color-accent-gold);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  z-index: 50;
+  border-radius: var(--radius-full);
+  z-index: 9999;
   white-space: nowrap;
-  animation: messageSlideIn 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .prayed-message {
+    animation: messageSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }
 
 @keyframes messageSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(10px);
+    transform: translateX(-50%) translateY(20px);
   }
   to {
     opacity: 1;
@@ -111,7 +78,7 @@
 }
 
 .prayed-message-text {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--color-accent-gold);
   font-weight: 500;
 }
@@ -120,58 +87,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: var(--space-1);
   background: none;
   border: none;
   color: var(--color-text-muted);
   cursor: pointer;
   border-radius: var(--radius-sm);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  transition: color var(--transition-fast),
+              background-color var(--transition-fast);
 }
 
 .prayed-message-close:hover {
   color: var(--color-text-primary);
   background-color: var(--color-bg-secondary);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .ripple-prayed-button {
-    padding: 8px 6px;
-    min-height: 48px;
-  }
-  
-  .prayed-label-stack {
-    font-size: 0.65rem;
-    letter-spacing: 0.2px;
-  }
-  
-  .prayed-count {
-    font-size: 0.85rem;
-    min-width: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .ripple-prayed-button {
-    padding: 6px 4px;
-    min-height: 44px;
-    gap: 2px;
-  }
-  
-  .prayed-label-stack {
-    font-size: 0.6rem;
-  }
-  
-  .prayed-count {
-    font-size: 0.8rem;
-  }
-  
-  .prayed-message {
-    padding: 6px 12px;
-  }
-  
-  .prayed-message-text {
-    font-size: 0.8rem;
-  }
 }

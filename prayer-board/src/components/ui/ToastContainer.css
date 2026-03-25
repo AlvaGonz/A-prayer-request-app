@@ -1,0 +1,101 @@
+.global-toast-container {
+  position: fixed;
+  bottom: var(--space-8);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  pointer-events: none; /* Let clicks pass to background elements if empty */
+  width: 100%;
+  max-width: 420px;
+  align-items: center;
+  padding: 0 var(--space-5);
+}
+
+.toast-notification {
+  pointer-events: auto; /* Catch clicks on toast */
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: var(--color-bg-card);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-base);
+  width: 100%;
+  max-width: 100%;
+}
+
+.toast-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status variants */
+.toast-info {
+  border-left: 3px solid var(--color-accent-gold);
+}
+.toast-info .toast-icon {
+  color: var(--color-accent-gold);
+}
+
+.toast-success {
+  border-left: 3px solid var(--color-accent-green);
+}
+.toast-success .toast-icon {
+  color: var(--color-accent-green);
+}
+
+.toast-error {
+  border-left: 3px solid var(--color-accent-red);
+}
+.toast-error .toast-icon {
+  color: var(--color-accent-red);
+}
+
+.toast-warning {
+  border-left: 3px solid var(--color-text-secondary);
+}
+.toast-warning .toast-icon {
+  color: var(--color-text-secondary);
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-message {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background-color: var(--color-hover-tint);
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 600px) {
+  .global-toast-container {
+    bottom: var(--space-20); /* Safe area over FABs */
+  }
+}

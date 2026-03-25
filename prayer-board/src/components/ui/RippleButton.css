@@ -1,41 +1,34 @@
-/* RippleButton Component Styles */
-
+/* === RippleButton — Flat Design Base === */
 .ripple-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   background-color: var(--color-bg-card);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-base);
+  border-radius: var(--radius-full);
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   overflow: hidden;
-  min-height: 52px;
-  min-width: 44px;
-  transition: 
+  min-height: 38px;
+  transition:
     background-color var(--transition-fast),
     border-color var(--transition-fast),
-    color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+    color var(--transition-fast);
 }
 
 .ripple-button:hover:not(:disabled) {
   background-color: var(--color-bg-secondary);
   border-color: var(--color-accent-gold);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .ripple-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0.9;
 }
 
 .ripple-button:focus-visible {
@@ -54,39 +47,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--space-2);
   pointer-events: none;
-  min-width: 0;
-  width: auto;
-  max-width: 100%;
-}
-
-/* Ensure text doesn't overflow */
-.ripple-button-content > span {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-  flex-shrink: 1;
-  /* Comet browser fix: ensure text visibility */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: inline-block;
 }
 
-/* Ensure icons don't shrink */
-.ripple-button-content > svg,
-.ripple-button-content > [class*="icon"] {
-  flex-shrink: 0;
-  /* Comet browser fix: ensure SVG visibility */
-  visibility: visible !important;
-  opacity: 1 !important;
-  display: inline-flex;
-  min-width: 16px;
-  min-height: 16px;
-}
-
-/* Ripple Effect Container */
 .ripple-button-ripples {
   position: absolute;
   inset: 0;
@@ -95,99 +60,10 @@
   border-radius: inherit;
 }
 
-/* Individual Ripple */
 .ripple-button-ripple {
   position: absolute;
   border-radius: 50%;
   transform: scale(0);
   animation: rippling 600ms ease-out forwards;
   pointer-events: none;
-}
-
-/* Animation Keyframes */
-@keyframes rippling {
-  0% {
-    opacity: 0.5;
-    transform: scale(0);
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
-}
-
-/* Variant: Primary (Gold accent) */
-.ripple-button-primary {
-  background-color: var(--color-accent-gold);
-  border-color: var(--color-accent-gold);
-  color: var(--color-bg-primary);
-}
-
-.ripple-button-primary:hover:not(:disabled) {
-  background-color: var(--color-accent-gold-hover);
-  border-color: var(--color-accent-gold-hover);
-  color: var(--color-bg-primary);
-}
-
-/* Variant: Ghost (Transparent background) */
-.ripple-button-ghost {
-  background-color: transparent;
-  border-color: transparent;
-}
-
-.ripple-button-ghost:hover:not(:disabled) {
-  background-color: var(--gold-tint-light, rgba(221, 179, 104, 0.08));
-  border-color: transparent;
-}
-
-/* Variant: Outline */
-.ripple-button-outline {
-  background-color: transparent;
-}
-
-.ripple-button-outline:hover:not(:disabled) {
-  background-color: var(--color-bg-secondary);
-}
-
-/* Size Variants */
-.ripple-button-sm {
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  min-height: 40px;
-}
-
-.ripple-button-lg {
-  padding: 16px 28px;
-  font-size: 1rem;
-  min-height: 56px;
-}
-
-/* Full Width */
-.ripple-button-full {
-  width: 100%;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .ripple-button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    min-height: 48px;
-  }
-  
-  .ripple-button-content {
-    gap: 4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .ripple-button {
-    padding: 6px 8px;
-    font-size: 0.8rem;
-    min-height: 44px;
-  }
-  
-  .ripple-button-content {
-    gap: 3px;
-  }
 }

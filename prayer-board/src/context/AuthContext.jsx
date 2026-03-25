@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authAPI, APIError } from '../api';
 import { safeStorage, safeSessionStorage } from '../utils/storage';
@@ -23,8 +24,7 @@ export const AuthProvider = ({ children }) => {
           setToken(storedToken);
           setIsAuthenticated(true);
         }
-      } catch (error) {
-        console.log('Session expired or invalid');
+      } catch {
         // Token exists but is invalid - clear it
         logout();
       } finally {
@@ -121,6 +121,25 @@ export const AuthProvider = ({ children }) => {
     setAuthError(null);
   };
 
+  const updateProfile = async (data) => {
+    setAuthError(null);
+    try {
+      const { user: updatedUser } = await authAPI.updateProfile(data);
+      
+      // Update local storage/sessionStorage
+      const isSessionStored = !!safeSessionStorage.getItem('prayerBoard_user');
+      const storage = isSessionStored ? safeSessionStorage : safeStorage;
+      
+      storage.setItem('prayerBoard_user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      setAuthError(error.message || 'Failed to update profile');
+      throw error;
+    }
+  };
+
   const clearError = () => setAuthError(null);
 
   const value = {
@@ -131,6 +150,7 @@ export const AuthProvider = ({ children }) => {
     authError,
     login,
     register,
+    updateProfile,
     logout,
     clearError
   };

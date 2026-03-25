@@ -14,19 +14,29 @@ const Sparkles = ({ isTriggered, onComplete }) => {
         }
     }, [isTriggered, shouldReduceMotion, onComplete]);
 
-    if (!isTriggered || shouldReduceMotion) return null;
+    const [particles, setParticles] = React.useState([]);
 
-    // Generate 8 particles with random flight paths
-    const particles = Array.from({ length: 8 }).map((_, i) => ({
-        id: i,
-        initialX: 0,
-        initialY: 0,
-        targetX: (Math.random() - 0.5) * 80, // spread horizontally
-        targetY: -60 - Math.random() * 40,   // rise vertically upwards
-        scale: 0.3 + Math.random() * 0.7,    // varying sizes
-        rotation: Math.random() * 360,
-        delay: Math.random() * 0.2
-    }));
+    // Generate 8 particles with random flight paths inside useEffect to keep render pure
+    useEffect(() => {
+        if (isTriggered && !shouldReduceMotion) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setParticles(Array.from({ length: 8 }).map((_, i) => ({
+                id: i,
+                initialX: 0,
+                initialY: 0,
+                targetX: (Math.random() - 0.5) * 80, // spread horizontally
+                targetY: -60 - Math.random() * 40,   // rise vertically upwards
+                scale: 0.3 + Math.random() * 0.7,    // varying sizes
+                rotation: Math.random() * 360,
+                delay: Math.random() * 0.2,
+                duration: 0.8 + Math.random() * 0.4
+            })));
+        } else {
+            setParticles([]);
+        }
+    }, [isTriggered, shouldReduceMotion]);
+
+    if (!isTriggered || shouldReduceMotion || particles.length === 0) return null;
 
     return (
         <div style={{ position: 'absolute', top: '50%', left: '50%', pointerEvents: 'none', zIndex: 10 }}>
@@ -51,7 +61,7 @@ const Sparkles = ({ isTriggered, onComplete }) => {
                         rotate: p.rotation
                     }}
                     transition={{
-                        duration: 0.8 + Math.random() * 0.4,
+                        duration: p.duration,
                         ease: "easeOut",
                         delay: p.delay
                     }}

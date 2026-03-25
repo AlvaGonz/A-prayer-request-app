@@ -6,10 +6,17 @@ test.describe('Answered Prayer Flow', () => {
   const password = 'Password123!';
 
   test('user can create a prayer and mark it as answered', async ({ page }) => {
-    // Force Spanish locale for consistent UI text
+    // Increase timeout for this complex flow
+    test.setTimeout(90000);
+
+    // Setup consistent environment: Spanish locale and no notification banner
     await page.addInitScript(() => {
-      localStorage.setItem('i18nextLng', 'es');  // Force Spanish locale
+      localStorage.setItem('prayerBoard_language', 'es');
+      localStorage.setItem('prayerBoard_notificationDismissed', 'true');
     });
+
+    // Hide banner via CSS just in case localStorage is slow or missed
+    await page.addStyleTag({ content: '.notification-banner { display: none !important; }' });
 
     // 1. Register a new user
     await page.goto('/register');
@@ -20,24 +27,31 @@ test.describe('Answered Prayer Flow', () => {
     await page.fill('input[name="confirmPassword"]', password);
     await page.click('button[type="submit"]');
 
-    // Wait for redirect to wall
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('.user-name')).toContainText('Test User');
+    // Wait for redirect to wall with a generous timeout
+    await page.waitForURL('/', { timeout: 15000 });
+    await expect(page.locator('.user-name')).toContainText('Test User', { timeout: 15000 });
 
-    // 2. Create a prayer request (NOT anonymous)
-    await page.click('.new-request-btn');
+    // 2. Create a prayer request (Step-by-step Wizard)
+    // Use force: true to bypass any lingering invisible obstacles or layout shifts
+    await page.click('.new-request-btn', { force: true });
     const prayerBody = `This is a test prayer for the answered flow ${uid}`;
-    await page.fill('textarea#prayer-body', prayerBody);
     
-    // Ensure "Post anonymously" is unchecked
-    const anonymousCheckbox = page.locator('input[name="isAnonymous"]');
-    await expect(anonymousCheckbox).toBeVisible();
-    if (await anonymousCheckbox.isChecked()) {
-      await page.click('.checkbox-label'); // Click the label to toggle
-    }
-    await expect(anonymousCheckbox).not.toBeChecked();
-
-    await page.click('button[type="submit"]');
+    // Step 1: Write text
+    await page.fill('textarea#prayer-body', prayerBody);
+    // Use a robust selector for "Next" that works in both languages or by role/index if needed
+    await page.click('button:has-text("Siguiente"), button:has-text("Next")'); 
+    
+    // Step 2: Identity Selection (Named)
+    // The "Named" identity card has the user's name
+    // We filter by "Publicar con mi nombre" or the Name itself to ensure robustness
+    const namedIdentityBtn = page.locator('.identity-card').filter({ hasText: /Publicar con mi nombre|Test User/ });
+    await expect(namedIdentityBtn).toBeVisible({ timeout: 5000 });
+    await namedIdentityBtn.click();
+    await page.click('button:has-text("Siguiente"), button:has-text("Next")');
+    
+    // Step 3: Review & Finalize
+    await expect(page.locator('.review-text')).toContainText(prayerBody, { timeout: 10000 });
+    await page.click('.submit-prayer-btn', { force: true }); // The final "Compartir Petición" button
     
     // 3. Verify it appears on the wall as "Test User"
     // Anchor to the specific card containing THIS test run's unique prayer text

@@ -153,19 +153,22 @@
 
 ---
 
+## Shared Page Modernization – 2026-03-24
+
+### Fix 15: Shared Prayer Comment Validation ✅
+**Root Cause:** The `requestController.js` was using the field name `request` when creating and finding comments, but the `Comment` Mongoose schema required `prayerRequest`. This resulted in a 500 Internal Server Error (Validation Failed).
+
+**Changes:**
+- Updated occurrences of `request: request._id` to `prayerRequest: request._id` in `commentShared` and `getSharedRequest`.
+- Verified fix with `Invoke-RestMethod` (201 Created).
+
+**File:** `prayer-board/server/controllers/requestController.js`
+
+---
+
 ## Summary
-All 5 adversarial hardening fixes + 6 E2E/SW fixes have been successfully applied:
-1. JWT expiry reduced to 1 day with explicit HS256 algorithm
-2. CSP is now enforced (no longer report-only)
-3. 'unsafe-inline' removed from CSP
-4. Body size limit reduced to 50KB
-5. CORS no-origin requests blocked in production
-6. X-Request-ID added for audit trail
-7. RegisterPage has proper `name` attributes and confirmPassword field
-8. E2E test forces Spanish locale and waits for hydration
-9. SW unhandled rejection silenced for bot contexts
-10. auth.spec.js fills confirmPassword field
-11. answered_flow.spec.js uses data-testid selectors
-12. RippleMarkAnsweredButton has data-testid
-13. PrayerRequestCard save button has data-testid
-14. Added i18n translations for confirmPassword (EN + ES)
+All modernization tasks and critical bug fixes have been applied:
+1. Modernized `SharedPrayerPage` with centered, premium design.
+2. Updated `SharedPrayerPage.css` with gold accents and glassmorphism.
+3. Fixed 500 error in shared comment creation by aligning field names with schema.
+4. Added multi-language support to shared timestamps.
